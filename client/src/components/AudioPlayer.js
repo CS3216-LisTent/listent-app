@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
+import { useTheme } from "@material-ui/core/styles";
 
 // Material UI components
 import Grid from "@material-ui/core/Grid";
@@ -18,7 +20,7 @@ import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
 // Utils
 import { formatSeconds } from "../utils/general-utils";
 
-const VOLUME_STEP = 0.1;
+// const VOLUME_STEP = 0.1;
 const SKIP_STEP = 10;
 
 const useStyles = makeStyles({
@@ -29,14 +31,20 @@ const useStyles = makeStyles({
     textAlign: "center",
     margin: "auto 0",
   },
+  right: {
+    textAlign: "right",
+  },
 });
 
-export default function AudioPlayer() {
+export default function AudioPlayer(props) {
   const classes = useStyles();
   const [audio, setAudio] = useState(null);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+
+  const theme = useTheme();
+  const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
 
   useEffect(() => {
     const isSupportAudio = !!document.createElement("audio").canPlayType;
@@ -67,29 +75,29 @@ export default function AudioPlayer() {
     }
   };
 
-  const alterVolume = (direction) => {
-    if (direction === "+") {
-      if (audio.volume + VOLUME_STEP > 1) {
-        audio.volume = 1;
-      } else {
-        audio.volume += VOLUME_STEP;
-      }
-    } else if (direction === "-") {
-      if (audio.volume - VOLUME_STEP < 0) {
-        audio.volume = 0;
-      } else {
-        audio.volume -= VOLUME_STEP;
-      }
-    }
-  };
+  // const alterVolume = (direction) => {
+  //   if (direction === "+") {
+  //     if (audio.volume + VOLUME_STEP > 1) {
+  //       audio.volume = 1;
+  //     } else {
+  //       audio.volume += VOLUME_STEP;
+  //     }
+  //   } else if (direction === "-") {
+  //     if (audio.volume - VOLUME_STEP < 0) {
+  //       audio.volume = 0;
+  //     } else {
+  //       audio.volume -= VOLUME_STEP;
+  //     }
+  //   }
+  // };
 
-  const volIncrease = () => {
-    alterVolume("+");
-  };
+  // const volIncrease = () => {
+  //   alterVolume("+");
+  // };
 
-  const volDecrease = () => {
-    alterVolume("-");
-  };
+  // const volDecrease = () => {
+  //   alterVolume("-");
+  // };
 
   const changeProgress = (_, value) => {
     setProgress(value);
@@ -121,7 +129,7 @@ export default function AudioPlayer() {
   };
 
   return (
-    <figure id="audio-container">
+    <div className={props.className}>
       <audio
         preload="metadata"
         id="audio"
@@ -148,35 +156,35 @@ export default function AudioPlayer() {
         <Grid item container xs={12} justify="center" wrap="nowrap">
           <Grid item xs={2} className={classes.center}>
             <IconButton onClick={skipBackwards}>
-              <Replay10Icon fontSize="large" />
+              <Replay10Icon fontSize={isLarge ? "large" : undefined} />
             </IconButton>
           </Grid>
           <Grid item xs={2} className={classes.center}>
             <IconButton>
-              <SkipPreviousIcon fontSize="large" />
+              <SkipPreviousIcon fontSize={isLarge ? "large" : undefined} />
             </IconButton>
           </Grid>
           <Grid item xs={2} className={classes.center}>
             <IconButton onClick={playPause}>
               {!audio || audio.paused ? (
-                <PlayArrowIcon fontSize="large" />
+                <PlayArrowIcon fontSize={isLarge ? "large" : undefined} />
               ) : (
-                <PauseIcon fontSize="large" />
+                <PauseIcon fontSize={isLarge ? "large" : undefined} />
               )}
             </IconButton>
           </Grid>
           <Grid item xs={2} className={classes.center}>
             <IconButton>
-              <SkipNextIcon fontSize="large" />
+              <SkipNextIcon fontSize={isLarge ? "large" : undefined} />
             </IconButton>
           </Grid>
           <Grid item xs={2} className={classes.center}>
             <IconButton onClick={skipForward}>
-              <Forward10Icon fontSize="large" />
+              <Forward10Icon fontSize={isLarge ? "large" : undefined} />
             </IconButton>
           </Grid>
         </Grid>
       </Grid>
-    </figure>
+    </div>
   );
 }
