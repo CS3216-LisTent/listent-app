@@ -4,11 +4,13 @@ import clsx from "clsx";
 
 // Material UI components
 import Container from "@material-ui/core/Container";
+import Typography from "@material-ui/core/Typography";
 
 // Custom components
 import AudioDetails from "../components/AudioDetails";
 import AudioPlayer from "../components/AudioPlayer";
 import Comments from "../components/Comments";
+import SingleLineContainer from "../components/SingleLineContainer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,6 +22,10 @@ const useStyles = makeStyles((theme) => ({
   audioContainer: {
     height: "50vh",
     position: "relative",
+  },
+  audioTitle: {
+    textAlign: "center",
+    paddingTop: theme.spacing(1),
   },
   audio: {
     width: "100%",
@@ -93,6 +99,15 @@ export default function Post(props) {
             isCommentScrolled === false && classes.audioContainerRevertAnimation
           )}
         >
+          <SingleLineContainer
+            className={classes.audioTitle}
+            component={Typography}
+            variant="h5"
+          >
+            Audio TitleAudio TitleAudio TitleAudio TitleAudio TitleAudio
+            TitleAudio TitleAudio TitleAudio TitleAudio TitleAudio TitleAudio
+            Title
+          </SingleLineContainer>
           <div className={classes.audio}>
             <AudioDetails isMinimized={isCommentScrolled} />
             <AudioPlayer />
