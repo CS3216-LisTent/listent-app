@@ -8,7 +8,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import LoadingCenter from "./components/LoadingCenter";
 
 // Pages
-const Post = lazy(() => import("./pages/Post"));
+const Home = lazy(() => import("./pages/Home"));
 
 function App() {
   return (
@@ -16,11 +16,8 @@ function App() {
       <CssBaseline />
       <Suspense fallback={<LoadingCenter />}>
         <Switch>
-          <Route exact path="/post">
-            <Post imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />
-          </Route>
           <Route exact path="/">
-            <h1>Home</h1>
+            <Home />
           </Route>
         </Switch>
       </Suspense>

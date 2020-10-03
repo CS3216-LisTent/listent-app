@@ -4,24 +4,30 @@ import clsx from "clsx";
 
 // Material UI components
 import Container from "@material-ui/core/Container";
+import Tab from "@material-ui/core/Tab";
+import Tabs from "@material-ui/core/Tabs";
 import Typography from "@material-ui/core/Typography";
 
 // Custom components
-import AudioDetails from "../components/AudioDetails";
-import AudioPlayer from "../components/AudioPlayer";
-import Comments from "../components/Comments";
-import SingleLineContainer from "../components/SingleLineContainer";
+import AudioDetails from "./AudioDetails";
+import AudioPlayer from "./AudioPlayer";
+import Comments from "./Comments";
+import SingleLineContainer from "./SingleLineContainer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    paddingTop: theme.spacing(7),
     backgroundImage: (props) =>
       `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${props.imageUrl})`,
-    height: "100vh",
+    height: "100%",
     backgroundSize: "cover",
   },
+  container: {
+    height: "100%",
+  },
   audioContainer: {
-    height: "50vh",
     position: "relative",
+    height: "50%",
   },
   audioTitle: {
     textAlign: "center",
@@ -33,9 +39,9 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
   },
   commentsContainer: {
-    height: "50vh",
+    height: "50%",
     overflow: "scroll",
-    padding: theme.spacing(1),
+    paddingTop: theme.spacing(1),
   },
   commentsContainerExpandAnimation: {
     animationName: "$expandComments",
@@ -59,28 +65,28 @@ const useStyles = makeStyles((theme) => ({
   },
   "@keyframes expandComments": {
     "100%": {
-      height: "70vh",
+      height: `70%`,
     },
   },
   "@keyframes collapseAudio": {
     "100%": {
-      height: "30vh",
+      height: `30%`,
     },
   },
   "@keyframes audioRevert": {
     "0%": {
-      height: "30vh",
+      height: `30%`,
     },
     "100%": {
-      height: "50vh",
+      height: `50%`,
     },
   },
   "@keyframes commentsRevert": {
     "0%": {
-      height: "70vh",
+      height: `70%`,
     },
     "100%": {
-      height: "50vh",
+      height: `50%`,
     },
   },
 }));
@@ -91,7 +97,7 @@ export default function Post(props) {
 
   return (
     <div className={classes.root}>
-      <Container>
+      <Container className={classes.container}>
         <div
           className={clsx(
             classes.audioContainer,
