@@ -8,7 +8,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import LoadingCenter from "./components/LoadingCenter";
 
 // Pages
-const Home = lazy(() => import("./pages/Home"));
+const Posts = lazy(() => import("./pages/Posts"));
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
       <Suspense fallback={<LoadingCenter />}>
         <Switch>
           <Route exact path="/">
-            <Home />
+            <Posts />
           </Route>
         </Switch>
       </Suspense>
