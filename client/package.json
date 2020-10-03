@@ -17,7 +17,9 @@
     "react-scripts": "3.4.3",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "validator": "^13.1.17"
+    "validator": "^13.1.17",
+    "videojs-record": "^4.1.0",
+    "wavesurfer.js": "^4.1.1"
   },
   "scripts": {
     "start": "react-scripts start",

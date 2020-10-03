@@ -4,8 +4,6 @@ import clsx from "clsx";
 
 // Material UI components
 import Container from "@material-ui/core/Container";
-import Tab from "@material-ui/core/Tab";
-import Tabs from "@material-ui/core/Tabs";
 import Typography from "@material-ui/core/Typography";
 
 // Custom components
@@ -65,17 +63,17 @@ const useStyles = makeStyles((theme) => ({
   },
   "@keyframes expandComments": {
     "100%": {
-      height: `70%`,
+      height: `65%`,
     },
   },
   "@keyframes collapseAudio": {
     "100%": {
-      height: `30%`,
+      height: `35%`,
     },
   },
   "@keyframes audioRevert": {
     "0%": {
-      height: `30%`,
+      height: `35%`,
     },
     "100%": {
       height: `50%`,
@@ -83,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
   },
   "@keyframes commentsRevert": {
     "0%": {
-      height: `70%`,
+      height: `65%`,
     },
     "100%": {
       height: `50%`,
@@ -92,8 +90,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Post(props) {
-  const classes = useStyles(props);
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
+  const classes = useStyles({ ...props, isCommentScrolled });
 
   return (
     <div className={classes.root}>

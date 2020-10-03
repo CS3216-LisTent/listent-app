@@ -1,6 +1,6 @@
 import { SET_HOME_TAB_INDEX } from "../actions/types";
 
-const initialState = { homeIndex: 0 };
+const initialState = { index: 0 };
 
 export default function homeTabReducer(state = initialState, action) {
   switch (action.type) {

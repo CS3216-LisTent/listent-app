@@ -5,6 +5,7 @@ import rootReducer from "./reducers";
 
 const initialState = {
   homeTab: { index: 0 },
+  bottomNavigation: { index: 0 },
 };
 
 const middleware = [thunk];

@@ -1,29 +1,21 @@
-import React, { useState } from "react";
-import clsx from "clsx";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
-import Container from "@material-ui/core/Container";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
-import Typography from "@material-ui/core/Typography";
-
-// Custom components
-import AudioDetails from "../components/AudioDetails";
-import AudioPlayer from "../components/AudioPlayer";
-import Comments from "../components/Comments";
-import SingleLineContainer from "../components/SingleLineContainer";
 
 // Pages
 import Post from "../components/Post";
 
 // Utils
 import { setHomeTabIndex } from "../actions/home-tab-actions";
+import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 
 const useStyles = makeStyles({
   root: {
-    height: "100vh",
+    height: "calc(100vh - 56px)",
   },
   tabs: {
     position: "fixed",
@@ -32,10 +24,14 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Posts() {
+export default function Home() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const tabIndex = useSelector((store) => store.homeTab.index);
+
+  useEffect(() => {
+    dispatch(setBottomNavigationIndex(0));
+  }, [dispatch]);
 
   const handleChange = (_, newValue) => {
     dispatch(setHomeTabIndex(newValue));
