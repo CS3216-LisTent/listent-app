@@ -6,6 +6,7 @@ import clsx from "clsx";
 import Container from "@material-ui/core/Container";
 
 // Custom components
+import AudioDetails from "../components/AudioDetails";
 import AudioPlayer from "../components/AudioPlayer";
 import Comments from "../components/Comments";
 
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     height: "50vh",
     position: "relative",
   },
-  audioPlayer: {
+  audio: {
     width: "100%",
     position: "absolute",
     bottom: 0,
@@ -92,7 +93,10 @@ export default function Post(props) {
             isCommentScrolled === false && classes.audioContainerRevertAnimation
           )}
         >
-          <AudioPlayer className={classes.audioPlayer} />
+          <div className={classes.audio}>
+            <AudioDetails isMinimized={isCommentScrolled} />
+            <AudioPlayer />
+          </div>
         </div>
         <div
           className={clsx(
