@@ -25,6 +25,7 @@
       dest: /srv/www/{{ app_name }}
       update: yes
       key_file: /root/.ssh/ec2-github
+      accept_hostkey: yes
 
 - hosts: webservers
   become: yes
