@@ -4,6 +4,7 @@ import clsx from "clsx";
 
 // Material UI components
 import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 
 // Custom components
@@ -26,68 +27,33 @@ const useStyles = makeStyles((theme) => ({
   container: {
     height: "100%",
   },
-  audioContainer: {
-    position: "relative",
-    height: "50%",
-  },
-  audioTitle: {
-    textAlign: "center",
-    paddingTop: theme.spacing(1),
-  },
-  audio: {
-    width: "100%",
-    position: "absolute",
-    bottom: 0,
+  gridContainer: {
+    height: "100%",
   },
   commentsContainer: {
-    height: "50%",
     overflowY: "scroll",
-    paddingTop: theme.spacing(1),
   },
-  commentsContainerExpandAnimation: {
-    animationName: "$expandComments",
+  collapse: {
+    animationName: "$collapse",
     animationDuration: "1s",
     animationFillMode: "forwards",
   },
-  audioContainerCollapseAnimation: {
-    animationName: "$collapseAudio",
+  expand: {
+    animationName: "$expand",
     animationDuration: "1s",
     animationFillMode: "forwards",
   },
-  audioContainerRevertAnimation: {
-    animationName: "$audioRevert",
-    animationDuration: "1s",
-    animationFillMode: "forwards",
-  },
-  commentsContainerRevertAnimation: {
-    animationName: "$commentsRevert",
-    animationDuration: "1s",
-    animationFillMode: "forwards",
-  },
-  "@keyframes expandComments": {
+  "@keyframes collapse": {
     "100%": {
-      height: `65%`,
+      flexBasis: "15%",
     },
   },
-  "@keyframes collapseAudio": {
-    "100%": {
-      height: `35%`,
-    },
-  },
-  "@keyframes audioRevert": {
+  "@keyframes expand": {
     "0%": {
-      height: `35%`,
+      flexBasis: "15%",
     },
     "100%": {
-      height: `50%`,
-    },
-  },
-  "@keyframes commentsRevert": {
-    "0%": {
-      height: `65%`,
-    },
-    "100%": {
-      height: `50%`,
+      flexBasis: "100%",
     },
   },
 }));
@@ -99,44 +65,61 @@ export default function Post(props) {
   return (
     <div className={classes.root}>
       <Container className={classes.container}>
-        <div
-          className={clsx(
-            classes.audioContainer,
-            isCommentScrolled && classes.audioContainerCollapseAnimation,
-            isCommentScrolled === false && classes.audioContainerRevertAnimation
-          )}
+        <Grid
+          container
+          direction="column"
+          wrap="nowrap"
+          className={classes.gridContainer}
         >
-          <SingleLineContainer
-            className={classes.audioTitle}
-            component={Typography}
-            variant="h5"
+          <Grid
+            item
+            xs={12}
+            container
+            direction="column"
+            wrap="nowrap"
+            className={clsx(
+              isCommentScrolled && classes.collapse,
+              isCommentScrolled === false && classes.expand
+            )}
           >
-            Audio TitleAudio TitleAudio TitleAudio TitleAudio TitleAudio
-            TitleAudio TitleAudio TitleAudio TitleAudio TitleAudio TitleAudio
-            Title
-          </SingleLineContainer>
-          <div className={classes.audio}>
-            <AudioDetails isMinimized={isCommentScrolled} />
-            <AudioPlayer src={`${process.env.PUBLIC_URL}/coffin.mp3`} />
-          </div>
-        </div>
-        <div
-          className={clsx(
-            classes.commentsContainer,
-            isCommentScrolled && classes.commentsContainerExpandAnimation,
-            isCommentScrolled === false &&
-              classes.commentsContainerRevertAnimation
-          )}
-          onScroll={(e) => {
-            if (e.target.scrollTop === 0) {
-              setIsCommentScrolled(false);
-            } else {
-              setIsCommentScrolled(true);
-            }
-          }}
-        >
-          <Comments />
-        </div>
+            <Grid
+              item
+              xs={12}
+              className={clsx(
+                isCommentScrolled && classes.collapse,
+                isCommentScrolled === false && classes.expand
+              )}
+            >
+              <SingleLineContainer
+                className={classes.audioTitle}
+                component={Typography}
+                variant="h5"
+              >
+                Audio TitleAudio TitleAudio TitleAudio TitleAudio TitleAudio
+                TitleAudio TitleAudio TitleAudio TitleAudio TitleAudio
+                TitleAudio Title
+              </SingleLineContainer>
+            </Grid>
+            <Grid item xs={12}>
+              <AudioDetails isMinimized={isCommentScrolled} />
+              <AudioPlayer src={`${process.env.PUBLIC_URL}/coffin.mp3`} />
+            </Grid>
+          </Grid>
+          <Grid
+            onScroll={(e) => {
+              if (e.target.scrollTop === 0) {
+                setIsCommentScrolled(false);
+              } else {
+                setIsCommentScrolled(true);
+              }
+            }}
+            item
+            xs={12}
+            className={classes.commentsContainer}
+          >
+            <Comments />
+          </Grid>
+        </Grid>
       </Container>
     </div>
   );

@@ -17,6 +17,17 @@ import SendIcon from "@material-ui/icons/Send";
 import { validateComment } from "../utils/validators";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    position: "relative",
+    height: "200px",
+  },
+  content: {
+    position: "absolute",
+    top: 0,
+    width: "100%",
+    height: "100%",
+    overflowY: "scroll",
+  },
   username: {
     fontWeight: theme.typography.fontWeightBold,
   },
