@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
   commentsContainer: {
     overflowY: "scroll",
+    paddingTop: theme.spacing(1),
   },
   collapse: {
     animationName: "$collapse",
