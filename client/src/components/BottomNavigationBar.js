@@ -12,13 +12,14 @@ import HomeIcon from "@material-ui/icons/Home";
 import MicIcon from "@material-ui/icons/Mic";
 import PersonIcon from "@material-ui/icons/Person";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     position: "fixed",
     bottom: 0,
     width: "100%",
+    zIndex: theme.zIndex.appBar,
   },
-});
+}));
 
 export default function BottomNavigationBar() {
   const classes = useStyles();
@@ -34,7 +35,7 @@ export default function BottomNavigationBar() {
             history.push("/");
             break;
           case 1:
-            history.push("/record");
+            history.push("/new");
             break;
           case 2:
             history.push("/profile");

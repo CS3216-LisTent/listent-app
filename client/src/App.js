@@ -11,7 +11,7 @@ import BottomNavigationBar from "./components/BottomNavigationBar";
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));
-const Record = lazy(() => import("./pages/Record"));
+const New = lazy(() => import("./pages/New"));
 
 const useStyles = makeStyles({ root: { paddingBottom: "56px" } });
 
@@ -25,8 +25,8 @@ function App() {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route exact path="/record">
-            <Record />
+          <Route exact path="/new">
+            <New />
           </Route>
         </Switch>
       </Suspense>

@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(7),
     backgroundImage: (props) =>
       `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${props.imageUrl})`,
+    backgroundRepeat: "no-repeat",
+    backgroundAttachment: "fixed",
+    backgroundPosition: "center",
     height: "100%",
     backgroundSize: "cover",
   },
@@ -38,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
   commentsContainer: {
     height: "50%",
-    overflow: "scroll",
+    overflowY: "scroll",
     paddingTop: theme.spacing(1),
   },
   commentsContainerExpandAnimation: {
@@ -114,7 +117,7 @@ export default function Post(props) {
           </SingleLineContainer>
           <div className={classes.audio}>
             <AudioDetails isMinimized={isCommentScrolled} />
-            <AudioPlayer />
+            <AudioPlayer src={`${process.env.PUBLIC_URL}/coffin.mp3`} />
           </div>
         </div>
         <div

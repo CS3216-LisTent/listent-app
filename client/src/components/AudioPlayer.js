@@ -36,7 +36,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function AudioPlayer(props) {
+export default function AudioPlayer({ hideNext, hidePrevious, src, ...rest }) {
   const classes = useStyles();
   const [audio, setAudio] = useState(null);
   const [duration, setDuration] = useState(0);
@@ -57,13 +57,22 @@ export default function AudioPlayer(props) {
 
       setAudio(audio);
 
-      audio.addEventListener("loadedmetadata", () => {
+      const loadedMetadataEvent = () => {
         setDuration(audio.duration);
-      });
-      audio.addEventListener("timeupdate", () => {
+      };
+      const timeUpdateEvent = () => {
         setCurrentTime(audio.currentTime);
         setProgress(Math.floor((audio.currentTime / audio.duration) * 100));
-      });
+      };
+
+      audio.addEventListener("loadedmetadata", loadedMetadataEvent);
+      audio.addEventListener("timeupdate", timeUpdateEvent);
+
+      return () => {
+        audio.removeEventListener("loadedmetadata", loadedMetadataEvent);
+        audio.removeEventListener("timeupdate", timeUpdateEvent);
+        audio.remove();
+      };
     }
   }, []);
 
@@ -129,13 +138,8 @@ export default function AudioPlayer(props) {
   };
 
   return (
-    <div className={props.className}>
-      <audio
-        preload="metadata"
-        id="audio"
-        controls
-        src={`${process.env.PUBLIC_URL}/coffin.mp3`}
-      >
+    <div className={rest.className}>
+      <audio preload="metadata" id="audio" controls src={src}>
         Your browser does not support the
         <code>audio</code> element.
       </audio>
@@ -160,9 +164,11 @@ export default function AudioPlayer(props) {
             </IconButton>
           </Grid>
           <Grid item xs={2} className={classes.center}>
-            <IconButton>
-              <SkipPreviousIcon fontSize={isLarge ? "large" : undefined} />
-            </IconButton>
+            {!hidePrevious && (
+              <IconButton>
+                <SkipPreviousIcon fontSize={isLarge ? "large" : undefined} />
+              </IconButton>
+            )}
           </Grid>
           <Grid item xs={2} className={classes.center}>
             <IconButton onClick={playPause}>
@@ -174,9 +180,11 @@ export default function AudioPlayer(props) {
             </IconButton>
           </Grid>
           <Grid item xs={2} className={classes.center}>
-            <IconButton>
-              <SkipNextIcon fontSize={isLarge ? "large" : undefined} />
-            </IconButton>
+            {!hideNext && (
+              <IconButton>
+                <SkipNextIcon fontSize={isLarge ? "large" : undefined} />
+              </IconButton>
+            )}
           </Grid>
           <Grid item xs={2} className={classes.center}>
             <IconButton onClick={skipForward}>
