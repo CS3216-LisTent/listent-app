@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
       `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${props.imageUrl})`,
     backgroundRepeat: "no-repeat",
     backgroundAttachment: "fixed",
-    backgroundPosition: "center",
+    backgroundPosition: "center center",
     height: "100%",
     backgroundSize: "cover",
   },

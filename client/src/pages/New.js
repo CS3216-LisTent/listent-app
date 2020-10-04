@@ -47,9 +47,10 @@ const useStyles = makeStyles((theme) => ({
     },
     backgroundRepeat: "no-repeat",
     backgroundAttachment: "fixed",
-    backgroundPosition: "center",
+    backgroundPosition: "center center",
     minHeight: "calc(100vh - 48px)",
     backgroundSize: "cover",
+    paddingBottom: theme.spacing(2),
   },
   audioRecorder: {
     backgroundColor: theme.palette.background.default + "!important",
