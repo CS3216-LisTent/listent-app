@@ -33,7 +33,7 @@
   tasks:
   - name: Install needed python packages
     pip:
-      requirements: requirements.txt
+      requirements: backend/requirements.txt
       chdir: /srv/www/{{ app_name }}
 
 - hosts: webservers
