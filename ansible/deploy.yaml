@@ -21,9 +21,10 @@
   tasks:
   - name: clone repo
     git:
-      repo: "https://github.com/{{ lookup('env','GITHUB_REPOSITORY') }}.git"
+      repo: "git@github.com:{{ lookup('env','GITHUB_REPOSITORY') }}.git"
       dest: /srv/www/{{ app_name }}
       update: yes
+      key_file: /root/.ssh/ec2-github
 
 - hosts: webservers
   become: yes
