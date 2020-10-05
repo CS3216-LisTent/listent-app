@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     backgroundSize: "cover",
   },
+  center: {
+    textAlign: "center",
+  },
   container: {
     height: "100%",
   },
@@ -92,13 +95,11 @@ export default function Post(props) {
               )}
             >
               <SingleLineContainer
-                className={classes.audioTitle}
+                className={classes.center}
                 component={Typography}
                 variant="h5"
               >
-                Audio TitleAudio TitleAudio TitleAudio TitleAudio TitleAudio
-                TitleAudio TitleAudio TitleAudio TitleAudio TitleAudio
-                TitleAudio Title
+                Coffin Dance
               </SingleLineContainer>
             </Grid>
             <Grid item xs={12}>

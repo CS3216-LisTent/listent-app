@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import isEmpty from "validator/lib/isEmpty";
 
 // Material UI components
 import Card from "@material-ui/core/Card";
@@ -12,9 +13,6 @@ import Typography from "@material-ui/core/Typography";
 
 // Icons
 import SendIcon from "@material-ui/icons/Send";
-
-// Utils
-import { validateComment } from "../utils/validators";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,24 +68,14 @@ export default function Comments() {
   const classes = useStyles();
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState(COMMENTS);
-  const [err, setErr] = useState({});
 
   const submitComment = () => {
-    const errors = validateComment(comment);
-
-    if (errors.hasError) {
-      setErr({ ...err, comment: errors.comment });
-      return;
-    }
-
     setComments([{ username: "nelsontky", content: comment }, ...comments]);
     setComment("");
   };
 
   const commentChange = (e) => {
     setComment(e.target.value);
-    const newErr = delete { ...err }.comment;
-    setErr(newErr);
   };
 
   return (
@@ -98,7 +86,10 @@ export default function Comments() {
           className: classes.commentInput,
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={submitComment}>
+              <IconButton
+                onClick={submitComment}
+                disabled={isEmpty(comment, { ignore_whitespace: true })}
+              >
                 <SendIcon />
               </IconButton>
             </InputAdornment>
@@ -110,8 +101,6 @@ export default function Comments() {
         variant="outlined"
         value={comment}
         onChange={commentChange}
-        error={err.comment}
-        helperText={err.comment}
         fullWidth
       />
       {comments.map((comment, i) => (
