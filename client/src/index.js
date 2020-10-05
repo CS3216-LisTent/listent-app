@@ -1,12 +1,15 @@
+import * as serviceWorker from "./serviceWorker";
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
-import * as serviceWorker from "./serviceWorker";
+import axios from "axios";
 import { BrowserRouter as Router } from "react-router-dom";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { Provider } from "react-redux";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
+import App from "./App";
 import store from "./store";
+
+axios.defaults.headers.post["Content-Type"] = "application/json";
 
 const theme = createMuiTheme({
   palette: {
