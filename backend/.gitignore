@@ -1,1 +1,7 @@
-env
+*.db
+*.idea
+*.ipynb
+*.vscode
+*__pycache__
+venv
+.env
