@@ -6,6 +6,9 @@ import { useSelector, useDispatch } from "react-redux";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 
+// Other components
+import SwipeableViews from "react-swipeable-views";
+
 // Pages
 import Post from "../components/Post";
 
@@ -13,7 +16,9 @@ import Post from "../components/Post";
 import { setHomeTabIndex } from "../actions/home-tab-actions";
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 
-const useStyles = makeStyles({
+import AudioPlayer from "../components/AudioPlayer";
+
+const useStyles = makeStyles((theme) => ({
   root: {
     height: "calc(100vh - 56px)",
   },
@@ -21,8 +26,15 @@ const useStyles = makeStyles({
     position: "fixed",
     backgroundColor: "rgba(0,0,0,0.5)",
     width: "100%",
+    zIndex: theme.zIndex.appBar,
   },
-});
+}));
+
+const POSTS = [
+  <Post key={0} imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />,
+  <Post key={1} imageUrl={`${process.env.PUBLIC_URL}/logo512.png`} />,
+  <Post key={2} imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />,
+];
 
 export default function Home() {
   const classes = useStyles();
@@ -50,7 +62,9 @@ export default function Home() {
         <Tab label="Feed" />
         <Tab label="Discover" />
       </Tabs>
-      <Post imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />
+      <SwipeableViews>
+        {POSTS}
+      </SwipeableViews>
     </div>
   );
 }

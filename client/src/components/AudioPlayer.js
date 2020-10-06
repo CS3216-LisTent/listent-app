@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
@@ -37,6 +37,8 @@ const useStyles = makeStyles({
 });
 
 export default function AudioPlayer({ hideNext, hidePrevious, src, ...rest }) {
+  const audioRef = useRef(null);
+  const controlsRef = useRef(null);
   const classes = useStyles();
   const [audio, setAudio] = useState(null);
   const [duration, setDuration] = useState(0);
@@ -48,9 +50,9 @@ export default function AudioPlayer({ hideNext, hidePrevious, src, ...rest }) {
 
   useEffect(() => {
     const isSupportAudio = !!document.createElement("audio").canPlayType;
-    if (isSupportAudio) {
-      const audio = document.getElementById("audio");
-      const audioControls = document.getElementById("audio-controls");
+    if (isSupportAudio && audioRef.current && controlsRef.current) {
+      const audio = audioRef.current;
+      const audioControls = controlsRef.current;
 
       audio.controls = false;
       audioControls.style.display = "block";
@@ -74,7 +76,7 @@ export default function AudioPlayer({ hideNext, hidePrevious, src, ...rest }) {
         audio.remove();
       };
     }
-  }, []);
+  }, [audioRef, controlsRef]);
 
   const playPause = () => {
     if (audio.paused || audio.ended) {
@@ -139,11 +141,11 @@ export default function AudioPlayer({ hideNext, hidePrevious, src, ...rest }) {
 
   return (
     <div className={rest.className}>
-      <audio preload="metadata" id="audio" controls src={src}>
+      <audio preload="metadata" ref={audioRef} controls src={src}>
         Your browser does not support the
         <code>audio</code> element.
       </audio>
-      <Grid container className={classes.controls} id="audio-controls">
+      <Grid container className={classes.controls} ref={controlsRef}>
         <Grid item container xs={12} justify="center" alignItems="center">
           <Grid item xs={2} className={classes.center}>
             <Typography variant="caption">
