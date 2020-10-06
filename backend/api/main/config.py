@@ -50,10 +50,10 @@ def get_connection_url(env):
         return 'mongodb://127.0.0.1:27017'
     if env == 'test':
         # Remote database
-        pass
+        return os.environ.get('DB_TEST_URL')
     if env == 'prod':
         # Remote database
-        pass
+        return os.environ.get('DB_PROD_URL')
 
 
 MONGO_CONNECTION_URL = get_connection_url(ENV)
