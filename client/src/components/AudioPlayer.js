@@ -36,7 +36,14 @@ const useStyles = makeStyles({
   },
 });
 
-export default function AudioPlayer({ hideNext, hidePrevious, src, ...rest }) {
+export default function AudioPlayer({
+  next,
+  previous,
+  hideNext,
+  hidePrevious,
+  src,
+  ...rest
+}) {
   const audioRef = useRef(null);
   const controlsRef = useRef(null);
   const classes = useStyles();
@@ -167,7 +174,7 @@ export default function AudioPlayer({ hideNext, hidePrevious, src, ...rest }) {
           </Grid>
           <Grid item xs={2} className={classes.center}>
             {!hidePrevious && (
-              <IconButton>
+              <IconButton disabled={!previous} onClick={previous}>
                 <SkipPreviousIcon fontSize={isLarge ? "large" : undefined} />
               </IconButton>
             )}
@@ -183,7 +190,7 @@ export default function AudioPlayer({ hideNext, hidePrevious, src, ...rest }) {
           </Grid>
           <Grid item xs={2} className={classes.center}>
             {!hideNext && (
-              <IconButton>
+              <IconButton disabled={!next} onClick={next}>
                 <SkipNextIcon fontSize={isLarge ? "large" : undefined} />
               </IconButton>
             )}

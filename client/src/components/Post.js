@@ -16,8 +16,8 @@ import SingleLineContainer from "./SingleLineContainer";
 const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: theme.spacing(7),
-    backgroundImage: (props) =>
-      `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${props.imageUrl})`,
+    backgroundImage: ({ imageUrl }) =>
+      `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${imageUrl})`,
     backgroundRepeat: "no-repeat",
     backgroundAttachment: "fixed",
     backgroundPosition: "center center",
@@ -62,9 +62,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Post(props) {
+export default function Post({ imageUrl, next, previous, ...rest }) {
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
-  const classes = useStyles({ ...props, isCommentScrolled });
+  const classes = useStyles({ imageUrl, isCommentScrolled });
 
   return (
     <div className={classes.root}>
@@ -102,7 +102,7 @@ export default function Post(props) {
                 Coffin Dance
               </SingleLineContainer>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{ flexGrow: 0 }}>
               <AudioDetails isMinimized={isCommentScrolled} />
               <AudioPlayer src={`${process.env.PUBLIC_URL}/coffin.mp3`} />
             </Grid>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -7,7 +7,7 @@ import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 
 // Other components
-import SwipeableViews from "react-swipeable-views";
+import ReactSwipe from "react-swipe";
 
 // Pages
 import Post from "../components/Post";
@@ -15,8 +15,6 @@ import Post from "../components/Post";
 // Utils
 import { setHomeTabIndex } from "../actions/home-tab-actions";
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
-
-import AudioPlayer from "../components/AudioPlayer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,18 +26,25 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     zIndex: theme.zIndex.appBar,
   },
+  swipeContainer: {
+    height: "100%",
+    "& > div": {
+      height: "100%",
+    },
+  },
 }));
 
 const POSTS = [
-  <Post key={0} imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />,
-  <Post key={1} imageUrl={`${process.env.PUBLIC_URL}/logo512.png`} />,
-  <Post key={2} imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />,
+  <Post imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />,
+  <Post imageUrl={`${process.env.PUBLIC_URL}/logo512.png`} />,
+  <Post imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />,
 ];
 
 export default function Home() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const tabIndex = useSelector((state) => state.homeTab.index);
+  const swipeRef = useRef(null);
 
   useEffect(() => {
     dispatch(setBottomNavigationIndex(0));
@@ -62,9 +67,17 @@ export default function Home() {
         <Tab label="Feed" />
         <Tab label="Discover" />
       </Tabs>
-      <SwipeableViews>
-        {POSTS}
-      </SwipeableViews>
+      <ReactSwipe
+        swipeOptions={{ continuous: false }}
+        ref={swipeRef}
+        className={classes.swipeContainer}
+      >
+        {POSTS.map((p, i) => (
+          <div style={{ height: "100%" }} key={i}>
+            {p}
+          </div>
+        ))}
+      </ReactSwipe>
     </div>
   );
 }
