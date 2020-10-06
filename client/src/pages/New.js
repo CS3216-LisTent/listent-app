@@ -87,6 +87,7 @@ export default function New() {
     dispatch(setBottomNavigationIndex(1));
   }, [dispatch]);
 
+  const audioRef = useRef(null);
   const recordRef = useRef(null);
   const [player, setPlayer] = useState(null);
   useEffect(() => {
@@ -208,6 +209,7 @@ export default function New() {
             {uploadedFiles.audio.blob && (
               <div className={classes.audioUploadContainer}>
                 <AudioPlayer
+                  audioRef={audioRef}
                   src={uploadedFiles.audio.url}
                   hideNext
                   hidePrevious

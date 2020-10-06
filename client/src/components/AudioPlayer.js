@@ -42,9 +42,9 @@ export default function AudioPlayer({
   hideNext,
   hidePrevious,
   src,
+  audioRef,
   ...rest
 }) {
-  const audioRef = useRef(null);
   const controlsRef = useRef(null);
   const classes = useStyles();
   const [audio, setAudio] = useState(null);
@@ -73,17 +73,24 @@ export default function AudioPlayer({
         setCurrentTime(audio.currentTime);
         setProgress(Math.floor((audio.currentTime / audio.duration) * 100));
       };
+      const endedEvent = () => {
+        if (next) {
+          next();
+        }
+      };
 
       audio.addEventListener("loadedmetadata", loadedMetadataEvent);
       audio.addEventListener("timeupdate", timeUpdateEvent);
+      audio.addEventListener("ended", endedEvent);
 
       return () => {
         audio.removeEventListener("loadedmetadata", loadedMetadataEvent);
         audio.removeEventListener("timeupdate", timeUpdateEvent);
+        audio.removeEventListener("ended", endedEvent);
         audio.remove();
       };
     }
-  }, [audioRef, controlsRef]);
+  }, [audioRef, controlsRef, next]);
 
   const playPause = () => {
     if (audio.paused || audio.ended) {
@@ -117,7 +124,8 @@ export default function AudioPlayer({
   //   alterVolume("-");
   // };
 
-  const changeProgress = (_, value) => {
+  const changeProgress = (e, value) => {
+    e.preventDefault();
     setProgress(value);
     audio.currentTime = (audio.duration / 100) * value;
   };

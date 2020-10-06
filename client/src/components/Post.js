@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Post({ imageUrl, next, previous, ...rest }) {
+export default function Post({ audioRef, imageUrl, next, previous, ...rest }) {
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
   const classes = useStyles({ imageUrl, isCommentScrolled });
 
@@ -104,7 +104,12 @@ export default function Post({ imageUrl, next, previous, ...rest }) {
             </Grid>
             <Grid item xs={12} style={{ flexGrow: 0 }}>
               <AudioDetails isMinimized={isCommentScrolled} />
-              <AudioPlayer src={`${process.env.PUBLIC_URL}/coffin.mp3`} />
+              <AudioPlayer
+                audioRef={audioRef}
+                next={next}
+                previous={previous}
+                src={`${process.env.PUBLIC_URL}/coffin.mp3`}
+              />
             </Grid>
           </Grid>
           <Grid

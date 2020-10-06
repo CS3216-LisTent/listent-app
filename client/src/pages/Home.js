@@ -34,17 +34,36 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const POSTS = [
-  <Post imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />,
-  <Post imageUrl={`${process.env.PUBLIC_URL}/logo512.png`} />,
-  <Post imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />,
-];
-
 export default function Home() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const tabIndex = useSelector((state) => state.homeTab.index);
   const swipeRef = useRef(null);
+
+  const one = useRef(null);
+  const two = useRef(null);
+  const three = useRef(null);
+
+  const POSTS = [
+    <Post
+      audioRef={one}
+      next={() => swipeRef.current.next()}
+      previous={() => swipeRef.current.prev()}
+      imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`}
+    />,
+    <Post
+      next={() => swipeRef.current.next()}
+      previous={() => swipeRef.current.prev()}
+      audioRef={two}
+      imageUrl={`${process.env.PUBLIC_URL}/logo512.png`}
+    />,
+    <Post
+      next={() => swipeRef.current.next()}
+      previous={() => swipeRef.current.prev()}
+      audioRef={three}
+      imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`}
+    />,
+  ];
 
   useEffect(() => {
     dispatch(setBottomNavigationIndex(0));
@@ -68,7 +87,24 @@ export default function Home() {
         <Tab label="Discover" />
       </Tabs>
       <ReactSwipe
-        swipeOptions={{ continuous: false }}
+        swipeOptions={{
+          continuous: false,
+          callback: (index) => {
+            if (index === 0) {
+              two.current.pause();
+              three.current.pause();
+              one.current.play();
+            } else if (index === 1) {
+              one.current.pause();
+              three.current.pause();
+              two.current.play();
+            } else {
+              two.current.pause();
+              one.current.pause();
+              three.current.play();
+            }
+          },
+        }}
         ref={swipeRef}
         className={classes.swipeContainer}
       >
