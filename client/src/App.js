@@ -13,8 +13,9 @@ import store from "./store";
 import { setUser, logoutUser } from "./actions/auth-actions";
 
 // Custom components
-import LoadingCenter from "./components/LoadingCenter";
 import BottomNavigationBar from "./components/BottomNavigationBar";
+import LoadingCenter from "./components/LoadingCenter";
+import TopSnackbar from "./components/TopSnackbar";
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));
@@ -45,6 +46,7 @@ function App() {
   return (
     <div className={classes.root}>
       <CssBaseline />
+      <TopSnackbar />
       <Suspense fallback={<LoadingCenter />}>
         <Switch>
           <Route exact path="/">

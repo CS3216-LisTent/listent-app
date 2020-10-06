@@ -27,7 +27,7 @@ const useStyles = makeStyles({
 export default function Home() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const tabIndex = useSelector((store) => store.homeTab.index);
+  const tabIndex = useSelector((state) => state.homeTab.index);
 
   useEffect(() => {
     dispatch(setBottomNavigationIndex(0));

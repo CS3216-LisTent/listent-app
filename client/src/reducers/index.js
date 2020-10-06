@@ -1,11 +1,13 @@
 import { combineReducers } from "redux";
 
-import homeTabReducer from "./home-tab-reducer";
-import bottomNavigationReducer from "./bottom-navigation-reducer";
 import authReducer from "./auth-reducer";
+import bottomNavigationReducer from "./bottom-navigation-reducer";
+import homeTabReducer from "./home-tab-reducer";
+import snackbarReducer from "./snackbar-reducer";
 
 export default combineReducers({
-  homeTab: homeTabReducer,
   bottomNavigation: bottomNavigationReducer,
+  homeTab: homeTabReducer,
+  snackbar: snackbarReducer,
   user: authReducer,
 });

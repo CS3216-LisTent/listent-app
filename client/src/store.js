@@ -4,8 +4,9 @@ import thunk from "redux-thunk";
 import rootReducer from "./reducers";
 
 const initialState = {
-  homeTab: { index: 0 },
   bottomNavigation: { index: 0 },
+  homeTab: { index: 0 },
+  snackbar: { isOpen: false, message: "", type: "" },
   user: false,
 };
 

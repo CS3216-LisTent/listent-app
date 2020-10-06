@@ -45,8 +45,7 @@ export default function Login() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
-  const user = useSelector((store) => store.user);
-
+  const user = useSelector((state) => state.user);
   useEffect(() => {
     if (user) {
       history.push("/");
@@ -74,6 +73,7 @@ export default function Login() {
     const err = loginErrors(login, password);
 
     if (err) {
+      setFields({ ...fields, password: "" });
       setErrors(err);
       setIsLoading(false);
       return;

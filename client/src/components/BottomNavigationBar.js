@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function BottomNavigationBar() {
   const classes = useStyles();
-  const index = useSelector((store) => store.bottomNavigation.index);
+  const index = useSelector((state) => state.bottomNavigation.index);
   const history = useHistory();
 
   return (
