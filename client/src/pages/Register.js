@@ -79,13 +79,11 @@ export default function Register() {
     }
 
     try {
-      const res = await axios.post(
+      await axios.post(
         "/api/v1/register",
         JSON.stringify({ username, email, password })
       );
-      dispatch(
-        openSnackbar("Registration successful! You can login now", "success")
-      );
+      dispatch(openSnackbar("Registration successful!", "success"));
       history.push("/login");
     } catch (e) {
       const res = e.response.data;
@@ -111,8 +109,8 @@ export default function Register() {
             "Password should be at least 8 characters long, include lower case, uppercase, and numbers, and include a special character",
         });
       }
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (

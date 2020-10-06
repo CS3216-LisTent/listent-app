@@ -101,8 +101,8 @@ export default function Login() {
         login: res.error_description,
         password: res.error_description,
       });
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
