@@ -74,3 +74,11 @@ class UserFollowController(Resource):
     def post(self, username):
         curr_username = TOKEN_AUTH.current_user()
         return UserService.follow(curr_username, username)
+
+
+@API.route('/user/<string:username>/unfollow', strict_slashes=False)
+class UserFollowController(Resource):
+    @TOKEN_AUTH.login_required
+    def post(self, username):
+        curr_username = TOKEN_AUTH.current_user()
+        return UserService.follow(curr_username, username)
