@@ -107,6 +107,16 @@ class UserService:
             )
 
     @staticmethod
+    def logout_user(user_token):
+        AuthUtil.blacklist_user_token(user_token)
+        return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': 'Successfully logout',
+                }), 200
+            )
+
+    @staticmethod
     def get_user(username, auth_info=True):
         try:
             data = {'username': username}
@@ -191,11 +201,6 @@ class UserService:
                     'message': f'DB Connection Error: {str(e)}',
                 }), 500
             )
-
-
-    @staticmethod
-    def logout():
-        pass
 
     @staticmethod
     def update_post():

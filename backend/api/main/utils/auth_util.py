@@ -6,6 +6,7 @@ from flask_httpauth import HTTPTokenAuth
 from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
 from api.main.config import AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_CERT, LOGGER
+from api.main.db import DB
 
 
 class AuthUtil:
@@ -65,6 +66,10 @@ class AuthUtil:
         return sub
 
     @staticmethod
+    def blacklist_user_token(user_token):
+        DB.blacklisted_tokens.save({'token': user_token})
+
+    @staticmethod
     def create_user(username, password, email):
         auth_token = AuthUtil.get_auth_token()
         url = os.path.join(AUTH0_DOMAIN, 'api/v2/users')
@@ -118,9 +123,11 @@ TOKEN_AUTH = HTTPTokenAuth()
 
 
 @TOKEN_AUTH.verify_token
-def verify_token(auth_token):
+def verify_token(user_token):
     try:
-        username = AuthUtil.decode_user_token(auth_token)
-        return username
+        is_blacklisted = DB.blacklisted_tokens.find_one({'token': user_token})
+        if not is_blacklisted:
+            username = AuthUtil.decode_user_token(user_token)
+            return username
     except:
         return None

@@ -47,8 +47,8 @@ class UserModel:
         following_user = UserModel.get_user(following_username)
         followed_user = UserModel.get_user(followed_username)
         if followed_user and following_user:
-            DB.users.update(following_user, {'$push': {'followings': followed_username}})
-            DB.users.update(followed_user, {'$push': {'followers': following_username}})
+            DB.users.update(following_user, {'$addToSet': {'followings': followed_username}})
+            DB.users.update(followed_user, {'$addToSet': {'followers': following_username}})
             updated_following = UserModel.get_user(following_username)
             updated_followed = UserModel.get_user(followed_username)
             return updated_following, updated_followed
