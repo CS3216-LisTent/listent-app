@@ -2,6 +2,7 @@ import * as serviceWorker from "./serviceWorker";
 import React from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
+import { SWRConfig } from "swr";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
@@ -28,13 +29,20 @@ const theme = createMuiTheme({
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <ThemeProvider theme={theme}>
-        <Provider store={store}>
-          <App />
-        </Provider>
-      </ThemeProvider>
-    </Router>
+    <SWRConfig
+      value={{
+        fetcher: (url) => axios.get(url).then((res) => res.data),
+        suspense: true,
+      }}
+    >
+      <Router>
+        <ThemeProvider theme={theme}>
+          <Provider store={store}>
+            <App />
+          </Provider>
+        </ThemeProvider>
+      </Router>
+    </SWRConfig>
   </React.StrictMode>,
   document.getElementById("root")
 );

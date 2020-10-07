@@ -5,3 +5,5 @@ export const SET_USER = "SET_USER";
 
 export const OPEN_SNACKBAR = "OPEN_SNACKBAR";
 export const CLOSE_SNACKBAR = "CLOSE_SNACKBAR";
+
+export const SET_REDIRECT_AFTER_AUTH = "SET_REDIRECT_AFTER_AUTH ";

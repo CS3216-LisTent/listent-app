@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { Switch, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
+import { useSelector } from "react-redux";
 
 // Material UI components
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -14,7 +15,9 @@ import { setUser, logoutUser } from "./actions/auth-actions";
 
 // Custom components
 import BottomNavigationBar from "./components/BottomNavigationBar";
+import Can from "./components/Can";
 import LoadingCenter from "./components/LoadingCenter";
+import PrivateRoute from "./components/PrivateRoute";
 import TopSnackbar from "./components/TopSnackbar";
 
 // Pages
@@ -38,10 +41,13 @@ if (jwt) {
   }
 }
 
-const useStyles = makeStyles({ root: { paddingBottom: "56px" } });
+const useStyles = makeStyles({
+  root: { paddingBottom: (user) => (user ? "56px" : 0) },
+});
 
 function App() {
-  const classes = useStyles();
+  const user = useSelector((state) => state.user);
+  const classes = useStyles(user);
 
   return (
     <div className={classes.root}>
@@ -52,10 +58,10 @@ function App() {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route exact path="/new">
+          <PrivateRoute exact path="/new">
             <New />
-          </Route>
-          <Route exact path="/profile">
+          </PrivateRoute>
+          <Route exact path="/:username">
             <Profile />
           </Route>
           <Route exact path="/login">
@@ -66,7 +72,10 @@ function App() {
           </Route>
         </Switch>
       </Suspense>
-      <BottomNavigationBar />
+      <Can
+        perform="bottom-navigation:read"
+        yes={() => <BottomNavigationBar />}
+      />
     </div>
   );
 }

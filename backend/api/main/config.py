@@ -47,7 +47,7 @@ P21Zv6DudI1c8u553gQO4ZE=
 
 def get_connection_url(env):
     if env == 'dev':
-        return 'mongodb://127.0.0.1:27017'
+        return 'mongodb+srv://admin:myADbVivS8QxspME@cluster0.4jbbo.mongodb.net/test'
     if env == 'test':
         # Remote database
         return os.environ.get('DB_TEST_URL')

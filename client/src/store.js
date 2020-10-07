@@ -8,6 +8,7 @@ const initialState = {
   homeTab: { index: 0 },
   snackbar: { isOpen: false, message: "", type: "" },
   user: false,
+  redirect: false,
 };
 
 const middleware = [thunk];

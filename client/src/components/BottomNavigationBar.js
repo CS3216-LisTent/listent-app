@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 export default function BottomNavigationBar() {
   const classes = useStyles();
   const index = useSelector((state) => state.bottomNavigation.index);
+  const user = useSelector((state) => state.user);
   const history = useHistory();
 
   return (
@@ -38,7 +39,7 @@ export default function BottomNavigationBar() {
             history.push("/new");
             break;
           case 2:
-            history.push("/profile");
+            history.push(`/${user.username}`);
             break;
           default:
           // placeholder

@@ -46,11 +46,14 @@ export default function Login() {
   const dispatch = useDispatch();
   const history = useHistory();
   const user = useSelector((state) => state.user);
+  const redirect = useSelector((state) => state.redirect);
   useEffect(() => {
-    if (user) {
+    if (redirect && user) {
+      history.push(redirect);
+    } else if (user) {
       history.push("/");
     }
-  }, [user, history]);
+  }, [user, history, redirect]);
 
   const [fields, setFields] = useState({
     login: "",
@@ -84,22 +87,19 @@ export default function Login() {
         "/api/v1/login",
         JSON.stringify({ username: login, password })
       );
-
-      dispatch(setUser(res.data.user_token));
+      dispatch(setUser(res.data.data.user_token));
 
       if (fields.isRemember) {
-        localStorage.setItem("jwt", res.data.user_token);
+        localStorage.setItem("jwt", res.data.data.user_token);
       } else {
-        sessionStorage.setItem("jwt", res.data.user_token);
+        sessionStorage.setItem("jwt", res.data.data.user_token);
       }
-
-      history.push("/");
     } catch (e) {
-      const res = e.response.data;
       setFields({ ...fields, password: "" });
+      const message = "Login or password invalid";
       setErrors({
-        login: res.error_description,
-        password: res.error_description,
+        login: message,
+        password: message,
       });
       setIsLoading(false);
     }
@@ -137,7 +137,7 @@ export default function Login() {
                 type="password"
                 onChange={onChange}
                 value={fields.password}
-                error={errors.login !== undefined}
+                error={errors.password !== undefined}
                 helperText={errors.password}
               />
             </Grid>

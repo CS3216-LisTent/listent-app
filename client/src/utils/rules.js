@@ -5,12 +5,13 @@ function usernameCheck({ username, owner }) {
   return username === owner;
 }
 
-export default rules = {
+const rules = {
   visitor: {
     static: ["posts:read", "discover:read", "profile:read", "comments:read"],
   },
   user: {
     static: [
+      "bottom-navigation:read",
       "posts:read",
       "posts:like",
       "posts:create",
@@ -26,3 +27,5 @@ export default rules = {
     },
   },
 };
+
+export default rules;
