@@ -46,6 +46,13 @@ class UserLoginController(Resource):
         )
 
 
+@API.route('/logout', strict_slashes=False)
+class UserLogoutController(Resource):
+    def post(self):
+        user_token = TOKEN_AUTH.get_auth()['token']
+        return UserService.logout_user(user_token)
+
+
 @API.route('/user', strict_slashes=False)
 class UserInfoController(Resource):
     @TOKEN_AUTH.login_required
