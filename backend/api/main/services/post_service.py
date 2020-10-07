@@ -1,18 +1,7 @@
-from api.main.db import DB
-
 
 class PostService:
     @staticmethod
-    def create_post():
-        pass
-        
-    
-    @staticmethod
-    def get_post():
-        pass
-
-    @staticmethod
-    def get_all_post():
+    def create_post(username):
         pass
 
     @staticmethod
@@ -21,4 +10,16 @@ class PostService:
 
     @staticmethod
     def delete_post():
+        pass
+    
+    @staticmethod
+    def get_post():
+        pass
+
+    @staticmethod
+    def get_feed_posts():
+        pass
+
+    @staticmethod
+    def get_discover_posts():
         pass

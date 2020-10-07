@@ -201,14 +201,3 @@ class UserService:
                     'message': f'DB Connection Error: {str(e)}',
                 }), 500
             )
-
-    @staticmethod
-    def update_post():
-        pass
-
-    @staticmethod
-    def delete_post():
-        pass
-
-
-
