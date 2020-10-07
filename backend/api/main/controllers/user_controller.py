@@ -2,6 +2,7 @@ from flask import request
 from flask_restplus import Resource, Namespace, fields
 
 from api.main.services.user_service import UserService
+from api.main.utils.auth_util import TOKEN_AUTH
 
 API = Namespace(name='User', path='/')
 
@@ -44,3 +45,25 @@ class UserLoginController(Resource):
             password=password
         )
 
+
+@API.route('/user', strict_slashes=False)
+class UserInfoController(Resource):
+    @TOKEN_AUTH.login_required
+    def get(self):
+        username = TOKEN_AUTH.current_user()
+        return UserService.get_user(username, auth_info=True)
+
+
+@API.route('/user/<string:username>', strict_slashes=False)
+class OtherUserInfoController(Resource):
+    @TOKEN_AUTH.login_required
+    def get(self, username):
+        return UserService.get_user(username, auth_info=False)
+
+
+@API.route('/user/<string:username>/follow', strict_slashes=False)
+class UserFollowController(Resource):
+    @TOKEN_AUTH.login_required
+    def post(self, username):
+        curr_username = TOKEN_AUTH.current_user()
+        return UserService.follow(curr_username, username)
