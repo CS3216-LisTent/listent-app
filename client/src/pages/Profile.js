@@ -1,21 +1,29 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
 import { makeStyles } from "@material-ui/core";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams, Redirect } from "react-router-dom";
 
 // Material UI components
 import Avatar from "@material-ui/core/Avatar";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 
 // Custom components
+import Can from "../components/Can";
 import ErrorBoundary from "../components/ErrorBoundary";
+import GreenButton from "../components/GreenButton";
 import PostCard from "../components/PostCard";
+import RedButton from "../components/RedButton";
 import SingleLineContainer from "../components/SingleLineContainer";
 import SuspenseLoading from "../components/SuspenseLoading";
+
+// Actions
+import { openSnackbar } from "../actions/snackbar-actions";
 
 // Utils
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
@@ -36,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
   },
   bold: {
     fontWeight: theme.typography.fontWeightBold,
+  },
+  postsContainer: {
+    marginTop: theme.spacing(1),
   },
 }));
 
@@ -60,8 +71,47 @@ export default function Profile() {
 }
 
 function UserProfile({ username }) {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const { data } = useSwr(`/api/v1/user/${username}`);
+
+  const user = useSelector((state) => state.user);
+  const { data: followingData, mutate } = useSwr(
+    user ? `/api/v1/user/${username}/is-following` : null
+  );
+  const isFollowing = followingData && followingData.data;
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    number_of_followers,
+    number_of_following,
+    number_of_posts,
+    description,
+    profile_picture,
+  } = data.data;
+
+  const follow = async () => {
+    try {
+      setIsLoading(true);
+      await axios.post(`/api/v1/user/${username}/follow`);
+      setIsLoading(false);
+      mutate();
+    } catch {
+      dispatch(openSnackbar("An error occurred. Please try again.", "error"));
+    }
+  };
+
+  const unfollow = async () => {
+    try {
+      setIsLoading(true);
+      await axios.post(`/api/v1/user/${username}/unfollow`);
+      setIsLoading(false);
+      mutate();
+    } catch {
+      dispatch(openSnackbar("An error occurred. Please try again.", "error"));
+    }
+  };
 
   return (
     <Grid container spacing={1}>
@@ -69,7 +119,7 @@ function UserProfile({ username }) {
         <Grid item xs={12} style={{ height: 72, width: 72 }}>
           <Avatar
             className={clsx(classes.flexItemCenter, classes.avatar)}
-            src={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`}
+            src={profile_picture}
           />
         </Grid>
         <SingleLineContainer
@@ -78,13 +128,13 @@ function UserProfile({ username }) {
           xs={12}
           className={classes.center}
         >
-          <Typography variant="body1">{`@${data.data.username}`}</Typography>
+          <Typography variant="body1">{`@${username}`}</Typography>
         </SingleLineContainer>
         <Grid container item xs={12} className={classes.center}>
           <Grid container item xs={4}>
             <Grid item xs={12}>
               <Typography className={classes.bold} variant="body1">
-                369
+                {number_of_following}
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -96,7 +146,7 @@ function UserProfile({ username }) {
           <Grid item xs={4}>
             <Grid item xs={12}>
               <Typography className={classes.bold} variant="body1">
-                369
+                {number_of_followers}
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -108,7 +158,7 @@ function UserProfile({ username }) {
           <Grid item xs={4}>
             <Grid item xs={12}>
               <Typography className={classes.bold} variant="body1">
-                369
+                {number_of_posts}
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -124,8 +174,36 @@ function UserProfile({ username }) {
             www.radityadika.com
           </Typography>
         </Grid>
+        <Can
+          data={{ username: user && user.username, profile: username }}
+          perform="user:view_follow_button"
+          yes={() => (
+            <Grid item xs={12}>
+              <Can
+                data={{ canFollow: !isFollowing }}
+                perform="user:follow"
+                yes={() => (
+                  <GreenButton onClick={follow} fullWidth disabled={isLoading}>
+                    {isLoading ? <CircularProgress /> : "Follow"}
+                  </GreenButton>
+                )}
+                no={() => (
+                  <RedButton onClick={unfollow} fullWidth disabled={isLoading}>
+                    {isLoading ? <CircularProgress /> : "Unfollow"}
+                  </RedButton>
+                )}
+              />
+            </Grid>
+          )}
+        />
       </Grid>
-      <Grid container item xs={12} spacing={1}>
+      <Grid
+        container
+        item
+        xs={12}
+        spacing={1}
+        className={classes.postsContainer}
+      >
         <Grid item xs={6} sm={4}>
           <PostCard />
         </Grid>

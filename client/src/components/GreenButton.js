@@ -5,9 +5,9 @@ import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.error.main,
+    backgroundColor: theme.palette.success.main,
     "&:hover": {
-      backgroundColor: theme.palette.error.dark,
+      backgroundColor: theme.palette.success.dark,
     },
     "&:disabled": {
       backgroundColor: theme.palette.action.disabled,

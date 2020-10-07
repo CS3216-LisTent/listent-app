@@ -126,6 +126,11 @@ class UserService:
                 'followers': user_app_data['followers'],
                 'followings': user_app_data['followings'],
                 'posts': user_app_data['posts'],
+                'number_of_followers': len(user_app_data['followers']),
+                'number_of_following': len(user_app_data['followings']),
+                'number_of_posts': len(user_app_data['posts']),
+                'description': user_app_data['description'],
+                'profile_picture': user_app_data['profile_picture'],
             })
             if auth_info:
                 user_auth_data = AuthUtil.get_user(username)
@@ -186,6 +191,34 @@ class UserService:
                     'status': 'fail',
                     'message': f'Auth0 Error: {str(e)}',
                 }), 400
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Operation Error: {str(e)}',
+                }), 400
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
+
+    @staticmethod
+    def is_following(username, other_username):
+        try:
+            res = UserModel.is_following(username, other_username)
+            message_verb = 'follows' if res else 'does not follow'
+
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'{username} {message_verb} {other_username}.',
+                    'data': res
+                }), 200
             )
         except OperationFailure as e:
             return make_response(

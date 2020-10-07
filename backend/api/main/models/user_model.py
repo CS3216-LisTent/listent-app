@@ -10,7 +10,9 @@ class UserModel:
             '_id': username,
             'followers': [],
             'followings': [],
-            'posts': []
+            'posts': [],
+            'description': '',
+            'profile_picture': '',
         })
         return UserModel.get_user(username)
 
@@ -55,3 +57,8 @@ class UserModel:
         raise WriteError(
             f'Error in the operation of making {following_username} follow {followed_username}. '
             'One or both users may not exist.')
+
+    @staticmethod
+    def is_following(username, other_username):
+        user = UserModel.get_user(username)
+        return other_username in user["followings"]
