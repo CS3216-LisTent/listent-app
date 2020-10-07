@@ -95,10 +95,11 @@ function UserProfile({ username }) {
     try {
       setIsLoading(true);
       await axios.post(`/api/v1/user/${username}/follow`);
-      setIsLoading(false);
       mutate();
     } catch {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -106,10 +107,11 @@ function UserProfile({ username }) {
     try {
       setIsLoading(true);
       await axios.post(`/api/v1/user/${username}/unfollow`);
-      setIsLoading(false);
       mutate();
     } catch {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
+    } finally {
+      setIsLoading(false);
     }
   };
 
