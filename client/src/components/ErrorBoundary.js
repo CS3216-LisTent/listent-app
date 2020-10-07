@@ -1,4 +1,5 @@
 import React from "react";
+import { Redirect } from "react-router-dom";
 
 export default class ErrorBoundary extends React.Component {
   state = { hasError: false, error: null };
@@ -11,10 +12,14 @@ export default class ErrorBoundary extends React.Component {
   }
 
   render() {
-    if (this.state.hasError) {
-      return this.props.fallback;
+    if (!this.state.hasError) {
+      return this.props.children;
     }
 
-    return this.props.children;
+    if (this.state.error.message.includes("status code 404")) {
+      return <Redirect to="/" />;
+    } else {
+      return this.props.fallback;
+    }
   }
 }
