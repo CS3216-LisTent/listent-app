@@ -42,7 +42,7 @@ if (jwt) {
 }
 
 const useStyles = makeStyles({
-  root: { paddingBottom: (user) => (user ? "56px" : 0) },
+  root: { height: (user) => (user ? "calc(100vh - 56px)" : "100vh") },
 });
 
 function App() {
