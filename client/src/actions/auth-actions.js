@@ -32,5 +32,5 @@ export const logoutUser = () => (dispatch) => {
 
   // Set current user to empty object
   dispatch(setUser(false));
-  window.location.reload();
+  window.location.href = "/";
 };

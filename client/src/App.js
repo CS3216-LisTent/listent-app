@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { Switch, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
-import { useSelector } from "react-redux";
 
 // Material UI components
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,6 +14,7 @@ import { setUser, logoutUser } from "./actions/auth-actions";
 
 // Custom components
 import BottomNavigationBar from "./components/BottomNavigationBar";
+import LoginBar from "./components/LoginBar";
 import Can from "./components/Can";
 import LoadingCenter from "./components/LoadingCenter";
 import PrivateRoute from "./components/PrivateRoute";
@@ -42,12 +42,11 @@ if (jwt) {
 }
 
 const useStyles = makeStyles({
-  root: { height: (user) => (user ? "calc(100vh - 56px)" : "100vh") },
+  root: { height: "calc(100vh - 56px)" },
 });
 
 function App() {
-  const user = useSelector((state) => state.user);
-  const classes = useStyles(user);
+  const classes = useStyles();
 
   return (
     <div className={classes.root}>
@@ -75,6 +74,7 @@ function App() {
       <Can
         perform="bottom-navigation:read"
         yes={() => <BottomNavigationBar />}
+        no={() => <LoginBar />}
       />
     </div>
   );

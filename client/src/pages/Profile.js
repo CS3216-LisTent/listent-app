@@ -8,10 +8,18 @@ import { useParams, Redirect } from "react-router-dom";
 
 // Material UI components
 import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+
+// Icons
+import EditIcon from "@material-ui/icons/Edit";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+
+// Actions
+import { logoutUser } from "../actions/auth-actions";
 
 // Custom components
 import Can from "../components/Can";
@@ -31,6 +39,7 @@ import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(2, 0),
+    marginBottom: theme.spacing(8),
   },
   avatar: {
     height: theme.spacing(8),
@@ -117,6 +126,11 @@ function UserProfile({ username }) {
     }
   };
 
+  const logout = () => {
+    setIsLoading(true);
+    dispatch(logoutUser());
+  };
+
   return (
     <Grid container spacing={1}>
       <Grid container item xs={12} spacing={1}>
@@ -198,6 +212,36 @@ function UserProfile({ username }) {
                 )}
               />
             </Grid>
+          )}
+        />
+        <Can
+          data={{ username: user && user.username, owner: username }}
+          perform="user:update"
+          yes={() => (
+            <>
+              <Grid item xs={12}>
+                <Button
+                  startIcon={<EditIcon />}
+                  onClick={null}
+                  fullWidth
+                  disabled={isLoading}
+                  color="primary"
+                  variant="contained"
+                >
+                  Edit Profile
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <RedButton
+                  onClick={logout}
+                  fullWidth
+                  disabled={isLoading}
+                  startIcon={isLoading ? undefined : <ExitToAppIcon />}
+                >
+                  {isLoading ? <CircularProgress /> : "Logout"}
+                </RedButton>
+              </Grid>
+            </>
           )}
         />
       </Grid>

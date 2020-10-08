@@ -24,6 +24,7 @@ const rules = {
     dynamic: {
       "any:update": usernameCheck,
       "any:delete": usernameCheck,
+      "user:update": usernameCheck,
       "user:view_follow_button": ({ username, profile }) => {
         if (!username || !profile) {
           return false;
