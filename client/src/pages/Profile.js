@@ -18,9 +18,6 @@ import Typography from "@material-ui/core/Typography";
 import EditIcon from "@material-ui/icons/Edit";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
-// Actions
-import { logoutUser } from "../actions/auth-actions";
-
 // Custom components
 import Can from "../components/Can";
 import ErrorBoundary from "../components/ErrorBoundary";
@@ -32,6 +29,7 @@ import SuspenseLoading from "../components/SuspenseLoading";
 
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
+import { logoutUser } from "../actions/auth-actions";
 
 // Utils
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";

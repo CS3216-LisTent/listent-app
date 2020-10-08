@@ -6,11 +6,17 @@ import clsx from "clsx";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+
+// Icons
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import ShareIcon from "@material-ui/icons/Share";
 
 // Custom components
 import AudioDetails from "./AudioDetails";
 import AudioPlayer from "./AudioPlayer";
 import Comments from "./Comments";
+import ShareDrawer from "./ShareDrawer";
 import SingleLineContainer from "./SingleLineContainer";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,11 +30,23 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     backgroundSize: "cover",
   },
+  likeShareContainer: {
+    position: "fixed",
+    right: 0,
+    top: "10%",
+    display: "flex",
+    flexDirection: "column",
+  },
+  likeButton: {
+    display: "flex",
+    flexDirection: "column",
+  },
   center: {
     textAlign: "center",
   },
   container: {
     height: "100%",
+    padding: theme.spacing(0, 3),
   },
   gridContainer: {
     height: "100%",
@@ -64,10 +82,21 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Post({ audioRef, imageUrl, next, previous, ...rest }) {
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const classes = useStyles({ imageUrl, isCommentScrolled });
 
   return (
     <div className={classes.root}>
+      <ShareDrawer isOpen={isShareOpen} setIsOpen={setIsShareOpen} />
+      <div className={classes.likeShareContainer}>
+        <IconButton classes={{ label: classes.likeButton }}>
+          <FavoriteBorderIcon />
+          <Typography variant="caption">1000</Typography>
+        </IconButton>
+        <IconButton onClick={() => setIsShareOpen(true)}>
+          <ShareIcon />
+        </IconButton>
+      </div>
       <Container className={classes.container}>
         <Grid
           container
