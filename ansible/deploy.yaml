@@ -62,7 +62,7 @@
       src: deploy/gunicorn.service
       dest: /etc/systemd/system/{{ app_name }}.service
   - name: start systemd app service
-    systemd: name={{ app_name }}.service state=restarted enabled=yes
+    systemd: name={{ app_name }}.service daemon_reload=yes state=restarted enabled=yes
   - name: template nginx site config
     template:
       src: deploy/nginx.conf
