@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/var/www/{{ app_name }}
-ExecStart=/usr/bin/gunicorn -b 0.0.0.0:8080 --chdir backend main:app
+ExecStart=/usr/bin/gunicorn -b 0.0.0.0:8080 --chdir backend main:APP
 
 [Install]
 WantedBy=multi-user.target
