@@ -36,7 +36,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home() {
   const dispatch = useDispatch();
-  const tabIndex = useSelector((state) => state.homeTab.index);
+  const user = useSelector((state) => state.user);
+  const tabIndex = useSelector((state) =>
+    state.user ? state.homeTab.index : 1
+  );
   const classes = useStyles();
   const swipeRef = useRef(null);
 
@@ -75,17 +78,19 @@ export default function Home() {
 
   return (
     <div className={classes.root}>
-      <Tabs
-        onChange={handleChange}
-        className={classes.tabs}
-        value={tabIndex}
-        indicatorColor="primary"
-        textColor="primary"
-        centered
-      >
-        <Tab label="Feed" />
-        <Tab label="Discover" />
-      </Tabs>
+      {user && (
+        <Tabs
+          onChange={handleChange}
+          className={classes.tabs}
+          value={tabIndex}
+          indicatorColor="primary"
+          textColor="primary"
+          centered
+        >
+          <Tab label="Feed" />
+          <Tab label="Discover" />
+        </Tabs>
+      )}
       <ReactSwipe
         swipeOptions={{
           continuous: false,

@@ -26,6 +26,10 @@ import { setUser } from "../actions/auth-actions";
 import { loginErrors } from "../utils/validators";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    overflowY: "hidden",
+    marginBottom: theme.spacing(8),
+  },
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
@@ -106,7 +110,7 @@ export default function Login() {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" className={classes.root}>
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
           Log In

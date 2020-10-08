@@ -38,7 +38,7 @@ import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(2, 0),
+    marginTop: theme.spacing(1),
     marginBottom: theme.spacing(8),
   },
   avatar: {
