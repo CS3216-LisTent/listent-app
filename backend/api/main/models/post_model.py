@@ -4,12 +4,13 @@ from api.main.db import DB
 
 class PostModel:
     @staticmethod
-    def add_post(username, post_id, title, description, audio_link):
+    def add_post(username, post_id, title, description, audio_link, image_link):
         DB.posts.save({
             '_id': post_id,
             'title': title,
             'description': description,
             'audio_link': audio_link,
+            'image_link': image_link,
             'comments': []
         })
         DB.users.update({'_id': username}, {'$addToSet': {'posts': post_id}})
