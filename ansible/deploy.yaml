@@ -5,6 +5,13 @@
   become: yes
   become_method: sudo
   tasks:
+  - name: add yarn apt key
+    apt_key:
+      url: https://dl.yarnpkg.com/debian/pubkey.gpg
+  - name: add yarn debian repo
+    apt_repository:
+      repo: deb https://dl.yarnpkg.com/debian/ stable main
+      filename: yarn
   - name: install packages
     apt: 
       name: "{{ packages }}"
@@ -14,6 +21,7 @@
         - nginx
         - gunicorn
         - python3-pip
+        - yarn
 
 - hosts: webservers
   become: yes
@@ -22,7 +30,7 @@
   - name: clone repo
     git:
       repo: "git@github.com:{{ lookup('env','GITHUB_REPOSITORY') }}.git"
-      dest: /srv/www/{{ app_name }}
+      dest: /var/www/{{ app_name }}
       update: yes
       key_file: /root/.ssh/ec2-github
       accept_hostkey: yes
@@ -34,7 +42,16 @@
   - name: Install needed python packages
     pip:
       requirements: backend/requirements.txt
-      chdir: /srv/www/{{ app_name }}
+      chdir: /var/www/{{ app_name }}
+
+- hosts: webservers
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: build react app
+      shell:
+        cmd: yarn install && yarn build
+        chdir: /var/www/{{ app_name }}/client
 
 - hosts: webservers
   become: yes

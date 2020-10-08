@@ -3,8 +3,8 @@ Description=gunicorn to serve {{ app_name }}
 After=network.target
 
 [Service]
-WorkingDirectory=/srv/www/{{ app_name }}
-ExecStart=/usr/bin/gunicorn -b 0.0.0.0:8080 --chdir backend app:app
+WorkingDirectory=/var/www/{{ app_name }}
+ExecStart=/usr/bin/gunicorn -b 0.0.0.0:8080 --chdir backend main:app
 
 [Install]
 WantedBy=multi-user.target
