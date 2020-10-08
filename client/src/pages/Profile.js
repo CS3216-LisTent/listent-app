@@ -73,10 +73,10 @@ export default function Profile() {
 function UserProfile({ username }) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { data } = useSwr(`/api/v1/user/${username}`);
+  const { data, mutate } = useSwr(`/api/v1/user/${username}`);
 
   const user = useSelector((state) => state.user);
-  const { data: followingData, mutate } = useSwr(
+  const { data: followingData, mutate: mutateFollowing } = useSwr(
     user ? `/api/v1/user/${username}/is-following` : null
   );
   const isFollowing = followingData && followingData.data;
@@ -96,6 +96,7 @@ function UserProfile({ username }) {
       setIsLoading(true);
       await axios.post(`/api/v1/user/${username}/follow`);
       mutate();
+      mutateFollowing();
     } catch {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
     } finally {
@@ -108,6 +109,7 @@ function UserProfile({ username }) {
       setIsLoading(true);
       await axios.post(`/api/v1/user/${username}/unfollow`);
       mutate();
+      mutateFollowing();
     } catch {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
     } finally {
@@ -118,7 +120,7 @@ function UserProfile({ username }) {
   return (
     <Grid container spacing={1}>
       <Grid container item xs={12} spacing={1}>
-        <Grid item xs={12} style={{ height: 72, width: 72 }}>
+        <Grid item xs={12}>
           <Avatar
             className={clsx(classes.flexItemCenter, classes.avatar)}
             src={profile_picture}
