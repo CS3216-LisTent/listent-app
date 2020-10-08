@@ -1,13 +1,13 @@
-import Button from "@material-ui/core/Button";
 import React from "react";
-import clsx from "clsx";
+import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.error.main,
+    backgroundColor: theme.palette.success.main,
     "&:hover": {
-      backgroundColor: theme.palette.error.dark,
+      backgroundColor: theme.palette.success.dark,
     },
     "&:disabled": {
       backgroundColor: theme.palette.action.disabled,

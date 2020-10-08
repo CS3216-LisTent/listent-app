@@ -42,7 +42,7 @@ if (jwt) {
 }
 
 const useStyles = makeStyles({
-  root: { paddingBottom: (user) => (user ? "56px" : 0) },
+  root: { height: (user) => (user ? "calc(100vh - 56px)" : "100vh") },
 });
 
 function App() {
@@ -61,14 +61,14 @@ function App() {
           <PrivateRoute exact path="/new">
             <New />
           </PrivateRoute>
-          <Route exact path="/:username">
-            <Profile />
-          </Route>
           <Route exact path="/login">
             <Login />
           </Route>
           <Route exact path="/register">
             <Register />
+          </Route>
+          <Route exact path="/:username">
+            <Profile />
           </Route>
         </Switch>
       </Suspense>

@@ -18,7 +18,7 @@ import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: (isLoggedIn) => (isLoggedIn ? "calc(100vh - 56px)" : "100vh"),
+    height: "100%",
   },
   tabs: {
     position: "fixed",
@@ -37,8 +37,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Home() {
   const dispatch = useDispatch();
   const tabIndex = useSelector((state) => state.homeTab.index);
-  const isLoggedIn = useSelector((state) => !!state.user);
-  const classes = useStyles(isLoggedIn);
+  const classes = useStyles();
   const swipeRef = useRef(null);
 
   const one = useRef(null);
