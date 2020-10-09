@@ -2,10 +2,14 @@
 from api.main.config import config_by_name
 from flask import Blueprint
 from flask_restplus import Api
-from api.main.controllers.user_controller import API as AUTH_NS
+from api.main.controllers.auth_controller import API as AUTH_NS
+from api.main.controllers.posts_controller import API as POSTS_NS
+from api.main.controllers.users_controller import API as USERS_NS
 
 NAMESPACES = [
     AUTH_NS,
+    POSTS_NS,
+    USERS_NS
 ]
 
 

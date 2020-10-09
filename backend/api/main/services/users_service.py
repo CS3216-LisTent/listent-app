@@ -1,8 +1,7 @@
 from auth0.v3 import Auth0Error
 from flask import jsonify, make_response
 from pymongo.errors import OperationFailure, ConnectionFailure
-
-from api.main.models.user_model import UserModel
+from api.main.models.users_model import UserModel
 from api.main.utils.auth_util import AuthUtil
 
 

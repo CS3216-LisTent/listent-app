@@ -1,10 +1,9 @@
 from flask import request
 from flask_restplus import Resource, Namespace, fields
-
-from api.main.services.user_service import UserService
+from api.main.services.users_service import UserService
 from api.main.utils.auth_util import TOKEN_AUTH
 
-API = Namespace(name='User', path='/')
+API = Namespace(name='auth')
 
 USER_REGISTER_DATA = API.model(
     "User register data", {
@@ -51,40 +50,3 @@ class UserLogoutController(Resource):
     def post(self):
         user_token = TOKEN_AUTH.get_auth()['token']
         return UserService.logout_user(user_token)
-
-
-@API.route('/user', strict_slashes=False)
-class UserInfoController(Resource):
-    @TOKEN_AUTH.login_required
-    def get(self):
-        username = TOKEN_AUTH.current_user()
-        return UserService.get_user(username, auth_info=True)
-
-
-@API.route('/user/<string:username>', strict_slashes=False)
-class OtherUserInfoController(Resource):
-    def get(self, username):
-        return UserService.get_user(username, auth_info=False)
-
-
-@API.route('/user/<string:username>/follow', strict_slashes=False)
-class UserFollowController(Resource):
-    @TOKEN_AUTH.login_required
-    def post(self, username):
-        curr_username = TOKEN_AUTH.current_user()
-        return UserService.follow(curr_username, username)
-
-
-@API.route('/user/<string:username>/unfollow', strict_slashes=False)
-class UserFollowController(Resource):
-    @TOKEN_AUTH.login_required
-    def post(self, username):
-        curr_username = TOKEN_AUTH.current_user()
-        return UserService.follow(curr_username, username)
-
-@API.route('/user/<string:username>/is-following', strict_slashes=False)
-class UserFollowController(Resource):
-    @TOKEN_AUTH.login_required
-    def get(self, username):
-        curr_username = TOKEN_AUTH.current_user()
-        return UserService.is_following(curr_username, username)
