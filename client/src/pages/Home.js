@@ -18,7 +18,7 @@ import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "calc(100vh - 56px)",
+    height: "100%",
   },
   tabs: {
     position: "fixed",
