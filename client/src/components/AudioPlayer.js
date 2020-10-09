@@ -6,6 +6,7 @@ import { useTheme } from "@material-ui/core/styles";
 // Material UI components
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import Slider from "@material-ui/core/Slider";
 import Typography from "@material-ui/core/Typography";
 
@@ -46,11 +47,12 @@ export default function AudioPlayer({
   ...rest
 }) {
   const controlsRef = useRef(null);
-  const classes = useStyles();
   const [audio, setAudio] = useState(null);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const classes = useStyles(isLoaded);
 
   const theme = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
@@ -62,7 +64,6 @@ export default function AudioPlayer({
       const audioControls = controlsRef.current;
 
       audio.controls = false;
-      audioControls.style.display = "block";
 
       setAudio(audio);
 
@@ -78,7 +79,11 @@ export default function AudioPlayer({
           next();
         }
       };
-
+      const canPlayEvent = () => {
+        audioControls.style.display = "block";
+        setIsLoaded(true);
+      };
+      audio.addEventListener("canplay", canPlayEvent);
       audio.addEventListener("loadedmetadata", loadedMetadataEvent);
       audio.addEventListener("timeupdate", timeUpdateEvent);
       audio.addEventListener("ended", endedEvent);
@@ -87,6 +92,7 @@ export default function AudioPlayer({
         audio.removeEventListener("loadedmetadata", loadedMetadataEvent);
         audio.removeEventListener("timeupdate", timeUpdateEvent);
         audio.removeEventListener("ended", endedEvent);
+        audio.removeEventListener("canplay", canPlayEvent);
         audio.remove();
       };
     }
@@ -156,6 +162,7 @@ export default function AudioPlayer({
 
   return (
     <div className={rest.className}>
+      {!isLoaded && <LinearProgress />}
       <audio preload="metadata" ref={audioRef} controls src={src}>
         Your browser does not support the
         <code>audio</code> element.
