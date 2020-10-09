@@ -90,7 +90,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
               url={window.location.href}
               onShareWindowClose={closeDrawer}
             >
-              <FacebookIcon size={40} round />
+              <FacebookIcon size={56} round />
             </FacebookShareButton>
           </Grid>
           <Grid item xs={3} className={classes.center}>
@@ -98,7 +98,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
               url={window.location.href}
               onShareWindowClose={closeDrawer}
             >
-              <TwitterIcon size={40} round />
+              <TwitterIcon size={56} round />
             </TwitterShareButton>
           </Grid>
           <Grid item xs={3} className={classes.center}>
@@ -106,7 +106,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
               url={window.location.href}
               onShareWindowClose={closeDrawer}
             >
-              <WhatsappIcon size={40} round />
+              <WhatsappIcon size={56} round />
             </WhatsappShareButton>
           </Grid>
           <Grid item xs={3} className={classes.center}>
@@ -114,7 +114,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
               url={window.location.href}
               onShareWindowClose={closeDrawer}
             >
-              <TelegramIcon size={40} round />
+              <TelegramIcon size={56} round />
             </TelegramShareButton>
           </Grid>
         </Grid>
@@ -129,7 +129,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
               url={window.location.href}
               onShareWindowClose={closeDrawer}
             >
-              <RedditIcon size={40} round />
+              <RedditIcon size={56} round />
             </RedditShareButton>
           </Grid>
           <Grid item xs={3} className={classes.center}>
@@ -137,7 +137,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
               url={window.location.href}
               onShareWindowClose={closeDrawer}
             >
-              <TumblrIcon size={40} round />
+              <TumblrIcon size={56} round />
             </TumblrShareButton>
           </Grid>
           <Grid item xs={3} className={classes.center}>
@@ -145,7 +145,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
               url={window.location.href}
               onShareWindowClose={closeDrawer}
             >
-              <LineIcon size={40} round />
+              <LineIcon size={56} round />
             </LineShareButton>
           </Grid>
           <Grid item xs={3} className={classes.center}>
@@ -153,7 +153,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
               url={window.location.href}
               onShareWindowClose={closeDrawer}
             >
-              <LinkedinIcon size={40} round />
+              <LinkedinIcon size={56} round />
             </LinkedinShareButton>
           </Grid>
         </Grid>
