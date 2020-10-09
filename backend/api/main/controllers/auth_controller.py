@@ -5,25 +5,24 @@ from api.main.utils.auth_util import TOKEN_AUTH
 
 API = Namespace(name='auth')
 
-USER_REGISTER_DATA = API.model(
-    "User register data", {
-        "username": fields.String(description="username", example="johndoe123", required=True),
-        "email": fields.String(description="email", example="johndoe@gmail.com", required=True),
-        "password": fields.String(description="password", example='password1', required=True)
-        }
-)
-
-USER_LOGIN_DATA = API.model(
-    "User login data", {
-        "username": fields.String(description="username", example="johndoe123", required=True),
-        "password": fields.String(description="password", example='password1', required=True)
-        }
-)
+# USER_REGISTER_DATA = API.model(
+#     "User register data", {
+#         "username": fields.String(description="username", example="johndoe123", required=True),
+#         "email": fields.String(description="email", example="johndoe@gmail.com", required=True),
+#         "password": fields.String(description="password", example='password1', required=True)
+#         }
+# )
+#
+# USER_LOGIN_DATA = API.model(
+#     "User login data", {
+#         "username": fields.String(description="username", example="johndoe123", required=True),
+#         "password": fields.String(description="password", example='password1', required=True)
+#         }
+# )
 
 
 @API.route('/register', strict_slashes=False)
 class AuthRegisterController(Resource):
-    @API.expect(USER_REGISTER_DATA)
     def post(self):
         data = request.json
         return UserService.register_user(
@@ -35,7 +34,6 @@ class AuthRegisterController(Resource):
 
 @API.route('/login', strict_slashes=False)
 class UserLoginController(Resource):
-    @API.expect(USER_LOGIN_DATA)
     def post(self):
         username_or_email = request.json.get('username') or request.json.get('email')
         password = request.json.get('password')
