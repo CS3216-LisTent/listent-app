@@ -32,6 +32,8 @@ import WaveSurfer from "wavesurfer.js";
 // eslint-disable-next-line
 import Wavesurfer from "videojs-wavesurfer/dist/videojs.wavesurfer.js";
 import videojs from "video.js";
+// eslint-disable-next-line
+import TsEBMLEngine from "videojs-record/dist/plugins/videojs.record.ts-ebml.js";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
@@ -144,6 +146,7 @@ export default function New() {
             video: false,
             maxLength: 720,
             displayMilliseconds: true,
+            convertEngine: "ts-ebml",
           },
         },
       };
@@ -151,10 +154,10 @@ export default function New() {
       const player = videojs("myAudio", options);
       setPlayer(player);
 
-      player.on("finishRecord", () => {
+      player.on("finishConvert", () => {
         setRecordedBlob(
-          new File([player.recordedData], player.recordedData.name, {
-            type: player.recordedData.type,
+          new File([player.convertedData], player.convertedData.name, {
+            type: player.convertedData.type,
           })
         );
       });

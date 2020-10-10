@@ -102,7 +102,6 @@ export default function Post({
       setIsCommentScrolled(true);
     }
   };
-  console.log(post);
 
   return (
     <div className={classes.root}>

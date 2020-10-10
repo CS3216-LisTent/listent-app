@@ -80,7 +80,7 @@ export default function Comments({ postId, comments, refresh }) {
   };
 
   return (
-    <div id="comments">
+    <div>
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
         <CircularProgress color="primary" />
       </Backdrop>
