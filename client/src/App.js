@@ -26,6 +26,7 @@ const Login = lazy(() => import("./pages/Login"));
 const New = lazy(() => import("./pages/New"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Register = lazy(() => import("./pages/Register"));
+const SinglePost = lazy(() => import("./pages/SinglePost"));
 
 // Check for token to keep user logged in
 const jwt = localStorage.getItem("jwt") || sessionStorage.getItem("jwt");
@@ -78,6 +79,9 @@ function App() {
           </Route>
           <Route exact path="/register">
             <Register />
+          </Route>
+          <Route exact path="/post/:id">
+            <SinglePost />
           </Route>
           <Route exact path="/:username">
             <Profile />

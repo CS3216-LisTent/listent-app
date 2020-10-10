@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import LinesEllipsis from "react-lines-ellipsis";
+import { Link } from "react-router-dom";
 
 // Material UI components
 import Card from "@material-ui/core/Card";
@@ -13,7 +14,10 @@ import SingleLineContainer from "./SingleLineContainer";
 
 const useStyles = makeStyles({
   root: {
-    backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${process.env.PUBLIC_URL}/ChickenWing.jpeg)`,
+    backgroundImage: ({ imageLink }) =>
+      `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${
+        imageLink ? imageLink : ""
+      })`,
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center center",
     backgroundSize: "cover",
@@ -34,18 +38,18 @@ const useStyles = makeStyles({
   },
 });
 
-export default function PostCard() {
-  const classes = useStyles();
+export default function PostCard({ title, description, imageLink, link }) {
+  const classes = useStyles({ imageLink });
 
   return (
     <Card className={classes.root}>
-      <CardActionArea className={classes.cardButton}>
+      <CardActionArea className={classes.cardButton} component={Link} to={link}>
         <CardContent className={classes.content}>
           <SingleLineContainer component={Typography} variant="h6" gutterBottom>
-            Pouring Rain Long Title
+            {title}
           </SingleLineContainer>
           <LinesEllipsis
-            text="Have u ever had your heart broken and started to recall all the bad memory everytime it started to drizzle?? #story #rain #humor #sadboy #brokenheart #moveon"
+            text={description}
             maxLine="3"
             ellipsis="..."
             trimRight

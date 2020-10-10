@@ -84,7 +84,7 @@ export default function Register() {
 
     try {
       await axios.post(
-        "/api/v1/register",
+        "/api/v1/auth/register",
         JSON.stringify({ username, email, password })
       );
       dispatch(openSnackbar("Registration successful!", "success"));

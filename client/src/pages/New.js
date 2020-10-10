@@ -32,6 +32,8 @@ import WaveSurfer from "wavesurfer.js";
 // eslint-disable-next-line
 import Wavesurfer from "videojs-wavesurfer/dist/videojs.wavesurfer.js";
 import videojs from "video.js";
+// eslint-disable-next-line
+import TsEBMLEngine from "videojs-record/dist/plugins/videojs.record.ts-ebml.js";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
@@ -144,6 +146,7 @@ export default function New() {
             video: false,
             maxLength: 720,
             displayMilliseconds: true,
+            convertEngine: "ts-ebml",
           },
         },
       };
@@ -151,11 +154,15 @@ export default function New() {
       const player = videojs("myAudio", options);
       setPlayer(player);
 
-      player.on("finishRecord", () => {
-        console.log(player.recordedData);
+      player.on("finishRecord", function () {
+        setIsLoading(true);
+      });
+
+      player.on("finishConvert", () => {
+        setIsLoading(false);
         setRecordedBlob(
-          new File([player.recordedData], player.recordedData.name, {
-            type: "audio/webm;codecs=opus",
+          new File([player.convertedData], player.convertedData.name, {
+            type: player.convertedData.type,
           })
         );
       });
@@ -242,14 +249,13 @@ export default function New() {
       await axios.post("/api/v1/posts", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      dispatch(
-        openSnackbar("Audio posted!", "success")
-      );
+      dispatch(openSnackbar("Audio posted!", "success"));
       history.push(`/${username}`);
     } catch (e) {
       dispatch(
         openSnackbar("An unspecified error occurred, please try again", "error")
       );
+      setIsLoading(false);
     }
   };
 
@@ -321,7 +327,7 @@ export default function New() {
             >
               {errors.audio
                 ? errors.audio
-                : "*Audio recorded or uploaded cannot exceed 12 minutes"}
+                : "*Audio recorded or uploaded cannot exceed 12 minutes and must be less than 25MB"}
             </Typography>
           </Grid>
           <Grid item xs={12}>

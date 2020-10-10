@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 
@@ -80,10 +80,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Post({ audioRef, imageUrl, next, previous, ...rest }) {
+export default function Post({
+  audioRef,
+  post,
+  next,
+  previous,
+  hideNext,
+  hidePrevious,
+  refresh,
+  ...rest
+}) {
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const classes = useStyles({ imageUrl, isCommentScrolled });
+  const classes = useStyles({ imageUrl: post.image_link, isCommentScrolled });
+  const commentsRef = useRef(null);
+
+  const onCommentsScroll = () => {
+    if (commentsRef.current && commentsRef.current.scrollTop === 0) {
+      setIsCommentScrolled(false);
+    } else {
+      setIsCommentScrolled(true);
+    }
+  };
 
   return (
     <div className={classes.root}>
@@ -91,7 +109,7 @@ export default function Post({ audioRef, imageUrl, next, previous, ...rest }) {
       <div className={classes.likeShareContainer}>
         <IconButton classes={{ label: classes.likeButton }}>
           <FavoriteBorderIcon />
-          <Typography variant="caption">1000</Typography>
+          <Typography variant="caption">{post.likedBy.length}</Typography>
         </IconButton>
         <IconButton onClick={() => setIsShareOpen(true)}>
           <ShareIcon />
@@ -128,32 +146,39 @@ export default function Post({ audioRef, imageUrl, next, previous, ...rest }) {
                 component={Typography}
                 variant="h5"
               >
-                Coffin Dance
+                {post.title}
               </SingleLineContainer>
             </Grid>
             <Grid item xs={12} style={{ flexGrow: 0 }}>
-              <AudioDetails isMinimized={isCommentScrolled} />
+              <AudioDetails
+                username={post.username}
+                profilePicture={post.profile_picture}
+                description={post.description}
+                isMinimized={isCommentScrolled}
+              />
               <AudioPlayer
                 audioRef={audioRef}
                 next={next}
                 previous={previous}
-                src={`${process.env.PUBLIC_URL}/coffin.mp3`}
+                hideNext={hideNext}
+                hidePrevious={hidePrevious}
+                src={post.audio_link}
               />
             </Grid>
           </Grid>
           <Grid
-            onScroll={(e) => {
-              if (e.target.scrollTop === 0) {
-                setIsCommentScrolled(false);
-              } else {
-                setIsCommentScrolled(true);
-              }
-            }}
+            ref={commentsRef}
+            onWheel={onCommentsScroll}
+            onTouchMove={onCommentsScroll}
             item
             xs={12}
             className={classes.commentsContainer}
           >
-            <Comments />
+            <Comments
+              postId={post._id}
+              comments={post.comments}
+              refresh={refresh}
+            />
           </Grid>
         </Grid>
       </Container>

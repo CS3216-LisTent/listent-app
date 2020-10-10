@@ -12,7 +12,12 @@ import SingleLineContainer from "./SingleLineContainer";
 
 const useStyles = makeStyles({});
 
-export default function AudioDetails({ isMinimized }) {
+export default function AudioDetails({
+  isMinimized,
+  username,
+  profilePicture,
+  description,
+}) {
   const classes = useStyles();
 
   return (
@@ -20,28 +25,24 @@ export default function AudioDetails({ isMinimized }) {
       <Grid container item xs={12} spacing={1} wrap="nowrap">
         <Grid item xs={2}>
           <Avatar
-            alt="username"
-            src={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`}
+            alt={username}
+            src={profilePicture}
           />
         </Grid>
-        <Grid container item xs={10}>
+        <Grid container item xs={10} alignItems="center">
           <SingleLineContainer component={Grid} item xs={12}>
             <Typography className={classes.username} variant="caption">
-              @therealradityarikatherealradityarikatherealradityarikatherealradityarikatherealradityarikatherealradityarikatherealradityarikatherealradityarikatherealradityarikatherealradityarikatherealradityarikatherealradityarikatherealradityarikatherealradityarika
+              {`@${username}`}
             </Typography>
           </SingleLineContainer>
-          <Grid item xs={12}>
+          {/* placeholder <Grid item xs={12}>
             <Typography variant="caption">2h ago</Typography>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
       <Collapse in={!isMinimized} timeout={1000}>
         <Grid item>
-          <Typography variant="caption">
-            Have u ever had your heart broken and started to recall all the bad
-            memory everytime it started to drizzle?? #story #rain #humor #sadboy
-            #brokenheart #moveon
-          </Typography>
+          <Typography variant="caption">{description}</Typography>
         </Grid>
       </Collapse>
     </Grid>

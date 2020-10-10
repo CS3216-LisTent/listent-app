@@ -22,6 +22,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Can from "../components/Can";
 import ErrorBoundary from "../components/ErrorBoundary";
 import GreenButton from "../components/GreenButton";
+import InfiniteScroll from "../components/InfiniteScroll";
 import PostCard from "../components/PostCard";
 import RedButton from "../components/RedButton";
 import SingleLineContainer from "../components/SingleLineContainer";
@@ -61,10 +62,13 @@ export default function Profile() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { username } = useParams();
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch(setBottomNavigationIndex(2));
-  }, [dispatch]);
+    if (user && user.username === username) {
+      dispatch(setBottomNavigationIndex(2));
+    }
+  }, [dispatch, user, username]);
 
   return (
     <Container className={classes.root}>
@@ -243,29 +247,32 @@ function UserProfile({ username }) {
           )}
         />
       </Grid>
-      <Grid
+      <InfiniteScroll
+        component={Grid}
         container
         item
         xs={12}
         spacing={1}
         className={classes.postsContainer}
+        apiPath={`/api/v1/users/${username}/posts`}
       >
-        <Grid item xs={6} sm={4}>
-          <PostCard />
-        </Grid>
-        <Grid item xs={6} sm={4}>
-          <PostCard />
-        </Grid>
-        <Grid item xs={6} sm={4}>
-          <PostCard />
-        </Grid>
-        <Grid item xs={6} sm={4}>
-          <PostCard />
-        </Grid>
-        <Grid item xs={6} sm={4}>
-          <PostCard />
-        </Grid>
-      </Grid>
+        {(data) => {
+          return data.map((page) =>
+            page.map((post, i) => {
+              return (
+                <Grid key={i} item xs={6} sm={4}>
+                  <PostCard
+                    title={post.title}
+                    description={post.description}
+                    imageLink={post.image_link}
+                    link={`/post/${post._id}`}
+                  />
+                </Grid>
+              );
+            })
+          );
+        }}
+      </InfiniteScroll>
     </Grid>
   );
 }
