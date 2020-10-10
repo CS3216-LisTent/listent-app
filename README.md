@@ -1,4 +1,4 @@
-# LisTent Application
+sTent Application
 
 ## Backend setup
 
@@ -23,10 +23,10 @@ venv
 ├── bin
 ├── include
 ├── lib
-│   └── python3.6
-│       └── site-packages
-│           ├── easy_install.py
-│           ├── pip
+│   └── python3.6
+│       └── site-packages
+│           ├── easy_install.py
+│           ├── pip
 ```
 
 Activate virtual environment

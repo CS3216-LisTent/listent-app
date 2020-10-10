@@ -31,9 +31,9 @@ class PostController(Resource):
     def get(self):
         username = TOKEN_AUTH.current_user()
         skip = request.args.get('skip')
-        skip = int(skip) if skip.isdigit() else 0
+        skip = int(skip) if (skip and skip.isdigit()) else 0
         limit = request.args.get('limit')
-        limit = int(limit) if limit.isdigit() else 10
+        limit = int(limit) if (limit and limit.isdigit()) else 10
         return PostService.get_user_posts(username, skip=skip, limit=limit)
 
 
@@ -74,9 +74,9 @@ class DiscoveryController(Resource):
     def get(self):
         username = TOKEN_AUTH.current_user()
         skip = request.args.get('skip')
-        skip = int(skip) if skip.isdigit() else 0
+        skip = int(skip) if (skip and skip.isdigit()) else 0
         limit = request.args.get('limit')
-        limit = int(limit) if limit.isdigit() else 10
+        limit = int(limit) if (limit and limit.isdigit()) else 10
         return PostService.get_user_feed_posts(username, skip=skip, limit=limit)
 
 
@@ -86,9 +86,9 @@ class PostDiscoveryController(Resource):
     def get(self):
         username = TOKEN_AUTH.current_user()
         skip = request.args.get('skip')
-        skip = int(skip) if skip.isdigit() else 0
+        skip = int(skip) if (skip and skip.isdigit()) else 0
         limit = request.args.get('limit')
-        limit = int(limit) if limit.isdigit() else 10
+        limit = int(limit) if (limit and limit.isdigit()) else 10
         return PostService.get_user_discover_posts(username, skip=skip, limit=limit)
 
 
@@ -96,9 +96,9 @@ class PostDiscoveryController(Resource):
 class PostFeedController(Resource):
     def get(self):
         skip = request.args.get('skip')
-        skip = int(skip) if skip.isdigit() else 0
+        skip = int(skip) if (skip and skip.isdigit()) else 0
         limit = request.args.get('limit')
-        limit = int(limit) if limit.isdigit() else 10
+        limit = int(limit) if (limit and limit.isdigit()) else 10
         return PostService.get_discover_posts(skip=skip, limit=limit)
 
 
