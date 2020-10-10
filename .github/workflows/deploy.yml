@@ -44,6 +44,8 @@ jobs:
         name: react-build
     - shell: bash
       run: |
+        pwd
+        which scp
         ls -lah
         cd react-build
         ls -lah
