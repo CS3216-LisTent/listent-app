@@ -63,9 +63,12 @@ export default function Profile() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { username } = useParams();
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch(setBottomNavigationIndex(2));
+    if (user && user.username === username) {
+      dispatch(setBottomNavigationIndex(2));
+    }
   }, [dispatch]);
 
   return (
@@ -245,35 +248,33 @@ function UserProfile({ username }) {
           )}
         />
       </Grid>
-      <Grid
+      <InfiniteScroll
+        component={Grid}
         container
         item
         xs={12}
         spacing={1}
         className={classes.postsContainer}
+        apiPath={`/api/v1/users/${username}/posts`}
       >
-        <InfiniteScroll apiPath={`/api/v1/users/${username}/posts`}>
-          {(data) => {
-            console.log(data);
-            return <p>Test</p>;
-          }}
-        </InfiniteScroll>
-        <Grid item xs={6} sm={4}>
-          <PostCard />
-        </Grid>
-        <Grid item xs={6} sm={4}>
-          <PostCard />
-        </Grid>
-        <Grid item xs={6} sm={4}>
-          <PostCard />
-        </Grid>
-        <Grid item xs={6} sm={4}>
-          <PostCard />
-        </Grid>
-        <Grid item xs={6} sm={4}>
-          <PostCard />
-        </Grid>
-      </Grid>
+        {(data) => {
+          return data.map((page) =>
+            page.map((post, i) => {
+              console.log(post);
+              return (
+                <Grid key={i} item xs={6} sm={4}>
+                  <PostCard
+                    title={post.title}
+                    description={post.description}
+                    imageLink={post.image_link}
+                    link={`/${post.username}/${post._id}`}
+                  />
+                </Grid>
+              );
+            })
+          );
+        }}
+      </InfiniteScroll>
     </Grid>
   );
 }

@@ -247,6 +247,7 @@ export default function New() {
       dispatch(
         openSnackbar("An unspecified error occurred, please try again", "error")
       );
+      setIsLoading(false);
     }
   };
 

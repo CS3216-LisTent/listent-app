@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createElement } from "react";
 import { useSWRInfinite } from "swr";
 import axios from "axios";
 
@@ -9,15 +9,23 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles } from "@material-ui/core/styles";
 import VisibilitySensor from "react-visibility-sensor";
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 6;
 
 const useStyles = makeStyles({
   bottomContainer: {
     textAlign: "center",
+    width: "100%",
   },
 });
 
-export default function InfiniteScroll({ apiPath, children, noEntriesText }) {
+export default function InfiniteScroll({
+  component,
+  apiPath,
+  children,
+  noEntriesText,
+  className,
+  ...rest
+}) {
   const classes = useStyles();
   const { data, size, setSize } = useSWRInfinite(
     (pageIndex, previousPageData) => {
@@ -40,8 +48,13 @@ export default function InfiniteScroll({ apiPath, children, noEntriesText }) {
     }
   };
 
-  return (
-    <div>
+  return createElement(
+    component ? component : "div",
+    {
+      className: className,
+      ...rest,
+    },
+    <>
       {children(data)}
       <VisibilitySensor
         onChange={(isVisible) => {
@@ -63,6 +76,6 @@ export default function InfiniteScroll({ apiPath, children, noEntriesText }) {
           )}
         </div>
       </VisibilitySensor>
-    </div>
+    </>
   );
 }

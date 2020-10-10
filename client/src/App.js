@@ -79,6 +79,9 @@ function App() {
           <Route exact path="/register">
             <Register />
           </Route>
+          <Route exact path="/:username/:id">
+            <h1>Post</h1>
+          </Route>
           <Route exact path="/:username">
             <Profile />
           </Route>
