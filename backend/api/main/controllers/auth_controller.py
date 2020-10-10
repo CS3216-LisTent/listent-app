@@ -1,7 +1,6 @@
 from flask import request
-from flask_restplus import Resource, Namespace, fields
-
-from api import IMAGES_DIR
+from flask_restplus import Resource, Namespace
+from api.main.config import IMAGES_DIR
 from api.main.services.users_service import UserService
 from api.main.utils.auth_util import TOKEN_AUTH
 from api.main.utils.file_util import save_file

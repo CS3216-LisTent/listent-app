@@ -13,8 +13,8 @@ class PostModel:
         raise WriteError('Error in getting post. Post may not exist.')
 
     @staticmethod
-    def get_discover_posts():
-        return [post for post in DB.posts.find()]
+    def get_discover_posts(skip=0, limit=10):
+        return [post for post in DB.posts.find().skip(skip).limit(limit)]
 
     @staticmethod
     def add_user_post(username, post_id, title, audio_link, description=None, image_link=None):
@@ -27,7 +27,8 @@ class PostModel:
                 'description': description,
                 'audio_link': audio_link,
                 'image_link': image_link,
-                'comments': []
+                'comments': [],
+                'likedBy': []
             })
             DB.users.find_one_and_update({'_id': username}, {'$addToSet': {'posts': post_id}})
             return PostModel.get_post(post_id)
@@ -62,29 +63,55 @@ class PostModel:
         raise WriteError(f'Error in removing post. User may not be authorized to remove this post.')
 
     @staticmethod
-    def get_user_posts(username):
+    def get_user_posts(username, skip=0, limit=10):
         user = UserModel.get_user(username)
         if user:
-            posts = [PostModel.get_post(post_id) for post_id in user['posts']]
+            posts = [PostModel.get_post(post_id) for post_id in user['posts'][skip:limit]]
             return posts
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
-    def get_user_feed_posts(username):
+    def get_user_feed_posts(username, skip=0, limit=10):
         user = UserModel.get_user(username)
         if user:
             followings = [username for username in user['followings']]
             posts = []
             for username in followings:
                 posts.extend(PostModel.get_user_posts(username))
-            return posts
+            return posts[skip:limit]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
-    def get_user_discover_posts(username):
+    def get_user_discover_posts(username, skip=0, limit=10):
         user = UserModel.get_user(username)
         if user:
-            return [post for post in DB.posts.find({'username': {'$ne': username}})]
+            return [post for post in DB.posts.find({'username': {'$ne': username}}).skip(skip).limit(limit)]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
+    @staticmethod
+    def like_post(post_id, username):
+        user = UserModel.get_user(username)
+        post = PostModel.get_post(post_id)
+        if user and post:
+            DB.posts.find_one_and_update({'_id': post_id}, {'$addToSet': {'likedBy': username}})
+            return PostModel.get_post(post_id)
+        raise WriteError(f'Error in liking post. User or post may not exist.')
 
+    @staticmethod
+    def unlike_post(post_id, username):
+        post = PostModel.get_post(post_id)
+        user = UserModel.get_user(username)
+        if (user and post) and (username in post['likedBy']):
+            DB.posts.find_one_and_update({'_id': post_id}, {'$pull': {'likedBy': username}})
+            return PostModel.get_post(post_id)
+        raise WriteError(f'Error in unliking post. User or post may not exist or post not liked by user.')
+
+    @staticmethod
+    def add_comment(post_id, username, text):
+        post = PostModel.get_post(post_id)
+        user = UserModel.get_user(username)
+        if user and post:
+            comment = {'username': username, 'text': text}
+            DB.posts.find_one_and_update({'_id': post_id}, {'$push': {'comments': comment}})
+            return PostModel.get_post(post_id)
+        raise WriteError(f'Error in adding comment. User or post may not exist.')

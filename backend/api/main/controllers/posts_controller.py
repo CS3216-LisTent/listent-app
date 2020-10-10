@@ -84,3 +84,28 @@ class PostDiscoveryController(Resource):
 class PostFeedController(Resource):
     def get(self):
         return PostService.get_discover_posts()
+
+
+@API.route('/<string:post_id>/comment', strict_slashes=False)
+class PostCommentController(Resource):
+    @TOKEN_AUTH.login_required
+    def post(self, post_id):
+        username = TOKEN_AUTH.current_user()
+        text = request.json.get('text')
+        return PostService.add_post_comment(post_id, username, text)
+
+
+@API.route('/<string:post_id>/like', strict_slashes=False)
+class LikeCommentController(Resource):
+    @TOKEN_AUTH.login_required
+    def post(self, post_id):
+        username = TOKEN_AUTH.current_user()
+        return PostService.like_post(post_id, username)
+
+
+@API.route('/<string:post_id>/unlike', strict_slashes=False)
+class UnlikeCommentController(Resource):
+    @TOKEN_AUTH.login_required
+    def post(self, post_id):
+        username = TOKEN_AUTH.current_user()
+        return PostService.unlike_post(post_id, username)

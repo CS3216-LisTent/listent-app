@@ -138,9 +138,9 @@ class PostService:
             )
 
     @staticmethod
-    def get_user_posts(username):
+    def get_user_posts(username, skip=0, limit=10):
         try:
-            posts_data = PostModel.get_user_posts(username)
+            posts_data = PostModel.get_user_posts(username, skip=skip, limit=limit)
             return make_response(
                 jsonify({
                     'status': 'success',
@@ -164,9 +164,9 @@ class PostService:
             )
 
     @staticmethod
-    def get_user_feed_posts(username):
+    def get_user_feed_posts(username, skip=0, limit=10):
         try:
-            posts_data = PostModel.get_user_feed_posts(username)
+            posts_data = PostModel.get_user_feed_posts(username, skip=skip, limit=limit)
             return make_response(
                 jsonify({
                     'status': 'success',
@@ -190,9 +190,9 @@ class PostService:
             )
 
     @staticmethod
-    def get_discover_posts():
+    def get_discover_posts(skip=0, limit=10):
         try:
-            posts_data = PostModel.get_discover_posts()
+            posts_data = PostModel.get_discover_posts(skip=skip, limit=limit)
             return make_response(
                 jsonify({
                     'status': 'success',
@@ -216,14 +216,102 @@ class PostService:
             )
 
     @staticmethod
-    def get_user_discover_posts(username):
+    def get_user_discover_posts(username, skip=0, limit=10):
         try:
-            posts_data = PostModel.get_user_discover_posts(username)
+            posts_data = PostModel.get_user_discover_posts(username, skip=skip, limit=limit)
             return make_response(
                 jsonify({
                     'status': 'success',
                     'message': 'Posts successfully queried.',
                     'data': posts_data
+                }), 200
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Operation Error: {str(e)}',
+                }), 400
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
+
+    @staticmethod
+    def add_post_comment(post_id, username, text):
+        try:
+            post_data = PostModel.add_comment(
+                post_id=post_id,
+                username=username,
+                text=text
+            )
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': 'Comment successfully added to post.',
+                    'data': post_data
+                }), 200
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Operation Error: {str(e)}',
+                }), 400
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
+
+    @staticmethod
+    def like_post(post_id, username):
+        try:
+            post_data = PostModel.like_post(
+                post_id=post_id,
+                username=username,
+            )
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': 'Post successfully liked.',
+                    'data': post_data
+                }), 200
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Operation Error: {str(e)}',
+                }), 400
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
+
+    @staticmethod
+    def unlike_post(post_id, username):
+        try:
+            post_data = PostModel.unlike_post(
+                post_id=post_id,
+                username=username,
+            )
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': 'Post successfully unliked.',
+                    'data': post_data
                 }), 200
             )
         except OperationFailure as e:
