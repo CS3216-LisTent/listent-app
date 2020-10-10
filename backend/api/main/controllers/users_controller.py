@@ -67,7 +67,7 @@ class UserFollowController(Resource):
 class UserPostsController(Resource):
     def get(self, username):
         skip = request.args.get('skip')
-        skip = int(skip) if skip.isdigit() else 0
+        skip = int(skip) if (skip and skip.isdigit()) else 0
         limit = request.args.get('limit')
-        limit = int(limit) if limit.isdigit() else 10
+        limit = int(limit) if (limit and limit.isdigit()) else 10
         return PostService.get_user_posts(username, skip=skip, limit=limit)
