@@ -3,8 +3,6 @@
 mkdir -p ~/.ssh
 echo "$AWS_EC2_KEY" > ~/.ssh/aws.pem
 
-pwd
 ls -lah
-which scp
 cd /github/workspace/ansible
-# ansible-playbook --key-file ~/.ssh/aws.pem deploy.yaml
+ansible-playbook --key-file ~/.ssh/aws.pem deploy.yaml
