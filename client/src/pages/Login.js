@@ -88,7 +88,7 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        "/api/v1/login",
+        "/api/v1/auth/login",
         JSON.stringify({ username: login, password })
       );
       dispatch(setUser(res.data.data.user_token));
