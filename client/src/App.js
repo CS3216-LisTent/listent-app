@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { Switch, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
 
@@ -42,11 +42,24 @@ if (jwt) {
 }
 
 const useStyles = makeStyles({
-  root: { height: "calc(100vh - 56px)" },
+  root: { height: (windowHeight) => windowHeight - 56 },
 });
 
 function App() {
-  const classes = useStyles();
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+  const classes = useStyles(windowHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <div className={classes.root}>

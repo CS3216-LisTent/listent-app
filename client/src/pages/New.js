@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
+import isEmpty from "validator/lib/isEmpty";
 import { makeStyles } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import { useTheme } from "@material-ui/core/styles";
 
 // Material UI components
+import Backdrop from "@material-ui/core/Backdrop";
 import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -30,9 +33,11 @@ import videojs from "video.js";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
+import LoadingButton from "../components/LoadingButton";
 
 // Utils
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
+import { newPostErrors } from "../utils/validators";
 
 WaveSurfer.microphone = MicrophonePlugin;
 
@@ -50,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "center center",
     minHeight: "calc(100vh - 48px)",
     backgroundSize: "cover",
-    paddingBottom: theme.spacing(2),
+    paddingBottom: theme.spacing(8),
   },
   audioRecorder: {
     backgroundColor: theme.palette.background.default + "!important",
@@ -76,6 +81,12 @@ const useStyles = makeStyles((theme) => ({
     display: ({ uploadedFiles }) =>
       uploadedFiles.audio.blob ? "block" : "none",
   },
+  red: {
+    color: "#FF0000",
+  },
+  loadingBackdrop: {
+    zIndex: theme.zIndex.modal,
+  },
 }));
 
 export default function New() {
@@ -90,6 +101,8 @@ export default function New() {
   const audioRef = useRef(null);
   const recordRef = useRef(null);
   const [player, setPlayer] = useState(null);
+
+  const [recordedBlob, setRecordedBlob] = useState(null);
   useEffect(() => {
     if (recordRef.current) {
       const options = {
@@ -134,6 +147,10 @@ export default function New() {
       const player = videojs("myAudio", options);
       setPlayer(player);
 
+      player.on("finishRecord", () => {
+        setRecordedBlob(player.recordedData);
+      });
+
       return () => {
         player.dispose();
       };
@@ -153,6 +170,7 @@ export default function New() {
   });
   const classes = useStyles({ uploadedFiles });
   const onUpload = (e) => {
+    setErrors({});
     if (e.target.files.length === 1) {
       if (e.target.name === "audio") {
         player.wavesurfer().surfer.stop();
@@ -171,18 +189,61 @@ export default function New() {
   };
 
   const removeUpload = (type) => {
+    setErrors({});
     setUploadedFiles({
       ...uploadedFiles,
       [type]: { blob: null, url: null },
     });
   };
 
+  const canPost =
+    (uploadedFiles.audio.blob || recordedBlob) &&
+    !isEmpty(fields.title, { ignore_whitespace: true });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const onPost = async () => {
+    setIsLoading(true);
+    let audioBlob = recordedBlob;
+    if (uploadedFiles.audio.blob) {
+      // User chose to upload audio
+      audioBlob = uploadedFiles.audio.blob;
+    }
+
+    const imageBlob = uploadedFiles.image.blob;
+    const { title, description } = fields;
+
+    const err = await newPostErrors(title, audioBlob, imageBlob);
+    if (err) {
+      setErrors(err);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={classes.root}>
+      <Backdrop className={classes.loadingBackdrop} open={isLoading}>
+        <CircularProgress color="primary" />
+      </Backdrop>
       <Container>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography variant="h6">Create a new post</Typography>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
+                <Typography variant="h6">Create a new post</Typography>
+              </Grid>
+              <Grid item>
+                <Button
+                  disabled={!canPost}
+                  onClick={onPost}
+                  variant="text"
+                  color="secondary"
+                  size="large"
+                >
+                  Post
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item xs={12}>
             <div className={classes.audioRecorderContainer}>
@@ -219,6 +280,16 @@ export default function New() {
                 </Button>
               </div>
             )}
+          </Grid>
+          <Grid item xs={12}>
+            <Typography
+              variant="caption"
+              className={clsx(errors.audio && classes.red)}
+            >
+              {errors.audio
+                ? errors.audio
+                : "*Audio recorded or uploaded cannot exceed 12 minutes"}
+            </Typography>
           </Grid>
           <Grid item xs={12}>
             <TextField
@@ -269,6 +340,16 @@ export default function New() {
                 Remove image
               </Button>
             )}
+          </Grid>
+          <Grid item xs={12}>
+            <Typography
+              variant="caption"
+              className={clsx(errors.image && classes.red)}
+            >
+              {errors.image
+                ? errors.image
+                : "*Image uploaded cannot exceed 10 MB"}
+            </Typography>
           </Grid>
         </Grid>
       </Container>

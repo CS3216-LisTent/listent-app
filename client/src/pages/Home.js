@@ -95,6 +95,7 @@ export default function Home() {
         swipeOptions={{
           continuous: false,
           callback: (index) => {
+            // window.history.pushState("object or string", "Title", "/new-url");
             if (index === 0) {
               two.current.pause();
               three.current.pause();

@@ -2,6 +2,7 @@ import equals from "validator/lib/equals";
 import isEmail from "validator/lib/isEmail";
 import isEmpty from "validator/lib/isEmpty";
 import isLength from "validator/lib/isLength";
+import getBlobDuration from "get-blob-duration";
 
 export function loginErrors(login, password) {
   const errors = {};
@@ -59,6 +60,36 @@ export function registerErrors(email, username, password, password2) {
     errors.password = "Passwords do not match";
     errors.password2 = "Passwords do not match";
   }
-  
+
+  return Object.keys(errors).length === 0 ? false : errors;
+}
+
+export async function newPostErrors(title, audioBlob, imageBlob) {
+  const errors = {};
+
+  if (isEmpty(title, { ignore_whitespace: true })) {
+    errors.title = "Title cannot be empty!";
+  }
+
+  if (!audioBlob.type.includes("audio/")) {
+    errors.audio = "*Uploaded audio is not in a valid format";
+  }
+
+  if (imageBlob && !imageBlob.type.includes("image/")) {
+    errors.image = "*Uploaded image is not in a valid format";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return errors;
+  }
+
+  if ((await getBlobDuration(audioBlob)) > 720) {
+    errors.audio = "*Audio recorded or uploaded cannot exceed 12 minutes";
+  }
+
+  if (imageBlob && imageBlob.size > 10000000) {
+    errors.image = "*Image uploaded cannot exceed 10MB";
+  }
+
   return Object.keys(errors).length === 0 ? false : errors;
 }
