@@ -80,11 +80,11 @@ export default function Profile() {
 function UserProfile({ username }) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { data, mutate } = useSwr(`/api/v1/user/${username}`);
+  const { data, mutate } = useSwr(`/api/v1/users/${username}`);
 
   const user = useSelector((state) => state.user);
   const { data: followingData, mutate: mutateFollowing } = useSwr(
-    user ? `/api/v1/user/${username}/is-following` : null
+    user ? `/api/v1/users/${username}/is-following` : null
   );
   const isFollowing = followingData && followingData.data;
 
@@ -101,7 +101,7 @@ function UserProfile({ username }) {
   const follow = async () => {
     try {
       setIsLoading(true);
-      await axios.post(`/api/v1/user/${username}/follow`);
+      await axios.post(`/api/v1/users/${username}/follow`);
       mutate();
       mutateFollowing();
     } catch {
@@ -114,7 +114,7 @@ function UserProfile({ username }) {
   const unfollow = async () => {
     try {
       setIsLoading(true);
-      await axios.post(`/api/v1/user/${username}/unfollow`);
+      await axios.post(`/api/v1/users/${username}/unfollow`);
       mutate();
       mutateFollowing();
     } catch {
