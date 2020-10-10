@@ -13,6 +13,8 @@ class PostModel:
             return resp
         raise WriteError('Error in getting post. Post may not exist.')
 
+    # Get random discovery contents as logged out users
+    # TODO: Change this to be adaptive with the number of likes or the current trends.
     @staticmethod
     def get_discover_posts(skip=0, limit=10):
         return [post for post in DB.posts.find().sort('timestamp', pymongo.DESCENDING).skip(skip).limit(limit)]
@@ -85,6 +87,8 @@ class PostModel:
             return posts[skip:skip+limit]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
+    # Get random discovery contents as logged in users
+    # TODO: Change this to be adaptive with the number of likes or the current trends.
     @staticmethod
     def get_user_discover_posts(username, skip=0, limit=10):
         user = UserModel.get_user(username)
