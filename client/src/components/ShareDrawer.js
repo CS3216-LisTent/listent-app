@@ -14,6 +14,9 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 // Other utils
 import copy from "copy-to-clipboard";
 
+// Custom components
+import SingleLineContainer from "./SingleLineContainer";
+
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
 
@@ -38,9 +41,9 @@ import {
 } from "react-share";
 
 const useStyles = makeStyles((theme) => ({
-  root: { overflowX: "hidden" },
+  root: { overflowX: "hidden", padding: theme.spacing(1) },
   iconRow: { margin: theme.spacing(1, 0) },
-  center: { textAlign: "center" },
+  center: { textAlign: "center", width: "100%" },
   copyButton: { borderRadius: "100px" },
 }));
 
@@ -66,7 +69,13 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
             <Typography variant="h6">Share</Typography>
           </Grid>
           <Grid className={classes.center} item>
-            <Typography variant="body">{window.location.href}</Typography>
+            <SingleLineContainer
+              component={Grid}
+              className={classes.center}
+              item
+            >
+              <Typography variant="body">{window.location.href}</Typography>
+            </SingleLineContainer>
           </Grid>
           <Grid className={classes.center} item>
             <Button

@@ -2,6 +2,7 @@ import uuid
 from botocore.exceptions import ClientError
 from flask import make_response, jsonify
 from pymongo.errors import OperationFailure, ConnectionFailure
+from api.main.models.users_model import UserModel
 from api.main.models.posts_model import PostModel
 from api.main.utils.file_util import upload_file
 
@@ -12,6 +13,8 @@ class PostService:
     def get_post(post_id):
         try:
             post_data = PostModel.get_post(post_id)
+            profile_picture = UserModel.get_user(post_data["username"])['profile_picture']
+            post_data["profile_picture"] = profile_picture
             return make_response(
                 jsonify({
                     'status': 'success',

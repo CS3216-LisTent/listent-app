@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
-import { useSWRInfinite } from "swr";
 import { makeStyles } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, Redirect } from "react-router-dom";
@@ -69,7 +68,7 @@ export default function Profile() {
     if (user && user.username === username) {
       dispatch(setBottomNavigationIndex(2));
     }
-  }, [dispatch]);
+  }, [dispatch, user, username]);
 
   return (
     <Container className={classes.root}>
@@ -260,14 +259,13 @@ function UserProfile({ username }) {
         {(data) => {
           return data.map((page) =>
             page.map((post, i) => {
-              console.log(post);
               return (
                 <Grid key={i} item xs={6} sm={4}>
                   <PostCard
                     title={post.title}
                     description={post.description}
                     imageLink={post.image_link}
-                    link={`/${post.username}/${post._id}`}
+                    link={`/post/${post._id}`}
                   />
                 </Grid>
               );
