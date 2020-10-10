@@ -1,10 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, createRef } from "react";
+import useSwr from "swr";
+import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
+
+// Custom components
+import ErrorBoundary from "../components/ErrorBoundary";
+import SuspenseLoading from "../components/SuspenseLoading";
 
 // Other components
 import ReactSwipe from "react-swipe";
@@ -34,7 +40,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+export default function HomeWrapper() {
+  return (
+    <ErrorBoundary fallback={<Redirect to="/" />}>
+      <SuspenseLoading>
+        <Home />
+      </SuspenseLoading>
+    </ErrorBoundary>
+  );
+}
+
+function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const tabIndex = useSelector((state) =>
@@ -43,30 +59,22 @@ export default function Home() {
   const classes = useStyles();
   const swipeRef = useRef(null);
 
-  const one = useRef(null);
-  const two = useRef(null);
-  const three = useRef(null);
+  const { data, mutate } = useSwr("/api/v1/posts/discover/all?skip=0&limit=5");
+  const audioRefs = useRef(data.data.map(() => createRef()));
 
-  const POSTS = [
+  const posts = data.data.map((post, i) => (
     <Post
-      audioRef={one}
-      next={() => swipeRef.current.next()}
-      previous={() => swipeRef.current.prev()}
-      imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`}
-    />,
-    <Post
-      next={() => swipeRef.current.next()}
-      previous={() => swipeRef.current.prev()}
-      audioRef={two}
-      imageUrl={`${process.env.PUBLIC_URL}/logo512.png`}
-    />,
-    <Post
-      next={() => swipeRef.current.next()}
-      previous={() => swipeRef.current.prev()}
-      audioRef={three}
-      imageUrl={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`}
-    />,
-  ];
+      audioRef={audioRefs.current[i]}
+      refresh={mutate}
+      post={post}
+      next={() => {
+        swipeRef.current.next();
+      }}
+      previous={() => {
+        swipeRef.current.prev();
+      }}
+    />
+  ));
 
   useEffect(() => {
     dispatch(setBottomNavigationIndex(0));
@@ -95,26 +103,19 @@ export default function Home() {
         swipeOptions={{
           continuous: false,
           callback: (index) => {
-            // window.history.pushState("object or string", "Title", "/new-url");
-            if (index === 0) {
-              two.current.pause();
-              three.current.pause();
-              one.current.play();
-            } else if (index === 1) {
-              one.current.pause();
-              three.current.pause();
-              two.current.play();
-            } else {
-              two.current.pause();
-              one.current.pause();
-              three.current.play();
+            if (index - 1 >= 0) {
+              audioRefs.current[index - 1].current.pause();
             }
+            if (index + 1 < data.data.length) {
+              audioRefs.current[index + 1].current.pause();
+            }
+            audioRefs.current[index].current.play();
           },
         }}
         ref={swipeRef}
         className={classes.swipeContainer}
       >
-        {POSTS.map((p, i) => (
+        {posts.map((p, i) => (
           <div style={{ height: "100%" }} key={i}>
             {p}
           </div>
