@@ -1,6 +1,8 @@
-sTent Application
+LisTent Application
 
 ## Backend setup
+
+First of all, move to the backend folder with `cd backend` command
 
 ### Setup Virtual Environment and Manage Dependencies
 
