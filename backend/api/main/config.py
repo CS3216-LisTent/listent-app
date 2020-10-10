@@ -17,6 +17,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'secret')
 # DB_NAME = os.environ["DB_NAME"]
 # SQL_CONNECTION_NAME = os.environ["SQL_CONNECTION_NAME"]
 
+# S3 Bucket
+BUCKET_NAME = 'listent'
+
+IMAGES_DIR = os.path.join(BASEDIR, 'images')
+AUDIO_DIR = os.path.join(BASEDIR, 'audio')
+
 
 AUTH0_DOMAIN = 'https://dev-idomqow8.us.auth0.com'
 AUTH0_CLIENT_ID = 'vEY8DZ6U24fv43INbpvkosUkYyYNqSQP'
@@ -47,12 +53,10 @@ P21Zv6DudI1c8u553gQO4ZE=
 
 def get_connection_url(env):
     if env == 'dev':
-        return 'mongodb+srv://admin:myADbVivS8QxspME@cluster0.4jbbo.mongodb.net/test'
+        return 'mongodb://127.0.0.1:27017'
     if env == 'test':
-        # Remote database
         return os.environ.get('DB_TEST_URL')
     if env == 'prod':
-        # Remote database
         return os.environ.get('DB_PROD_URL')
 
 

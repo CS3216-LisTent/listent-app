@@ -5,3 +5,5 @@
 *__pycache__
 venv
 .env
+api/main/audio
+api/main/images

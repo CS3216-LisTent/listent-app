@@ -70,7 +70,7 @@ class AuthUtil:
         DB.blacklisted_tokens.save({'token': user_token})
 
     @staticmethod
-    def create_user(username, password, email):
+    def create_user(username, password, email, picture=None):
         auth_token = AuthUtil.get_auth_token()
         url = os.path.join(AUTH0_DOMAIN, 'api/v2/users')
         headers = {
@@ -83,12 +83,15 @@ class AuthUtil:
             'email': email,
             "connection": "Username-Password-Authentication",
         }
+        if picture:
+            payload['picture'] = picture
         resp = requests.post(url, headers=headers, data=payload)
         resp_data = resp.json()
         if resp.status_code == 201:
             user_info = {
-                'username': username,
-                'email': email,
+                'username': resp_data['username'],
+                'email': resp_data['email'],
+                'picture': resp_data['picture']
             }
             return user_info
         raise Auth0Error(
@@ -108,14 +111,44 @@ class AuthUtil:
         resp_data = resp.json()
         if resp.status_code == 200:
             user_info = {
-                'username': username,
-                'email': resp_data['email']
+                'username': resp_data['username'],
+                'email': resp_data['email'],
+                'picture': resp_data['picture']
             }
             return user_info
         raise Auth0Error(
             status_code=resp.status_code,
             error_code=resp_data.get('errorCode'),
             message=f'Error retrieving user. {resp_data}'
+        )
+
+    @staticmethod
+    def update_user(username, **updates):
+        auth_token = AuthUtil.get_auth_token()
+        url = os.path.join(AUTH0_DOMAIN, f'api/v2/users/auth0|{username}')
+        headers = {
+            'Authorization': 'Bearer ' + auth_token
+        }
+        payload = {}
+        if 'email' in updates:
+            payload['email'] = updates['email']
+        if 'password' in updates:
+            payload['password'] = updates['password']
+        if 'picture' in updates:
+            payload['picture'] = updates['picture']
+        resp = requests.patch(url, headers=headers, data=payload)
+        resp_data = resp.json()
+        if resp.status_code == 200:
+            user_info = {
+                'username': resp_data['username'],
+                'email': resp_data['email'],
+                'picture': resp_data['picture']
+            }
+            return user_info
+        raise Auth0Error(
+            status_code=resp.status_code,
+            error_code=resp_data.get('errorCode'),
+            message=f'Error creating user. {resp_data}'
         )
 
 

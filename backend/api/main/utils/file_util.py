@@ -1,6 +1,8 @@
+import os
 import boto3
+from api.main.config import BUCKET_NAME
+
 s3 = boto3.resource('s3')
-BUCKET_NAME = 'listent'
 bucket = s3.Bucket(BUCKET_NAME)
 
 
@@ -13,6 +15,16 @@ def upload(fileobj, key):
     return "https://{0}.s3.amazonaws.com/{1}".format(BUCKET_NAME, key)
 
 
-if __name__ == '__main__':
-    with open('test-upload.txt', 'rb') as f:
-        print(upload(f, 'a/b/bla.txt'))
+def upload_file(filepath, key):
+    print(filepath)
+    filetype = filepath.split('.')[-1]
+    with open(filepath, 'rb') as f:
+        link = upload(f, f'{key}.{filetype}')
+        return link
+
+
+def save_file(directory, file):
+    filename = file.filename
+    filepath = os.path.join(directory, filename)
+    file.save(filepath)
+    return filepath
