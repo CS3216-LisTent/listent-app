@@ -152,10 +152,9 @@ export default function New() {
       setPlayer(player);
 
       player.on("finishRecord", () => {
-        console.log(player.recordedData);
         setRecordedBlob(
           new File([player.recordedData], player.recordedData.name, {
-            type: "audio/webm;codecs=opus",
+            type: player.recordedData.type,
           })
         );
       });
@@ -242,9 +241,7 @@ export default function New() {
       await axios.post("/api/v1/posts", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      dispatch(
-        openSnackbar("Audio posted!", "success")
-      );
+      dispatch(openSnackbar("Audio posted!", "success"));
       history.push(`/${username}`);
     } catch (e) {
       dispatch(
@@ -321,7 +318,7 @@ export default function New() {
             >
               {errors.audio
                 ? errors.audio
-                : "*Audio recorded or uploaded cannot exceed 12 minutes"}
+                : "*Audio recorded or uploaded cannot exceed 12 minutes and must be less than 25MB"}
             </Typography>
           </Grid>
           <Grid item xs={12}>

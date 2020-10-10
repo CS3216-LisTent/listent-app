@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
+import { useSWRInfinite } from "swr";
 import { makeStyles } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, Redirect } from "react-router-dom";
@@ -22,6 +23,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Can from "../components/Can";
 import ErrorBoundary from "../components/ErrorBoundary";
 import GreenButton from "../components/GreenButton";
+import InfiniteScroll from "../components/InfiniteScroll";
 import PostCard from "../components/PostCard";
 import RedButton from "../components/RedButton";
 import SingleLineContainer from "../components/SingleLineContainer";
@@ -250,6 +252,12 @@ function UserProfile({ username }) {
         spacing={1}
         className={classes.postsContainer}
       >
+        <InfiniteScroll apiPath={`/api/v1/users/${username}/posts`}>
+          {(data) => {
+            console.log(data);
+            return <p>Test</p>;
+          }}
+        </InfiniteScroll>
         <Grid item xs={6} sm={4}>
           <PostCard />
         </Grid>
