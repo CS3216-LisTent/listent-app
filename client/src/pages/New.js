@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import clsx from "clsx";
 import isEmpty from "validator/lib/isEmpty";
 import { makeStyles } from "@material-ui/core";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { useTheme } from "@material-ui/core/styles";
 
 // Material UI components
@@ -33,10 +35,12 @@ import videojs from "video.js";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
-import LoadingButton from "../components/LoadingButton";
+
+// Actions
+import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
+import { openSnackbar } from "../actions/snackbar-actions";
 
 // Utils
-import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 import { newPostErrors } from "../utils/validators";
 
 WaveSurfer.microphone = MicrophonePlugin;
@@ -148,7 +152,12 @@ export default function New() {
       setPlayer(player);
 
       player.on("finishRecord", () => {
-        setRecordedBlob(player.recordedData);
+        console.log(player.recordedData);
+        setRecordedBlob(
+          new File([player.recordedData], player.recordedData.name, {
+            type: "audio/webm;codecs=opus",
+          })
+        );
       });
 
       return () => {
@@ -200,6 +209,8 @@ export default function New() {
     (uploadedFiles.audio.blob || recordedBlob) &&
     !isEmpty(fields.title, { ignore_whitespace: true });
 
+  const username = useSelector((state) => state.user.username);
+  const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const onPost = async () => {
@@ -217,6 +228,28 @@ export default function New() {
     if (err) {
       setErrors(err);
       setIsLoading(false);
+      return;
+    }
+
+    try {
+      const form = new window.FormData();
+      form.append("title", title);
+      form.append("description", description);
+      form.append("audio", audioBlob);
+      if (imageBlob) {
+        form.append("image", imageBlob);
+      }
+      await axios.post("/api/v1/posts", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      dispatch(
+        openSnackbar("Audio posted!", "success")
+      );
+      history.push(`/${username}`);
+    } catch (e) {
+      dispatch(
+        openSnackbar("An unspecified error occurred, please try again", "error")
+      );
     }
   };
 

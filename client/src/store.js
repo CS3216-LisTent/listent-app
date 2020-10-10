@@ -6,7 +6,7 @@ import rootReducer from "./reducers";
 const initialState = {
   bottomNavigation: { index: 0 },
   homeTab: { index: 0 },
-  snackbar: { isOpen: false, message: "", type: "" },
+  snackbar: { isOpen: false, message: "", type: "success" },
   user: false,
   redirect: false,
 };

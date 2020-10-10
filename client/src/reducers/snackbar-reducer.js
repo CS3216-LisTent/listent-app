@@ -1,6 +1,6 @@
 import { OPEN_SNACKBAR, CLOSE_SNACKBAR } from "../actions/types";
 
-const initialState = { isOpen: false, message: "", type: "" };
+const initialState = { isOpen: false, message: "", type: "success" };
 
 export default function snackbarReducer(state = initialState, action) {
   switch (action.type) {
