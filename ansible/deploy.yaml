@@ -44,14 +44,14 @@
       requirements: backend/requirements.txt
       chdir: /var/www/{{ app_name }}
 
-- hosts: webservers
-  become: yes
-  become_method: sudo
-  tasks:
-    - name: build react app
-      shell:
-        cmd: yarn install && yarn build
-        chdir: /var/www/{{ app_name }}/client
+# - hosts: webservers
+#   become: yes
+#   become_method: sudo
+#   tasks:
+#     - name: build react app
+#       shell:
+#         cmd: yarn install && yarn build
+#         chdir: /var/www/{{ app_name }}/client
 
 - hosts: webservers
   become: yes
