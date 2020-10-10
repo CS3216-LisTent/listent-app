@@ -1,25 +1,31 @@
+import uuid
 from auth0.v3 import Auth0Error
+from botocore.exceptions import ClientError
 from flask import jsonify, make_response
 from pymongo.errors import OperationFailure, ConnectionFailure
 from api.main.models.users_model import UserModel
 from api.main.utils.auth_util import AuthUtil
+from api.main.utils.file_util import upload_file
 
 
 class UserService:
     @staticmethod
-    def register_user(username, email, password):
+    def register_user(username, email, password, description=None, picture_filepath=None):
         try:
+            picture = upload_file(picture_filepath, uuid.uuid4().hex) if picture_filepath else None
             user_auth_data = AuthUtil.create_user(
                 username=username,
                 email=email,
-                password=password
+                password=password,
+                picture=picture
             )
             user_token = AuthUtil.get_user_token(
-                    username_or_email=username,
-                    password=password
+                username_or_email=username,
+                password=password
             )
             user_app_data = UserModel.add_user(
-                username=username
+                username=username,
+                description=description
             )
             data = {
                 'username': user_auth_data['username'],
@@ -27,6 +33,11 @@ class UserService:
                 'followers': user_app_data['followers'],
                 'followings': user_app_data['followings'],
                 'posts': user_app_data['posts'],
+                'number_of_followers': len(user_app_data['followers']),
+                'number_of_following': len(user_app_data['followings']),
+                'number_of_posts': len(user_app_data['posts']),
+                'description': user_app_data['description'],
+                'picture': user_auth_data['picture'],
                 'user_token': user_token
             }
             return make_response(
@@ -57,6 +68,13 @@ class UserService:
                     'message': f'DB Connection Error: {str(e)}',
                 }), 500
             )
+        except ClientError as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'S3 Connection Error: {str(e)}',
+                }), 500
+            )
 
     @staticmethod
     def login_user(username_or_email, password):
@@ -74,6 +92,11 @@ class UserService:
                 'followers': user_app_data['followers'],
                 'followings': user_app_data['followings'],
                 'posts': user_app_data['posts'],
+                'number_of_followers': len(user_app_data['followers']),
+                'number_of_following': len(user_app_data['followings']),
+                'number_of_posts': len(user_app_data['posts']),
+                'description': user_app_data['description'],
+                'picture': user_auth_data['picture'],
                 'user_token': user_token
             }
             return make_response(
@@ -118,10 +141,11 @@ class UserService:
     @staticmethod
     def get_user(username, auth_info=True):
         try:
-            data = {'username': username}
+            user_auth_data = AuthUtil.get_user(username)
             user_app_data = UserModel.get_user(username)
+            data = {'username': username}
             data.update({
-                'username': username,
+                'username': user_auth_data['username'],
                 'followers': user_app_data['followers'],
                 'followings': user_app_data['followings'],
                 'posts': user_app_data['posts'],
@@ -129,12 +153,11 @@ class UserService:
                 'number_of_following': len(user_app_data['followings']),
                 'number_of_posts': len(user_app_data['posts']),
                 'description': user_app_data['description'],
-                'profile_picture': user_app_data['profile_picture'],
+                'picture': user_auth_data['picture'],
             })
             if auth_info:
-                user_auth_data = AuthUtil.get_user(username)
                 data.update({
-                    'email': user_auth_data['email'],
+                    'email': user_auth_data['email']
                 })
             return make_response(
                 jsonify({
@@ -162,6 +185,59 @@ class UserService:
                 jsonify({
                     'status': 'fail',
                     'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
+
+    @staticmethod
+    def update_user(username, **updates):
+        try:
+            user_auth_data = AuthUtil.update_user(username, **updates)
+            user_app_data = UserModel.update_user(username, **updates)
+            data = {
+                'username': user_auth_data['username'],
+                'email': user_auth_data['email'],
+                'followers': user_app_data['followers'],
+                'followings': user_app_data['followings'],
+                'posts': user_app_data['posts'],
+                'number_of_followers': len(user_app_data['followers']),
+                'number_of_following': len(user_app_data['followings']),
+                'number_of_posts': len(user_app_data['posts']),
+                'description': user_app_data['description'],
+                'picture': user_auth_data['picture'],
+            }
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': 'User successfully updated.',
+                    'data': data
+                }), 201
+            )
+        except Auth0Error as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'Auth0 Error: {str(e)}',
+                }), 400
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Operation Error: {str(e)}',
+                }), 400
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
+        except ClientError as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'S3 Connection Error: {str(e)}',
                 }), 500
             )
 

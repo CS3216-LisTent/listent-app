@@ -1,17 +1,37 @@
+from flask import request
 from flask_restplus import Resource, Namespace
+
+from api import IMAGES_DIR
 from api.main.services.posts_service import PostService
 from api.main.services.users_service import UserService
 from api.main.utils.auth_util import TOKEN_AUTH
+from api.main.utils.file_util import save_file
 
 API = Namespace(name='users')
 
 
 @API.route('/', strict_slashes=False)
-class UserInfoController(Resource):
+class UserController(Resource):
     @TOKEN_AUTH.login_required
     def get(self):
         username = TOKEN_AUTH.current_user()
         return UserService.get_user(username, auth_info=True)
+
+    @TOKEN_AUTH.login_required
+    def put(self):
+        username = TOKEN_AUTH.current_user()
+        email = request.form.get('email')
+        password = request.form.get('password')
+        description = request.form.get('description')
+        picture_file = request.files.get('picture')
+        picture_filepath = save_file(IMAGES_DIR, picture_file) if picture_file else None
+        return UserService.update_user(
+            username=username,
+            email=email,
+            password=password,
+            description=description,
+            picture_filepath=picture_filepath
+        )
 
 
 @API.route('/<string:username>', strict_slashes=False)

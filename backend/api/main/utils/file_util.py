@@ -1,6 +1,4 @@
 import os
-import uuid
-
 import boto3
 from api.main.config import BUCKET_NAME
 
@@ -18,8 +16,9 @@ def upload(fileobj, key):
 
 
 def upload_file(filepath, key):
+    filetype = filepath.split('.')[-1]
     with open(filepath, 'rb') as f:
-        link = upload(f, key)
+        link = upload(f, f'{key}.{filetype}')
         return link
 
 

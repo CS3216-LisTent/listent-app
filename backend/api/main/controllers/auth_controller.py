@@ -1,7 +1,10 @@
 from flask import request
 from flask_restplus import Resource, Namespace, fields
+
+from api import IMAGES_DIR
 from api.main.services.users_service import UserService
 from api.main.utils.auth_util import TOKEN_AUTH
+from api.main.utils.file_util import save_file
 
 API = Namespace(name='auth')
 
@@ -24,11 +27,18 @@ API = Namespace(name='auth')
 @API.route('/register', strict_slashes=False)
 class AuthRegisterController(Resource):
     def post(self):
-        data = request.json
+        username = request.form.get('username')
+        password = request.form.get('password')
+        email = request.form.get('email')
+        description = request.form.get('description')
+        picture_file = request.files.get('picture')
+        picture_filepath = save_file(IMAGES_DIR, picture_file) if picture_file else None
         return UserService.register_user(
-            username=data.get('username'),
-            password=data.get('password'),
-            email=data.get('email'),
+            username=username,
+            password=password,
+            email=email,
+            description=description,
+            picture_filepath=picture_filepath
         )
 
 
