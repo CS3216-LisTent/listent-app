@@ -59,7 +59,7 @@
   tasks:
   - name: copy react build dir to remote
     copy:
-      src: react-build
+      src: /github/workspace/react-build
       dest: /var/www/{{ app_name }}/client/build
 
 - hosts: webservers
