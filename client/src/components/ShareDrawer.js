@@ -74,7 +74,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
               className={classes.center}
               item
             >
-              <Typography variant="body">{window.location.href}</Typography>
+              <Typography variant="body1">{window.location.href}</Typography>
             </SingleLineContainer>
           </Grid>
           <Grid className={classes.center} item>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 
@@ -87,11 +87,21 @@ export default function Post({
   previous,
   hideNext,
   hidePrevious,
+  refresh,
   ...rest
 }) {
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const classes = useStyles({ imageUrl: post.image_link, isCommentScrolled });
+  const commentsRef = useRef(null);
+
+  const onCommentsScroll = () => {
+    if (commentsRef.current && commentsRef.current.scrollTop === 0) {
+      setIsCommentScrolled(false);
+    } else {
+      setIsCommentScrolled(true);
+    }
+  };
   console.log(post);
 
   return (
@@ -158,18 +168,18 @@ export default function Post({
             </Grid>
           </Grid>
           <Grid
-            onScroll={(e) => {
-              if (e.target.scrollTop === 0) {
-                setIsCommentScrolled(false);
-              } else {
-                setIsCommentScrolled(true);
-              }
-            }}
+            ref={commentsRef}
+            onWheel={onCommentsScroll}
+            onTouchMove={onCommentsScroll}
             item
             xs={12}
             className={classes.commentsContainer}
           >
-            <Comments />
+            <Comments
+              postId={post._id}
+              comments={post.comments}
+              refresh={refresh}
+            />
           </Grid>
         </Grid>
       </Container>

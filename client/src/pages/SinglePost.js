@@ -35,5 +35,13 @@ function SinglePost({ id }) {
   const { data, mutate } = useSwr(`/api/v1/posts/${id}`);
   const audioRef = useRef(null);
 
-  return <Post audioRef={audioRef} post={data.data} hideNext hidePrevious />;
+  return (
+    <Post
+      refresh={mutate}
+      audioRef={audioRef}
+      post={data.data}
+      hideNext
+      hidePrevious
+    />
+  );
 }
