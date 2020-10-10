@@ -154,7 +154,12 @@ export default function New() {
       const player = videojs("myAudio", options);
       setPlayer(player);
 
+      player.on("finishRecord", function () {
+        setIsLoading(true);
+      });
+
       player.on("finishConvert", () => {
+        setIsLoading(false);
         setRecordedBlob(
           new File([player.convertedData], player.convertedData.name, {
             type: player.convertedData.type,
