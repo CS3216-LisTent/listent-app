@@ -30,7 +30,11 @@ class PostController(Resource):
     @TOKEN_AUTH.login_required
     def get(self):
         username = TOKEN_AUTH.current_user()
-        return PostService.get_user_posts(username)
+        skip = request.args.get('skip')
+        skip = int(skip) if skip.isdigit() else 0
+        limit = request.args.get('limit')
+        limit = int(limit) if limit.isdigit() else 10
+        return PostService.get_user_posts(username, skip=skip, limit=limit)
 
 
 @API.route('/<string:post_id>', strict_slashes=False)
@@ -69,7 +73,11 @@ class DiscoveryController(Resource):
     @TOKEN_AUTH.login_required
     def get(self):
         username = TOKEN_AUTH.current_user()
-        return PostService.get_user_feed_posts(username)
+        skip = request.args.get('skip')
+        skip = int(skip) if skip.isdigit() else 0
+        limit = request.args.get('limit')
+        limit = int(limit) if limit.isdigit() else 10
+        return PostService.get_user_feed_posts(username, skip=skip, limit=limit)
 
 
 @API.route('/discover', strict_slashes=False)
@@ -77,13 +85,21 @@ class PostDiscoveryController(Resource):
     @TOKEN_AUTH.login_required
     def get(self):
         username = TOKEN_AUTH.current_user()
-        return PostService.get_user_discover_posts(username)
+        skip = request.args.get('skip')
+        skip = int(skip) if skip.isdigit() else 0
+        limit = request.args.get('limit')
+        limit = int(limit) if limit.isdigit() else 10
+        return PostService.get_user_discover_posts(username, skip=skip, limit=limit)
 
 
 @API.route('/discover/all', strict_slashes=False)
 class PostFeedController(Resource):
     def get(self):
-        return PostService.get_discover_posts()
+        skip = request.args.get('skip')
+        skip = int(skip) if skip.isdigit() else 0
+        limit = request.args.get('limit')
+        limit = int(limit) if limit.isdigit() else 10
+        return PostService.get_discover_posts(skip=skip, limit=limit)
 
 
 @API.route('/<string:post_id>/comment', strict_slashes=False)

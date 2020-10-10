@@ -16,6 +16,7 @@ def upload(fileobj, key):
 
 
 def upload_file(filepath, key):
+    print(filepath)
     filetype = filepath.split('.')[-1]
     with open(filepath, 'rb') as f:
         link = upload(f, f'{key}.{filetype}')
@@ -27,8 +28,3 @@ def save_file(directory, file):
     filepath = os.path.join(directory, filename)
     file.save(filepath)
     return filepath
-
-
-if __name__ == '__main__':
-    with open('test-upload.txt', 'rb') as f:
-        print(upload(f, 'a/b/bla.txt'))

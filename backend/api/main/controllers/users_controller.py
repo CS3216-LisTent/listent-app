@@ -34,13 +34,13 @@ class UserController(Resource):
 
 
 @API.route('/<string:username>', strict_slashes=False)
-class OtherUserInfoController(Resource):
+class OtherUserController(Resource):
     def get(self, username):
         return UserService.get_user(username, auth_info=False)
 
 
 @API.route('/<string:username>/follow', strict_slashes=False)
-class UserFollowController(Resource):
+class FollowController(Resource):
     @TOKEN_AUTH.login_required
     def post(self, username):
         curr_username = TOKEN_AUTH.current_user()
@@ -48,11 +48,11 @@ class UserFollowController(Resource):
 
 
 @API.route('/<string:username>/unfollow', strict_slashes=False)
-class UserFollowController(Resource):
+class UnFollowController(Resource):
     @TOKEN_AUTH.login_required
     def post(self, username):
         curr_username = TOKEN_AUTH.current_user()
-        return UserService.follow(curr_username, username)
+        return UserService.unfollow(curr_username, username)
 
 
 @API.route('/<string:username>/is-following', strict_slashes=False)
@@ -66,4 +66,8 @@ class UserFollowController(Resource):
 @API.route('/<string:username>/posts', strict_slashes=False)
 class UserPostsController(Resource):
     def get(self, username):
-        return PostService.get_user_posts(username)
+        skip = request.args.get('skip')
+        skip = int(skip) if skip.isdigit() else 0
+        limit = request.args.get('limit')
+        limit = int(limit) if limit.isdigit() else 10
+        return PostService.get_user_posts(username, skip=skip, limit=limit)

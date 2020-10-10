@@ -38,8 +38,8 @@ class PostService:
     def create_user_post(username, title, audio_filepath, description=None, image_filepath=None):
         try:
             post_id = uuid.uuid4().hex
-            audio_link = upload_file(audio_filepath, uuid.uuid4().hex + '.mp3')
-            image_link = upload_file(image_filepath, uuid.uuid4().hex + '.png') if image_filepath else None
+            audio_link = upload_file(audio_filepath, uuid.uuid4().hex)
+            image_link = upload_file(image_filepath, uuid.uuid4().hex) if image_filepath else None
             post_data = PostModel.add_user_post(
                 username=username,
                 post_id=post_id,
@@ -86,7 +86,7 @@ class PostService:
             if description is not None:
                 updates['description'] = description
             if image_filepath is not None:
-                image_link = upload_file(image_filepath, uuid.uuid4().hex + '.png')
+                image_link = upload_file(image_filepath, uuid.uuid4().hex)
                 updates['image_link'] = image_link
             post_data = PostModel.update_user_post(username, post_id, **updates)
             return make_response(

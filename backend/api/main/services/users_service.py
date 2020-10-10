@@ -191,6 +191,8 @@ class UserService:
     @staticmethod
     def update_user(username, **updates):
         try:
+            if ('picture_filepath' in updates) and (updates['picture_filepath'] is not None):
+                updates['picture'] = upload_file(updates['picture_filepath'], uuid.uuid4().hex)
             user_auth_data = AuthUtil.update_user(username, **updates)
             user_app_data = UserModel.update_user(username, **updates)
             data = {
@@ -256,7 +258,48 @@ class UserService:
             return make_response(
                 jsonify({
                     'status': 'success',
-                    'message': f'{username} successfully followed {other_username}.',
+                    'message': f'Successfully followed {other_username}.',
+                    'data': data
+                }), 200
+            )
+        except Auth0Error as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'Auth0 Error: {str(e)}',
+                }), 400
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Operation Error: {str(e)}',
+                }), 400
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
+
+    @staticmethod
+    def unfollow(username, other_username):
+        try:
+            user_app_data = UserModel.unfollow(username, other_username)[0]
+            user_auth_data = AuthUtil.get_user(username)
+            data = {
+                'username': user_auth_data['username'],
+                'email': user_auth_data['email'],
+                'followers': user_app_data['followers'],
+                'followings': user_app_data['followings'],
+                'posts': user_app_data['posts'],
+            }
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'Successfully followed {other_username}.',
                     'data': data
                 }), 200
             )

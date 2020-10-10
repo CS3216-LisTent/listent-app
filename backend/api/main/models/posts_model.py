@@ -101,10 +101,10 @@ class PostModel:
     def unlike_post(post_id, username):
         post = PostModel.get_post(post_id)
         user = UserModel.get_user(username)
-        if (user and post) and (username in post['likedBy']):
+        if user and post:
             DB.posts.find_one_and_update({'_id': post_id}, {'$pull': {'likedBy': username}})
             return PostModel.get_post(post_id)
-        raise WriteError(f'Error in unliking post. User or post may not exist or post not liked by user.')
+        raise WriteError(f'Error in unliking post. User or post may not exist.')
 
     @staticmethod
     def add_comment(post_id, username, text):

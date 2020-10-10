@@ -59,7 +59,7 @@ class UserModel:
         other_user = UserModel.get_user(other_username)
         if user and other_user:
             DB.users.find_one_and_update(user, {'$pull': {'followings': other_username}})
-            DB.users.find_one_and_update(other_user, {'$addToSet': {'followers': username}})
+            DB.users.find_one_and_update(other_user, {'$pull': {'followers': username}})
             updated_user = UserModel.get_user(username)
             updated_other_user = UserModel.get_user(other_username)
             return updated_user, updated_other_user
