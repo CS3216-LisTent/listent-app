@@ -5,13 +5,6 @@
   become: yes
   become_method: sudo
   tasks:
-  - name: add yarn apt key
-    apt_key:
-      url: https://dl.yarnpkg.com/debian/pubkey.gpg
-  - name: add yarn debian repo
-    apt_repository:
-      repo: deb https://dl.yarnpkg.com/debian/ stable main
-      filename: yarn
   - name: install packages
     apt: 
       name: "{{ packages }}"
@@ -21,7 +14,6 @@
         - nginx
         - gunicorn
         - python3-pip
-        - yarn
 
 - hosts: webservers
   become: yes
@@ -48,10 +40,10 @@
   become: yes
   become_method: sudo
   tasks:
-    - name: build react app
-      shell:
-        cmd: yarn install && yarn build
-        chdir: /var/www/{{ app_name }}/client
+  - name: copy react build dir to remote
+    copy:
+      src: /github/workspace/react-build/
+      dest: /var/www/{{ app_name }}/client/build/
 
 - hosts: webservers
   become: yes
