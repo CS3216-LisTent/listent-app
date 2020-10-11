@@ -248,9 +248,9 @@ class PostService:
             )
 
     @staticmethod
-    def get_user_discover_posts(username, skip=0, limit=10):
+    def get_user_discover_posts(username, skip=0, limit=10, seed=0):
         try:
-            posts_data = PostModel.get_user_discover_posts(username, skip=skip, limit=limit)
+            posts_data = PostModel.get_user_discover_posts(username, skip=skip, limit=limit, seed=seed)
             return make_response(
                 jsonify({
                     'status': 'success',
