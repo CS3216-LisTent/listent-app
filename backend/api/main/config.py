@@ -18,7 +18,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'secret')
 # SQL_CONNECTION_NAME = os.environ["SQL_CONNECTION_NAME"]
 
 # S3 Bucket
-BUCKET_NAME = 'listent'
+BUCKET_NAME = 'listent-prod' if ENV == 'prod' else 'listent'
 
 IMAGES_DIR = os.path.join(BASEDIR, 'images')
 AUDIO_DIR = os.path.join(BASEDIR, 'audio')
