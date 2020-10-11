@@ -71,7 +71,9 @@ export default function Comments({ postId, comments, refresh }) {
       JSON.stringify({ text: comment })
     );
     setComment("");
-    refresh();
+    if (refresh) {
+      refresh();
+    }
     setIsLoading(false);
   };
 

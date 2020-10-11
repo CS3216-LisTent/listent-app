@@ -1,6 +1,4 @@
 import React, { createElement } from "react";
-import { useSWRInfinite } from "swr";
-import axios from "axios";
 
 // Material UI components
 import Typography from "@material-ui/core/Typography";
@@ -9,7 +7,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles } from "@material-ui/core/styles";
 import VisibilitySensor from "react-visibility-sensor";
 
-const PAGE_SIZE = 6;
+// Utils
+import useInfinite from "../utils/use-infinite";
 
 const useStyles = makeStyles({
   bottomContainer: {
@@ -27,20 +26,14 @@ export default function InfiniteScroll({
   ...rest
 }) {
   const classes = useStyles();
-  const { data, size, setSize } = useSWRInfinite(
-    (pageIndex, previousPageData) => {
-      if (previousPageData && !previousPageData.length) {
-        return null;
-      }
-      return `${apiPath}?skip=${pageIndex * PAGE_SIZE}&limit=${PAGE_SIZE}`;
-    },
-    (url) => axios.get(url).then((res) => res.data.data)
-  );
-
-  const isLoadingMore =
-    size > 0 && data && typeof data[size - 1] === "undefined";
-  const isEmpty = data[0].length === 0;
-  const isReachingEnd = isEmpty || data[data.length - 1].length < PAGE_SIZE;
+  const {
+    data,
+    size,
+    setSize,
+    isLoadingMore,
+    isEmpty,
+    isReachingEnd,
+  } = useInfinite(apiPath);
 
   const requestNextPage = (isVisible) => {
     if (isVisible && !isReachingEnd && !isLoadingMore) {

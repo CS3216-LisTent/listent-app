@@ -190,8 +190,7 @@ function UserProfile({ username }) {
         </Grid>
         <Grid item xs={12} className={classes.center}>
           <Typography variant="caption" color="textSecondary">
-            For business inquiries email to: management@radityadika.com
-            www.radityadika.com
+            {description}
           </Typography>
         </Grid>
         <Can

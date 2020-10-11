@@ -1,6 +1,6 @@
 import jwt_decode from "jwt-decode";
 
-import setAuthToken from "../utils/setAuthToken";
+import setAuthToken from "../utils/set-auth-token";
 import { SET_USER } from "./types";
 
 export const setUser = (jwtString) => {
