@@ -102,7 +102,7 @@ export default function Register() {
         });
       }
 
-      if (res.message.includes("username provided is in use already")) {
+      if (res.message.includes("The provided id is already in use.")) {
         setErrors({
           username: "Username already in use",
         });

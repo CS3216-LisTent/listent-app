@@ -51,6 +51,10 @@ const useStyles = makeStyles((theme) => ({
   link: {
     color: theme.palette.common.white,
   },
+  plainLink: {
+    color: theme.palette.common.white,
+    textDecoration: "none",
+  },
   marginTop: {
     marginTop: theme.spacing(1),
   },
@@ -145,7 +149,13 @@ function Comment({ username, text }) {
       <CardContent>
         <Grid>
           <Grid item xs={12}>
-            <Typography className={classes.username} variant="caption">
+            <Typography
+              className={classes.username}
+              variant="caption"
+              component={Link}
+              className={classes.plainLink}
+              to={`/${username}`}
+            >
               {username}
             </Typography>
           </Grid>
