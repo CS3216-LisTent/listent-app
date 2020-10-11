@@ -32,7 +32,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: theme.spacing(7),
     backgroundImage: ({ imageUrl }) =>
-      `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${imageUrl})`,
+      imageUrl
+        ? `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${imageUrl})`
+        : undefined,
     backgroundRepeat: "no-repeat",
     backgroundAttachment: "fixed",
     backgroundPosition: "center center",
@@ -94,12 +96,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Post({
   audioRef,
-  post,
+  postId,
   next,
   previous,
   hideNext,
   hidePrevious,
 }) {
+  const { data, mutate } = useSwr(`/api/v1/posts/${postId}`);
+  const post = data.data;
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const classes = useStyles({ imageUrl: post.image_link, isCommentScrolled });
@@ -117,7 +121,7 @@ export default function Post({
     <div className={classes.root}>
       <ShareDrawer isOpen={isShareOpen} setIsOpen={setIsShareOpen} />
       <div className={classes.likeShareContainer}>
-        <LikeButton post={post} />
+        <LikeButton post={post} mutate={mutate} />
         <IconButton onClick={() => setIsShareOpen(true)}>
           <ShareIcon />
         </IconButton>
@@ -181,7 +185,11 @@ export default function Post({
             xs={12}
             className={classes.commentsContainer}
           >
-            <Comments postId={post._id} />
+            <Comments
+              postId={post._id}
+              comments={post.comments}
+              mutate={mutate}
+            />
           </Grid>
         </Grid>
       </Container>
@@ -189,9 +197,8 @@ export default function Post({
   );
 }
 
-function LikeButton({ post }) {
-  const { data, mutate } = useSwr(`/api/v1/posts/${post._id}`);
-  const likedBy = data.data.liked_by;
+function LikeButton({ post, mutate }) {
+  const likedBy = post.liked_by;
   const [isLoading, setIsLoading] = useState(false);
   const classes = useStyles();
   const dispatch = useDispatch();
