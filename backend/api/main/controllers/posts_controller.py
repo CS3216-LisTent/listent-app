@@ -2,7 +2,6 @@ from flask import request
 from flask_restplus import Resource, Namespace
 from api.main.services.posts_service import PostService
 from api.main.utils.auth_util import TOKEN_AUTH
-from api.main.utils.file_util import save_file
 from api.main.config import IMAGES_DIR, AUDIO_DIR
 
 API = Namespace(name='posts')
@@ -17,13 +16,12 @@ class PostController(Resource):
         description = request.form.get('description')
         audio_file = request.files.get('audio')
         image_file = request.files.get('image')
-        image_filepath = save_file(IMAGES_DIR, image_file) if image_file else None
         return PostService.create_user_post(
             username=username,
             title=title,
             description=description,
             audio_file=audio_file,
-            image_filepath=image_filepath,
+            image_file=image_file,
         )
 
     @TOKEN_AUTH.login_required
@@ -44,13 +42,12 @@ class PostController(Resource):
         title = request.form.get('title')
         description = request.form.get('description')
         image_file = request.files.get('image')
-        image_filepath = save_file(IMAGES_DIR, image_file) if image_file else None
         return PostService.update_user_post(
             username=username,
             post_id=post_id,
             title=title,
             description=description,
-            image_filepath=image_filepath,
+            image_file=image_file,
         )
 
     @TOKEN_AUTH.login_required

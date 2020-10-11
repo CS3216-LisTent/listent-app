@@ -5,11 +5,12 @@ from flask import make_response, jsonify
 from pymongo.errors import OperationFailure, ConnectionFailure
 from api.main.models.users_model import UserModel
 from api.main.models.posts_model import PostModel
-from api.main.utils.file_util import upload_file, upload
+from api.main.utils.file_util import upload
 from pydub import AudioSegment
 from pydub.exceptions import CouldntDecodeError, CouldntEncodeError
 import os
 import io
+from PIL import Image
 
 
 class PostService:
@@ -43,20 +44,38 @@ class PostService:
             )
 
     @staticmethod
-    def create_user_post(username, title, audio_file, description=None, image_filepath=None):
+    def create_user_post(username, title, audio_file, description=None, image_file=None):
         try:
             post_id = uuid.uuid4().hex
             timestamp = datetime.utcnow().isoformat()
             file_name, file_ext = os.path.splitext(audio_file.filename)
             # todo: multithread or multiprocess the audio conversion cos it's blocking and uses high cpu
+            print(audio_file.content_length)
             audio = AudioSegment.from_file(audio_file, format=file_ext.lstrip('.'))
+            if len(audio) > 12*60*60*1000: # len(audio) is audio duration in ms
+                return make_response(
+                    jsonify({
+                        'status': 'fail',
+                        'message': f'Audio duration is longer than 12 minutes, actual duration = {len(audio)/1000/60}min.'
+                    })
+                )
             # export in memory, not stored to disk
-            buffer = io.BytesIO()
-            audio.export(buffer, format='webm')
-            audio_link = upload(buffer, uuid.uuid4().hex + '.webm')
-            buffer.close()
-            image_link = upload_file(
-                image_filepath, uuid.uuid4().hex) if image_filepath else None
+            audio_buffer = io.BytesIO()
+            audio.export(audio_buffer, format='webm')
+            audio_link = upload(audio_buffer, uuid.uuid4().hex + '.webm')
+            audio_buffer.close()
+
+            image_buffer = io.BytesIO()
+            image = Image.open(image_file)
+            # max width, max height
+            max_size = 2560, 2560
+            # downscale if width > max width or height > max height while maintaining aspect ratio
+            image.thumbnail(max_size, Image.LANCZOS)
+            image.save(image_buffer, format='JPEG', quality=95, optimize=True)
+            image_buffer.seek(0)
+            image_link = upload(image_buffer, uuid.uuid4().hex + '.jpg')
+            image_buffer.close()
+
             post_data = PostModel.add_user_post(
                 username=username,
                 post_id=post_id,
@@ -110,7 +129,7 @@ class PostService:
             )
 
     @staticmethod
-    def update_user_post(username, post_id, title=None, description=None, image_filepath=None):
+    def update_user_post(username, post_id, title=None, description=None, image_file=None):
         try:
             updates = {}
             if title is not None:
@@ -118,7 +137,14 @@ class PostService:
             if description is not None:
                 updates['description'] = description
             if image_filepath is not None:
-                image_link = upload_file(image_filepath, uuid.uuid4().hex)
+                image_buffer = io.BytesIO()
+                image = Image.open(image_file)
+                max_size = 2560, 2560
+                image.thumbnail(max_size, Image.LANCZOS)
+                image.save(image_buffer, format='JPEG', quality=95, optimize=True)
+                image_buffer.seek(0)
+                image_link = upload(image_buffer, uuid.uuid4().hex + '.jpg')
+                image_buffer.close()
                 updates['image_link'] = image_link
             post_data = PostModel.update_user_post(username, post_id, **updates)
             return make_response(
