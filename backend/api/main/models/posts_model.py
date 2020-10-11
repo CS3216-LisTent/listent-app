@@ -101,10 +101,16 @@ class PostModel:
     # Get random discovery contents as logged in users
     # TODO: Change this to be adaptive with the number of likes or the current trends.
     @staticmethod
-    def get_user_discover_posts(username, skip=0, limit=10):
+    def get_user_discover_posts(username, skip=0, limit=10, seed=0):
         user = UserModel.get_user(username)
         if user:
-            return [post for post in DB.posts.find({'username': {'$ne': username}}).sort('timestamp', pymongo.DESCENDING).skip(skip).limit(limit)]
+            total_post = DB.posts.find({'username': {'$ne': username}}).count()
+            random_permute = rng.RandomState(seed).permutation(total_post)
+            selected_posts = random_permute[skip:skip+limit]
+            discovered_posts = []
+            for post_order in selected_posts:
+                discovered_posts += DB.posts.find({'username': {'$ne': username}}).skip(int(post_order)).limit(1)
+            return discovered_posts
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
