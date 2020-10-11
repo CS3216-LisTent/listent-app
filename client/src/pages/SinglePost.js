@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import useSwr from "swr";
 import { makeStyles } from "@material-ui/core/styles";
 import { useParams, Redirect } from "react-router-dom";
 
@@ -16,7 +15,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function SinglePostWrapper() {
+export default function SinglePost() {
   const classes = useStyles();
   const { id } = useParams();
   const audioRef = useRef(null);

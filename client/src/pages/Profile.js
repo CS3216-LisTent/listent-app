@@ -12,6 +12,7 @@ import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 
 // Icons
@@ -22,7 +23,9 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Can from "../components/Can";
 import ErrorBoundary from "../components/ErrorBoundary";
 import GreenButton from "../components/GreenButton";
+import ImageUpload from "../components/ImageUpload";
 import InfiniteScroll from "../components/InfiniteScroll";
+import LoadingButton from "../components/LoadingButton";
 import PostCard from "../components/PostCard";
 import RedButton from "../components/RedButton";
 import SingleLineContainer from "../components/SingleLineContainer";
@@ -34,6 +37,8 @@ import { logoutUser } from "../actions/auth-actions";
 
 // Utils
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
+
+const CHAR_LIMIT = 200;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,13 +98,14 @@ function UserProfile({ username }) {
   const isFollowing = followingData && followingData.data;
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const {
     number_of_followers,
     number_of_following,
     number_of_posts,
     description,
-    profile_picture,
+    picture,
   } = data.data;
 
   const follow = async () => {
@@ -133,13 +139,24 @@ function UserProfile({ username }) {
     dispatch(logoutUser());
   };
 
+  if (isEdit) {
+    return (
+      <EditProfile
+        description={description}
+        profilePicture={picture}
+        endEdit={() => setIsEdit(false)}
+        mutate={mutate}
+      />
+    );
+  }
+
   return (
     <Grid container spacing={1}>
       <Grid container item xs={12} spacing={1}>
         <Grid item xs={12}>
           <Avatar
             className={clsx(classes.flexItemCenter, classes.avatar)}
-            src={profile_picture}
+            src={picture}
           />
         </Grid>
         <SingleLineContainer
@@ -223,11 +240,11 @@ function UserProfile({ username }) {
               <Grid item xs={12}>
                 <Button
                   startIcon={<EditIcon />}
-                  onClick={null}
                   fullWidth
                   disabled={isLoading}
                   color="primary"
                   variant="contained"
+                  onClick={() => setIsEdit(true)}
                 >
                   Edit Profile
                 </Button>
@@ -277,6 +294,69 @@ function UserProfile({ username }) {
           );
         }}
       </InfiniteScroll>
+    </Grid>
+  );
+}
+
+function EditProfile({ description, profilePicture, endEdit, mutate }) {
+  const dispatch = useDispatch();
+  const classes = useStyles();
+  const [imageBlob, setImageBlob] = useState(null);
+  const [newDesc, setNewDesc] = useState(description || "");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const submit = async () => {
+    setIsLoading(true);
+    const form = new window.FormData();
+    form.append("description", newDesc);
+    form.append("picture", imageBlob);
+    await axios.put("/api/v1/users", form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    dispatch(openSnackbar("Profile updated!", "success"));
+    mutate();
+    endEdit();
+  };
+
+  return (
+    <Grid container direction="column" spacing={1}>
+      <Grid item>
+        <Typography variant="h5">Edit profile</Typography>
+      </Grid>
+      <Grid item className={classes.center}>
+        <ImageUpload
+          initialImage={profilePicture}
+          setImageBlob={setImageBlob}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          helperText={`${newDesc.length} / ${CHAR_LIMIT} characters`}
+          label="Description"
+          multiline
+          name="description"
+          rows={4}
+          variant="filled"
+          onChange={(e) => {
+            if (e.target.value.length <= 200) {
+              setNewDesc(e.target.value);
+            }
+          }}
+          value={newDesc}
+        />
+      </Grid>
+      <Grid item>
+        <LoadingButton
+          onClick={submit}
+          fullWidth
+          color="primary"
+          variant="contained"
+          isLoading={isLoading}
+        >
+          Submit
+        </LoadingButton>
+      </Grid>
     </Grid>
   );
 }
