@@ -55,6 +55,7 @@ prompt-toolkit==3.0.7
 ptyprocess==0.6.0
 pyasn1==0.4.8
 pycparser==2.20
+pydub==0.24.1
 Pygments==2.7.1
 PyJWT==1.7.1
 pymongo==3.11.0
