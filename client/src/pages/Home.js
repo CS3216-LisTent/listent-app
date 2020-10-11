@@ -46,20 +46,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HomeWrapper() {
-  return (
-    <ErrorBoundary fallback={<Redirect to="/" />}>
-      <SuspenseLoading>
-        <Home />
-      </SuspenseLoading>
-    </ErrorBoundary>
-  );
-}
-
 const genPostIds = (data) =>
   data.reduce((acc, page) => [...acc, ...page.map((post) => post._id)], []);
 
-function Home() {
+export default function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { data: userInfo } = useSwr(
@@ -67,10 +57,7 @@ function Home() {
   );
   const hasFollowing =
     user && userInfo && userInfo.data && userInfo.data.number_of_following > 0;
-
-  const tabIndex = useSelector((state) =>
-    state.user && hasFollowing ? state.homeTab.index : 1
-  );
+  const tabIndex = useSelector((state) => state.homeTab.index);
   const classes = useStyles();
   const swipeRef = useRef(null);
 
@@ -99,16 +86,20 @@ function Home() {
         const index = PAGE_SIZE * i + j;
         return (
           <div style={{ height: "100%" }} key={index}>
-            <Post
-              audioRef={audioRefs.current[index]}
-              post={post}
-              next={() => {
-                swipeRef.current.next();
-              }}
-              previous={() => {
-                swipeRef.current.prev();
-              }}
-            />
+            <ErrorBoundary fallback={<Redirect to="/" />}>
+              <SuspenseLoading>
+                <Post
+                  audioRef={audioRefs.current[index]}
+                  postId={post._id}
+                  next={() => {
+                    swipeRef.current.next();
+                  }}
+                  previous={() => {
+                    swipeRef.current.prev();
+                  }}
+                />
+              </SuspenseLoading>
+            </ErrorBoundary>
           </div>
         );
       }),
@@ -119,6 +110,18 @@ function Home() {
   useEffect(() => {
     dispatch(setBottomNavigationIndex(0));
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(setHomeTabIndex(user && hasFollowing ? 0 : 1));
+  }, [dispatch, user, hasFollowing]);
+
+  const [firstLoad, setFirstLoad] = useState(true);
+  useEffect(() => {
+    if (firstLoad && data && data[0] && data[0][0]) {
+      window.history.pushState({}, "", `/post/${data[0][0]._id}`);
+      setFirstLoad(false);
+    }
+  }, [data, firstLoad]);
 
   const handleChange = (_, newValue) => {
     dispatch(setHomeTabIndex(newValue));
