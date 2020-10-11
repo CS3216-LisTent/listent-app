@@ -84,3 +84,4 @@ webencodings==0.5.1
 Werkzeug==0.16.1
 widgetsnbextension==3.5.1
 zipp==3.3.0
+numpy==1.19.2
