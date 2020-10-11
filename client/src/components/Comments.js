@@ -150,7 +150,6 @@ function Comment({ username, text }) {
         <Grid>
           <Grid item xs={12}>
             <Typography
-              className={classes.username}
               variant="caption"
               component={Link}
               className={classes.plainLink}

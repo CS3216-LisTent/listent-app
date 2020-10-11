@@ -112,6 +112,7 @@ export default function Post({
   previous,
   hideNext,
   hidePrevious,
+  autoplay,
 }) {
   const { data, mutate } = useSwr(`/api/v1/posts/${postId}`);
   const post = data.data;
@@ -192,6 +193,7 @@ export default function Post({
                   isMinimized={isCommentScrolled}
                 />
                 <AudioPlayer
+                  autoplay={autoplay}
                   audioRef={audioRef}
                   next={next}
                   previous={previous}
