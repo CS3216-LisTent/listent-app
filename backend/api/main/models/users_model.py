@@ -12,9 +12,11 @@ class UserModel:
         raise WriteError(f'Error in querying for {username}. User may not exist.')
 
     @staticmethod
-    def add_user(username, description=None):
+    def add_user(username, email, description=None, picture=None):
         DB.users.save({
             '_id': username,
+            'email': email,
+            'picture': picture,
             'description': description,
             'followers': [],
             'followings': [],
@@ -25,8 +27,12 @@ class UserModel:
     @staticmethod
     def update_user(username, **kwargs):
         updated_document = {'_id': username}
+        if 'email' in kwargs:
+            updated_document['email'] = kwargs['email']
         if 'description' in kwargs:
             updated_document['description'] = kwargs['description']
+        if 'picture' in kwargs:
+            updated_document['picture'] = kwargs['picture']
         resp = DB.users.find_one_and_update({'_id': username}, {'$set': updated_document})
         if resp:
             return UserModel.get_user(username)

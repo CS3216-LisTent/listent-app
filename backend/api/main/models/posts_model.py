@@ -1,3 +1,4 @@
+import pymongo
 from pymongo.errors import WriteError
 from api.main.db import DB
 from api.main.models.users_model import UserModel
@@ -14,10 +15,10 @@ class PostModel:
 
     @staticmethod
     def get_discover_posts(skip=0, limit=10):
-        return [post for post in DB.posts.find().skip(skip).limit(limit)]
+        return [post for post in DB.posts.find().sort('timestamp', pymongo.DESCENDING).skip(skip).limit(limit)]
 
     @staticmethod
-    def add_user_post(username, post_id, title, audio_link, description=None, image_link=None):
+    def add_user_post(username, post_id, title, audio_link, timestamp, description=None, image_link=None):
         user = UserModel.get_user(username)
         if user:
             DB.posts.insert({
@@ -27,6 +28,7 @@ class PostModel:
                 'description': description,
                 'audio_link': audio_link,
                 'image_link': image_link,
+                'timestamp': timestamp,
                 'comments': [],
                 'likedBy': []
             })
@@ -66,7 +68,8 @@ class PostModel:
     def get_user_posts(username, skip=0, limit=10):
         user = UserModel.get_user(username)
         if user:
-            posts = [PostModel.get_post(post_id) for post_id in user['posts'][skip:limit]]
+            posts = [PostModel.get_post(post_id) for post_id in user['posts'][skip:skip+limit]]
+            posts.sort(key=lambda post: post['timestamp'], reverse=True)
             return posts
         raise WriteError(f'Error in querying posts. User may not exist.')
 
@@ -78,14 +81,15 @@ class PostModel:
             posts = []
             for username in followings:
                 posts.extend(PostModel.get_user_posts(username))
-            return posts[skip:limit]
+            posts.sort(key=lambda post: post['timestamp'], reverse=True)
+            return posts[skip:skip+limit]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
     def get_user_discover_posts(username, skip=0, limit=10):
         user = UserModel.get_user(username)
         if user:
-            return [post for post in DB.posts.find({'username': {'$ne': username}}).skip(skip).limit(limit)]
+            return [post for post in DB.posts.find({'username': {'$ne': username}}).sort('timestamp', pymongo.DESCENDING).skip(skip).limit(limit)]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
@@ -107,11 +111,11 @@ class PostModel:
         raise WriteError(f'Error in unliking post. User or post may not exist.')
 
     @staticmethod
-    def add_comment(post_id, username, text):
+    def add_comment(post_id, username, text, timestamp):
         post = PostModel.get_post(post_id)
         user = UserModel.get_user(username)
         if user and post:
-            comment = {'username': username, 'text': text}
+            comment = {'username': username, 'text': text, 'timestamp': timestamp}
             DB.posts.find_one_and_update({'_id': post_id}, {'$push': {'comments': comment}})
             return PostModel.get_post(post_id)
         raise WriteError(f'Error in adding comment. User or post may not exist.')
