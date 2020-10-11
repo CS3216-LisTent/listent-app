@@ -81,6 +81,14 @@ class DiscoveryController(Resource):
 
 @API.route('/discover', strict_slashes=False)
 class PostDiscoveryController(Resource):
+    # Hash username to seed value
+    @staticmethod
+    def hash_to_seed(username):
+        total = 1
+        for char in username:
+            total = (total * ord(char)) % 1007
+        return total
+
     @TOKEN_AUTH.login_required
     def get(self):
         username = TOKEN_AUTH.current_user()
@@ -89,7 +97,7 @@ class PostDiscoveryController(Resource):
         limit = request.args.get('limit')
         limit = int(limit) if (limit and limit.isdigit()) else 10
         seed = request.args.get('seed')
-        seed = int(seed) if (seed and seed.isdigit()) else 0
+        seed = int(seed) if (seed and seed.isdigit()) else PostDiscoveryController.hash_to_seed(username)
         return PostService.get_user_discover_posts(username, skip=skip, limit=limit, seed=seed)
 
 
