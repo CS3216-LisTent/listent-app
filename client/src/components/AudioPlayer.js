@@ -45,6 +45,7 @@ export default function AudioPlayer({
   hidePrevious,
   src,
   autoplay,
+  autopause,
   ...rest
 }) {
   const audioRef = useRef(null);
@@ -140,7 +141,7 @@ export default function AudioPlayer({
   const onChange = (isVisible) => {
     if (isVisible && autoplay) {
       audioRef.current.play();
-    } else {
+    } else if (!isVisible && autopause) {
       audioRef.current.pause();
     }
   };

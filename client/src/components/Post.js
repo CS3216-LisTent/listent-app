@@ -106,13 +106,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Post({
-  audioRef,
   postId,
   next,
   previous,
   hideNext,
   hidePrevious,
   autoplay,
+  autopause,
 }) {
   const { data, mutate } = useSwr(`/api/v1/posts/${postId}`);
   const post = data.data;
@@ -194,7 +194,7 @@ export default function Post({
                 />
                 <AudioPlayer
                   autoplay={autoplay}
-                  audioRef={audioRef}
+                  autopause={autopause}
                   next={next}
                   previous={previous}
                   hideNext={hideNext}

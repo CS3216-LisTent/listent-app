@@ -18,13 +18,12 @@ const useStyles = makeStyles({
 export default function SinglePost() {
   const classes = useStyles();
   const { id } = useParams();
-  const audioRef = useRef(null);
 
   return (
     <div className={classes.root}>
       <ErrorBoundary fallback={<Redirect to="/" />}>
         <SuspenseLoading>
-          <Post audioRef={audioRef} postId={id} hideNext hidePrevious />
+          <Post postId={id} hideNext hidePrevious />
         </SuspenseLoading>
       </ErrorBoundary>
     </div>

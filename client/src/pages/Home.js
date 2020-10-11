@@ -88,6 +88,7 @@ export default function Home() {
               <SuspenseLoading>
                 <Post
                   autoplay={index !== 0}
+                  autopause
                   postId={post._id}
                   next={() => {
                     swipeRef.current.next();
