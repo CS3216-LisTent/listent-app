@@ -69,7 +69,7 @@ function Home() {
     user && userInfo && userInfo.data && userInfo.data.number_of_following > 0;
 
   const tabIndex = useSelector((state) =>
-    state.user || !hasFollowing ? state.homeTab.index : 1
+    state.user && hasFollowing ? state.homeTab.index : 1
   );
   const classes = useStyles();
   const swipeRef = useRef(null);

@@ -83,10 +83,13 @@ export default function Register() {
     }
 
     try {
-      await axios.post(
-        "/api/v1/auth/register",
-        JSON.stringify({ username, email, password })
-      );
+      const form = new window.FormData();
+      form.append("username", username);
+      form.append("password", password);
+      form.append("email", email);
+      await axios.post("/api/v1/auth/register", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       dispatch(openSnackbar("Registration successful!", "success"));
       history.push("/login");
     } catch (e) {

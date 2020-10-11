@@ -254,6 +254,11 @@ function UserProfile({ username }) {
         spacing={1}
         className={classes.postsContainer}
         apiPath={`/api/v1/users/${username}/posts`}
+        noEntriesText={
+          <Typography variant="caption">
+            You haven't posted anything yet
+          </Typography>
+        }
       >
         {(data) => {
           return data.map((page) =>
