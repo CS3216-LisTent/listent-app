@@ -16,14 +16,13 @@ class PostController(Resource):
         title = request.form.get('title')
         description = request.form.get('description')
         audio_file = request.files.get('audio')
-        audio_filepath = save_file(AUDIO_DIR, audio_file)
         image_file = request.files.get('image')
         image_filepath = save_file(IMAGES_DIR, image_file) if image_file else None
         return PostService.create_user_post(
             username=username,
             title=title,
             description=description,
-            audio_filepath=audio_filepath,
+            audio_file=audio_file,
             image_filepath=image_filepath,
         )
 

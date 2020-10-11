@@ -11,7 +11,7 @@ export default function snackbarReducer(state = initialState, action) {
         type: action.payload.type,
       };
     case CLOSE_SNACKBAR: {
-      return { ...initialState };
+      return { isOpen: false, type: state.type };
     }
     default:
       return state;

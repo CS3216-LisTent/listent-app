@@ -38,9 +38,10 @@ import {
 } from "react-share";
 
 const useStyles = makeStyles((theme) => ({
-  root: { overflowX: "hidden" },
+  root: { overflowX: "hidden", padding: theme.spacing(1) },
   iconRow: { margin: theme.spacing(1, 0) },
   center: { textAlign: "center" },
+  link: { wordBreak: "break-all" },
   copyButton: { borderRadius: "100px" },
 }));
 
@@ -65,8 +66,10 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
           <Grid className={classes.center} item>
             <Typography variant="h6">Share</Typography>
           </Grid>
-          <Grid className={classes.center} item>
-            <Typography variant="body">{window.location.href}</Typography>
+          <Grid item className={classes.center}>
+            <Typography className={classes.link} variant="body2">
+              {window.location.href}
+            </Typography>
           </Grid>
           <Grid className={classes.center} item>
             <Button

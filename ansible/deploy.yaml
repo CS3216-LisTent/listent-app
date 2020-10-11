@@ -14,6 +14,7 @@
         - nginx
         - gunicorn
         - python3-pip
+        - ffmpeg
 
 - hosts: webservers
   become: yes

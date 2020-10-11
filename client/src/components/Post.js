@@ -1,15 +1,21 @@
-import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState, useRef } from "react";
+import axios from "axios";
 import clsx from "clsx";
+import useSwr from "swr";
+import { makeStyles } from "@material-ui/core/styles";
+import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 // Icons
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShareIcon from "@material-ui/icons/Share";
 
 // Custom components
@@ -18,6 +24,9 @@ import AudioPlayer from "./AudioPlayer";
 import Comments from "./Comments";
 import ShareDrawer from "./ShareDrawer";
 import SingleLineContainer from "./SingleLineContainer";
+
+// Actions
+import { openSnackbar } from "../actions/snackbar-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,21 +87,37 @@ const useStyles = makeStyles((theme) => ({
       flexBasis: "100%",
     },
   },
+  loadingBackdrop: {
+    zIndex: theme.zIndex.modal,
+  },
 }));
 
-export default function Post({ audioRef, imageUrl, next, previous, ...rest }) {
+export default function Post({
+  audioRef,
+  post,
+  next,
+  previous,
+  hideNext,
+  hidePrevious,
+}) {
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const classes = useStyles({ imageUrl, isCommentScrolled });
+  const classes = useStyles({ imageUrl: post.image_link, isCommentScrolled });
+  const commentsRef = useRef(null);
+
+  const onCommentsScroll = () => {
+    if (commentsRef.current && commentsRef.current.scrollTop === 0) {
+      setIsCommentScrolled(false);
+    } else {
+      setIsCommentScrolled(true);
+    }
+  };
 
   return (
     <div className={classes.root}>
       <ShareDrawer isOpen={isShareOpen} setIsOpen={setIsShareOpen} />
       <div className={classes.likeShareContainer}>
-        <IconButton classes={{ label: classes.likeButton }}>
-          <FavoriteBorderIcon />
-          <Typography variant="caption">1000</Typography>
-        </IconButton>
+        <LikeButton post={post} />
         <IconButton onClick={() => setIsShareOpen(true)}>
           <ShareIcon />
         </IconButton>
@@ -128,35 +153,75 @@ export default function Post({ audioRef, imageUrl, next, previous, ...rest }) {
                 component={Typography}
                 variant="h5"
               >
-                Coffin Dance
+                {post.title}
               </SingleLineContainer>
             </Grid>
             <Grid item xs={12} style={{ flexGrow: 0 }}>
-              <AudioDetails isMinimized={isCommentScrolled} />
+              <AudioDetails
+                username={post.username}
+                profilePicture={post.profile_picture}
+                description={post.description}
+                isMinimized={isCommentScrolled}
+              />
               <AudioPlayer
                 audioRef={audioRef}
                 next={next}
                 previous={previous}
-                src={`${process.env.PUBLIC_URL}/coffin.mp3`}
+                hideNext={hideNext}
+                hidePrevious={hidePrevious}
+                src={post.audio_link}
               />
             </Grid>
           </Grid>
           <Grid
-            onScroll={(e) => {
-              if (e.target.scrollTop === 0) {
-                setIsCommentScrolled(false);
-              } else {
-                setIsCommentScrolled(true);
-              }
-            }}
+            ref={commentsRef}
+            onWheel={onCommentsScroll}
+            onTouchMove={onCommentsScroll}
             item
             xs={12}
             className={classes.commentsContainer}
           >
-            <Comments />
+            <Comments postId={post._id} />
           </Grid>
         </Grid>
       </Container>
     </div>
+  );
+}
+
+function LikeButton({ post }) {
+  const { data, mutate } = useSwr(`/api/v1/posts/${post._id}`);
+  const likedBy = data.data.liked_by;
+  const [isLoading, setIsLoading] = useState(false);
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const hasLiked = user && likedBy.includes(user.username);
+
+  const onClick = async () => {
+    if (!user) {
+      dispatch(
+        openSnackbar("You need to be signed in to like posts!", "warning")
+      );
+    } else {
+      setIsLoading(true);
+      await axios.post(
+        `/api/v1/posts/${post._id}/${hasLiked ? "unlike" : "like"}`
+      );
+      mutate();
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Backdrop className={classes.loadingBackdrop} open={isLoading}>
+        <CircularProgress color="primary" />
+      </Backdrop>
+      <IconButton onClick={onClick} classes={{ label: classes.likeButton }}>
+        {hasLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        <Typography variant="caption">{likedBy.length}</Typography>
+      </IconButton>
+    </>
   );
 }

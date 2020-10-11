@@ -30,7 +30,7 @@ class PostModel:
                 'image_link': image_link,
                 'timestamp': timestamp,
                 'comments': [],
-                'likedBy': []
+                'liked_by': []
             })
             DB.users.find_one_and_update({'_id': username}, {'$addToSet': {'posts': post_id}})
             return PostModel.get_post(post_id)
@@ -68,7 +68,7 @@ class PostModel:
     def get_user_posts(username, skip=0, limit=10):
         user = UserModel.get_user(username)
         if user:
-            posts = [PostModel.get_post(post_id) for post_id in user['posts'][skip:skip+limit]]
+            posts = [PostModel.get_post(post_id) for post_id in user['posts'][skip:skip + limit]]
             posts.sort(key=lambda post: post['timestamp'], reverse=True)
             return posts
         raise WriteError(f'Error in querying posts. User may not exist.')
@@ -97,7 +97,7 @@ class PostModel:
         user = UserModel.get_user(username)
         post = PostModel.get_post(post_id)
         if user and post:
-            DB.posts.find_one_and_update({'_id': post_id}, {'$addToSet': {'likedBy': username}})
+            DB.posts.find_one_and_update({'_id': post_id}, {'$addToSet': {'liked_by': username}})
             return PostModel.get_post(post_id)
         raise WriteError(f'Error in liking post. User or post may not exist.')
 
@@ -106,7 +106,7 @@ class PostModel:
         post = PostModel.get_post(post_id)
         user = UserModel.get_user(username)
         if user and post:
-            DB.posts.find_one_and_update({'_id': post_id}, {'$pull': {'likedBy': username}})
+            DB.posts.find_one_and_update({'_id': post_id}, {'$pull': {'liked_by': username}})
             return PostModel.get_post(post_id)
         raise WriteError(f'Error in unliking post. User or post may not exist.')
 

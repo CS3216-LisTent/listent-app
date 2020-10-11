@@ -93,7 +93,6 @@ export default function AudioPlayer({
         audio.removeEventListener("timeupdate", timeUpdateEvent);
         audio.removeEventListener("ended", endedEvent);
         audio.removeEventListener("canplay", canPlayEvent);
-        audio.remove();
       };
     }
   }, [audioRef, controlsRef, next]);
@@ -105,30 +104,6 @@ export default function AudioPlayer({
       audio.pause();
     }
   };
-
-  // const alterVolume = (direction) => {
-  //   if (direction === "+") {
-  //     if (audio.volume + VOLUME_STEP > 1) {
-  //       audio.volume = 1;
-  //     } else {
-  //       audio.volume += VOLUME_STEP;
-  //     }
-  //   } else if (direction === "-") {
-  //     if (audio.volume - VOLUME_STEP < 0) {
-  //       audio.volume = 0;
-  //     } else {
-  //       audio.volume -= VOLUME_STEP;
-  //     }
-  //   }
-  // };
-
-  // const volIncrease = () => {
-  //   alterVolume("+");
-  // };
-
-  // const volDecrease = () => {
-  //   alterVolume("-");
-  // };
 
   const changeProgress = (e, value) => {
     e.preventDefault();
