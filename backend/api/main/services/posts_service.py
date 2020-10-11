@@ -222,9 +222,9 @@ class PostService:
             )
 
     @staticmethod
-    def get_discover_posts(skip=0, limit=10):
+    def get_discover_posts(skip=0, limit=10, seed=0):
         try:
-            posts_data = PostModel.get_discover_posts(skip=skip, limit=limit)
+            posts_data = PostModel.get_discover_posts(skip=skip, limit=limit, seed=seed)
             return make_response(
                 jsonify({
                     'status': 'success',

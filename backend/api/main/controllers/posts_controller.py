@@ -98,8 +98,9 @@ class PostFeedController(Resource):
         skip = int(skip) if (skip and skip.isdigit()) else 0
         limit = request.args.get('limit')
         limit = int(limit) if (limit and limit.isdigit()) else 10
-        return PostService.get_discover_posts(skip=skip, limit=limit)
-
+        seed = request.args.get('seed')
+        seed = int(seed) if (seed and seed.isdigit()) else 0
+        return PostService.get_discover_posts(skip=skip, limit=limit, seed=seed)
 
 @API.route('/<string:post_id>/comment', strict_slashes=False)
 class PostCommentController(Resource):
