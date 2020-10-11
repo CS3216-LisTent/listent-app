@@ -2,7 +2,7 @@ import pymongo
 from pymongo.errors import WriteError
 from api.main.db import DB
 from api.main.models.users_model import UserModel
-
+import numpy.random as rng
 
 class PostModel:
 
@@ -13,11 +13,22 @@ class PostModel:
             return resp
         raise WriteError('Error in getting post. Post may not exist.')
 
+    # Return the k-th element based on the default ordering
+    @staticmethod
+    def get_post_based_on_order(k):
+        return DB.posts.find().skip(int(k)).limit(1)[0]
+
     # Get random discovery contents as logged out users
     # TODO: Change this to be adaptive with the number of likes or the current trends.
     @staticmethod
-    def get_discover_posts(skip=0, limit=10):
-        return [post for post in DB.posts.find().sort('timestamp', pymongo.DESCENDING).skip(skip).limit(limit)]
+    def get_discover_posts(skip=0, limit=10, seed=0):
+        total_post = DB.posts.find().count()
+        random_permute = rng.RandomState(seed).permutation(total_post)
+        selected_posts = random_permute[skip:skip+limit]
+        discovered_posts = []
+        for post_order in selected_posts:
+            discovered_posts.append(PostModel.get_post_based_on_order(post_order))
+        return discovered_posts
 
     @staticmethod
     def add_user_post(username, post_id, title, audio_link, timestamp, description=None, image_link=None):
