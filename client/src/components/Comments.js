@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import isEmpty from "validator/lib/isEmpty";
-import useSwr from "swr";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -60,9 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Comments({ postId }) {
-  const { data, mutate } = useSwr(`/api/v1/posts/${postId}`);
-  const comments = data.data.comments;
+export default function Comments({ postId, comments, mutate }) {
   const classes = useStyles();
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);

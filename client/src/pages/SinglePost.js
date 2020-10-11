@@ -19,28 +19,15 @@ const useStyles = makeStyles({
 export default function SinglePostWrapper() {
   const classes = useStyles();
   const { id } = useParams();
+  const audioRef = useRef(null);
 
   return (
     <div className={classes.root}>
       <ErrorBoundary fallback={<Redirect to="/" />}>
         <SuspenseLoading>
-          <SinglePost id={id} />
+          <Post audioRef={audioRef} postId={id} hideNext hidePrevious />
         </SuspenseLoading>
       </ErrorBoundary>
     </div>
-  );
-}
-
-function SinglePost({ id }) {
-  const { data } = useSwr(`/api/v1/posts/${id}`);
-  const audioRef = useRef(null);
-
-  return (
-    <Post
-      audioRef={audioRef}
-      post={data.data}
-      hideNext
-      hidePrevious
-    />
   );
 }
