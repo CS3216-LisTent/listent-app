@@ -4,7 +4,11 @@ from flask import make_response, jsonify
 from pymongo.errors import OperationFailure, ConnectionFailure
 from api.main.models.users_model import UserModel
 from api.main.models.posts_model import PostModel
-from api.main.utils.file_util import upload_file
+from api.main.utils.file_util import upload_file, upload
+from pydub import AudioSegment
+from pydub.exceptions import CouldntDecodeError, CouldntEncodeError
+import os
+import io
 
 
 class PostService:
@@ -38,11 +42,19 @@ class PostService:
             )
 
     @staticmethod
-    def create_user_post(username, title, audio_filepath, description=None, image_filepath=None):
+    def create_user_post(username, title, audio_file, description=None, image_filepath=None):
         try:
             post_id = uuid.uuid4().hex
-            audio_link = upload_file(audio_filepath, uuid.uuid4().hex)
-            image_link = upload_file(image_filepath, uuid.uuid4().hex) if image_filepath else None
+            file_name, file_ext = os.path.splitext(audio_file.filename)
+            # todo: multithread or multiprocess the audio conversion cos it's blocking and uses high cpu
+            audio = AudioSegment.from_file(audio_file, format=file_ext.lstrip('.'))
+            # export in memory, not stored to disk
+            buffer = io.BytesIO()
+            audio.export(buffer, format='webm')
+            audio_link = upload(buffer, uuid.uuid4().hex + '.webm')
+            buffer.close()
+            image_link = upload_file(
+                image_filepath, uuid.uuid4().hex) if image_filepath else None
             post_data = PostModel.add_user_post(
                 username=username,
                 post_id=post_id,
@@ -57,6 +69,20 @@ class PostService:
                     'message': 'Post successfully created.',
                     'data': post_data
                 }), 201
+            )
+        except CouldntDecodeError as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'PyDub failed to decode: {str(e)}',
+                }), 400
+            )
+        except CouldntEncodeError as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'PyDub failed to encode: {str(e)}',
+                }), 500
             )
         except OperationFailure as e:
             return make_response(
