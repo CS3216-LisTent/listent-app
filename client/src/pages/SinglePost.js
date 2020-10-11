@@ -37,7 +37,6 @@ function SinglePost({ id }) {
 
   return (
     <Post
-      refresh={mutate}
       audioRef={audioRef}
       post={data.data}
       hideNext

@@ -63,7 +63,7 @@ function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { data: userInfo } = useSwr(
-    user ? `/api/v1//users/${user.username}` : null
+    user ? `/api/v1/users/${user.username}` : null
   );
   const hasFollowing =
     user && userInfo && userInfo.data && userInfo.data.number_of_following > 0;
@@ -100,7 +100,6 @@ function Home() {
         return (
           <div style={{ height: "100%" }} key={index}>
             <Post
-              refresh={mutate}
               audioRef={audioRefs.current[index]}
               post={post}
               next={() => {

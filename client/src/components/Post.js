@@ -87,7 +87,6 @@ export default function Post({
   previous,
   hideNext,
   hidePrevious,
-  refresh,
   ...rest
 }) {
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
@@ -174,11 +173,7 @@ export default function Post({
             xs={12}
             className={classes.commentsContainer}
           >
-            <Comments
-              postId={post._id}
-              comments={post.comments}
-              refresh={refresh}
-            />
+            <Comments postId={post._id} />
           </Grid>
         </Grid>
       </Container>
