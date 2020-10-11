@@ -28,7 +28,7 @@ class PostModel:
                 'audio_link': audio_link,
                 'image_link': image_link,
                 'comments': [],
-                'likedBy': []
+                'liked_by': []
             })
             DB.users.find_one_and_update({'_id': username}, {'$addToSet': {'posts': post_id}})
             return PostModel.get_post(post_id)
@@ -93,7 +93,7 @@ class PostModel:
         user = UserModel.get_user(username)
         post = PostModel.get_post(post_id)
         if user and post:
-            DB.posts.find_one_and_update({'_id': post_id}, {'$addToSet': {'likedBy': username}})
+            DB.posts.find_one_and_update({'_id': post_id}, {'$addToSet': {'liked_by': username}})
             return PostModel.get_post(post_id)
         raise WriteError(f'Error in liking post. User or post may not exist.')
 
@@ -102,7 +102,7 @@ class PostModel:
         post = PostModel.get_post(post_id)
         user = UserModel.get_user(username)
         if user and post:
-            DB.posts.find_one_and_update({'_id': post_id}, {'$pull': {'likedBy': username}})
+            DB.posts.find_one_and_update({'_id': post_id}, {'$pull': {'liked_by': username}})
             return PostModel.get_post(post_id)
         raise WriteError(f'Error in unliking post. User or post may not exist.')
 

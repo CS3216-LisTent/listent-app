@@ -1,15 +1,21 @@
 import React, { useState, useRef } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
 import clsx from "clsx";
+import useSwr from "swr";
+import { makeStyles } from "@material-ui/core/styles";
+import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 // Icons
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShareIcon from "@material-ui/icons/Share";
 
 // Custom components
@@ -18,6 +24,9 @@ import AudioPlayer from "./AudioPlayer";
 import Comments from "./Comments";
 import ShareDrawer from "./ShareDrawer";
 import SingleLineContainer from "./SingleLineContainer";
+
+// Actions
+import { openSnackbar } from "../actions/snackbar-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,6 +87,9 @@ const useStyles = makeStyles((theme) => ({
       flexBasis: "100%",
     },
   },
+  loadingBackdrop: {
+    zIndex: theme.zIndex.modal,
+  },
 }));
 
 export default function Post({
@@ -87,7 +99,6 @@ export default function Post({
   previous,
   hideNext,
   hidePrevious,
-  ...rest
 }) {
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -106,10 +117,7 @@ export default function Post({
     <div className={classes.root}>
       <ShareDrawer isOpen={isShareOpen} setIsOpen={setIsShareOpen} />
       <div className={classes.likeShareContainer}>
-        <IconButton classes={{ label: classes.likeButton }}>
-          <FavoriteBorderIcon />
-          <Typography variant="caption">{post.likedBy.length}</Typography>
-        </IconButton>
+        <LikeButton post={post} />
         <IconButton onClick={() => setIsShareOpen(true)}>
           <ShareIcon />
         </IconButton>
@@ -178,5 +186,42 @@ export default function Post({
         </Grid>
       </Container>
     </div>
+  );
+}
+
+function LikeButton({ post }) {
+  const { data, mutate } = useSwr(`/api/v1/posts/${post._id}`);
+  const likedBy = data.data.liked_by;
+  const [isLoading, setIsLoading] = useState(false);
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const hasLiked = user && likedBy.includes(user.username);
+
+  const onClick = async () => {
+    if (!user) {
+      dispatch(
+        openSnackbar("You need to be signed in to like posts!", "warning")
+      );
+    } else {
+      setIsLoading(true);
+      await axios.post(
+        `/api/v1/posts/${post._id}/${hasLiked ? "unlike" : "like"}`
+      );
+      mutate();
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Backdrop className={classes.loadingBackdrop} open={isLoading}>
+        <CircularProgress color="primary" />
+      </Backdrop>
+      <IconButton onClick={onClick} classes={{ label: classes.likeButton }}>
+        {hasLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        <Typography variant="caption">{likedBy.length}</Typography>
+      </IconButton>
+    </>
   );
 }

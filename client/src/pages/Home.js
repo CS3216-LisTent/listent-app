@@ -74,7 +74,7 @@ function Home() {
   const classes = useStyles();
   const swipeRef = useRef(null);
 
-  const { data, size, setSize, mutate, isEmpty } = useInfinite(
+  const { data, size, setSize, isEmpty } = useInfinite(
     !user
       ? `/api/v1/posts/discover/all`
       : tabIndex === 0

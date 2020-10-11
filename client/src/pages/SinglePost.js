@@ -32,7 +32,7 @@ export default function SinglePostWrapper() {
 }
 
 function SinglePost({ id }) {
-  const { data, mutate } = useSwr(`/api/v1/posts/${id}`);
+  const { data } = useSwr(`/api/v1/posts/${id}`);
   const audioRef = useRef(null);
 
   return (
