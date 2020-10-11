@@ -21,9 +21,10 @@ import ReactSwipe from "react-swipe";
 import Post from "../components/Post";
 
 // Utils
-import useInfinite, { PAGE_SIZE } from "../utils/use-infinite";
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 import { setHomeTabIndex } from "../actions/home-tab-actions";
+
+const PAGE_SIZE = 3;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,9 +57,6 @@ export default function HomeWrapper() {
   );
 }
 
-const genPostIds = (data) =>
-  data.reduce((acc, page) => [...acc, ...page.map((post) => post._id)], []);
-
 function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -67,62 +65,58 @@ function Home() {
   );
   const hasFollowing =
     user && userInfo && userInfo.data && userInfo.data.number_of_following > 0;
-
-  const tabIndex = useSelector((state) =>
-    state.user && hasFollowing ? state.homeTab.index : 1
-  );
+  const tabIndex = useSelector((state) => state.homeTab.index);
   const classes = useStyles();
   const swipeRef = useRef(null);
-
-  const { data, size, setSize, isEmpty } = useInfinite(
-    !user
-      ? `/api/v1/posts/discover/all`
-      : tabIndex === 0
-      ? `/api/v1/posts/feed/`
-      : `/api/v1/posts/discover/`
+  const [firstLoad, setFirstLoad] = useState(true);
+  const [swipeIndex, setSwipeIndex] = useState(0);
+  const [skip, setSkip] = useState(0);
+  const { data } = useSwr(
+    `/api/v1/posts/discover/all?skip=${skip}&limit=${PAGE_SIZE}`
   );
-  let audioRefs = useRef(
-    data.reduce((acc, page) => [...acc, ...page.map(() => createRef())], [])
-  );
-  let [postIds, setPostIds] = useState(genPostIds(data));
+  const postsData = data.data;
+  let audioRefs = Array.from({ length: PAGE_SIZE }, () => createRef());
+  let [postIds, setPostIds] = useState(postsData.map((post) => post._id));
 
   useEffect(() => {
-    setPostIds(genPostIds(data));
-  }, [data]);
+    setPostIds(postsData.map((post) => post._id));
+  }, [postsData]);
 
-  const [startSlide, setStartSlide] = useState(0);
-
-  const posts = data.reduce(
-    (acc, page, i) => [
-      ...acc,
-      ...page.map((post, j) => {
-        const index = PAGE_SIZE * i + j;
-        return (
-          <div style={{ height: "100%" }} key={index}>
-            <ErrorBoundary fallback={<Redirect to="/" />}>
-              <SuspenseLoading>
-                <Post
-                  audioRef={audioRefs.current[index]}
-                  postId={post._id}
-                  next={() => {
-                    swipeRef.current.next();
-                  }}
-                  previous={() => {
-                    swipeRef.current.prev();
-                  }}
-                />
-              </SuspenseLoading>
-            </ErrorBoundary>
-          </div>
-        );
-      }),
-    ],
-    []
-  );
+  const posts = postsData.map((post, i) => {
+    return (
+      <div style={{ height: "100%" }} key={i}>
+        <ErrorBoundary fallback={<Redirect to="/" />}>
+          <SuspenseLoading>
+            <Post
+              audioRef={audioRefs[i]}
+              postId={post._id}
+              next={() => {
+                swipeRef.current.next();
+              }}
+              previous={() => {
+                swipeRef.current.prev();
+              }}
+            />
+          </SuspenseLoading>
+        </ErrorBoundary>
+      </div>
+    );
+  });
 
   useEffect(() => {
     dispatch(setBottomNavigationIndex(0));
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(setHomeTabIndex(user && hasFollowing ? 0 : 1));
+  }, [dispatch, user, hasFollowing]);
+
+  useEffect(() => {
+    if (firstLoad && data && data[0]) {
+      window.history.pushState({}, "", `/post/${data[0]._id}`);
+      setFirstLoad(false);
+    }
+  }, [data, firstLoad]);
 
   const handleChange = (_, newValue) => {
     dispatch(setHomeTabIndex(newValue));
@@ -143,7 +137,7 @@ function Home() {
           <Tab label="Discover" />
         </Tabs>
       )}
-      {isEmpty ? (
+      {data.length === 0 ? (
         <Container className={classes.emptyContainer}>
           <Typography variant="h5">
             It seems a little lonely here... Start following other accounts now!
@@ -152,32 +146,28 @@ function Home() {
       ) : (
         <ReactSwipe
           swipeOptions={{
-            startSlide: startSlide,
+            startSlide: swipeIndex,
             continuous: false,
             callback: (index) => {
-              setStartSlide(index);
-              if (index - 1 >= 0) {
-                audioRefs.current[index - 1].current.pause();
+              // if (index - 1 >= 0) {
+              //   audioRefs[index - 1].current.pause();
+              // }
+              // if (index + 1 < postsData.length) {
+              //   audioRefs[index + 1].current.pause();
+              // }
+              if (index + 1 === PAGE_SIZE) {
+                // Last index of window
+                setSkip(skip + 1);
+                setSwipeIndex(1);
               }
-              if (index + 1 < posts.length) {
-                audioRefs.current[index + 1].current.pause();
-              }
-              if (index + 1 === audioRefs.current.length - 1) {
-                // Load more if next is last
-                setSize(size + 1);
-                audioRefs.current = [
-                  ...audioRefs.current,
-                  ...Array.from({ length: PAGE_SIZE }, () => createRef()),
-                ];
-              }
-              audioRefs.current[index].current.play();
+              // audioRefs[index].current.play();
               window.history.pushState({}, "", `/post/${postIds[index]}`);
             },
           }}
           ref={swipeRef}
           className={classes.swipeContainer}
         >
-          {posts.slice(Math.max(posts.length - 6, 1))}
+          {posts}
         </ReactSwipe>
       )}
     </div>
