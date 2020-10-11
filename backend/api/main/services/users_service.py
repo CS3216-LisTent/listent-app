@@ -25,7 +25,9 @@ class UserService:
             )
             user_app_data = UserModel.add_user(
                 username=username,
-                description=description
+                email=email,
+                description=description,
+                picture=picture
             )
             data = {
                 'username': user_auth_data['username'],
@@ -141,23 +143,21 @@ class UserService:
     @staticmethod
     def get_user(username, auth_info=True):
         try:
-            user_auth_data = AuthUtil.get_user(username)
-            user_app_data = UserModel.get_user(username)
+            user_data = UserModel.get_user(username)
             data = {'username': username}
             data.update({
-                'username': user_auth_data['username'],
-                'followers': user_app_data['followers'],
-                'followings': user_app_data['followings'],
-                'posts': user_app_data['posts'],
-                'number_of_followers': len(user_app_data['followers']),
-                'number_of_following': len(user_app_data['followings']),
-                'number_of_posts': len(user_app_data['posts']),
-                'description': user_app_data['description'],
-                'picture': user_auth_data['picture'],
+                'followers': user_data['followers'],
+                'followings': user_data['followings'],
+                'posts': user_data['posts'],
+                'number_of_followers': len(user_data['followers']),
+                'number_of_following': len(user_data['followings']),
+                'number_of_posts': len(user_data['posts']),
+                'description': user_data['description'],
+                'picture': user_data['picture'],
             })
             if auth_info:
                 data.update({
-                    'email': user_auth_data['email']
+                    'email': user_data['email']
                 })
             return make_response(
                 jsonify({

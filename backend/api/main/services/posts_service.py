@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from botocore.exceptions import ClientError
 from flask import make_response, jsonify
 from pymongo.errors import OperationFailure, ConnectionFailure
@@ -45,6 +46,7 @@ class PostService:
     def create_user_post(username, title, audio_file, description=None, image_filepath=None):
         try:
             post_id = uuid.uuid4().hex
+            timestamp = datetime.utcnow().isoformat()
             file_name, file_ext = os.path.splitext(audio_file.filename)
             # todo: multithread or multiprocess the audio conversion cos it's blocking and uses high cpu
             audio = AudioSegment.from_file(audio_file, format=file_ext.lstrip('.'))
@@ -59,6 +61,7 @@ class PostService:
                 username=username,
                 post_id=post_id,
                 title=title,
+                timestamp=timestamp,
                 audio_link=audio_link,
                 description=description,
                 image_link=image_link
@@ -273,10 +276,12 @@ class PostService:
     @staticmethod
     def add_post_comment(post_id, username, text):
         try:
+            timestamp = datetime.utcnow().isoformat()
             post_data = PostModel.add_comment(
                 post_id=post_id,
                 username=username,
-                text=text
+                text=text,
+                timestamp=timestamp
             )
             return make_response(
                 jsonify({
