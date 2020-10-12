@@ -1,5 +1,4 @@
 from pymongo.errors import WriteError
-
 from api.main.config import LOGGER
 from api.main.db import DB
 from api.main.models.users_model import UserModel
@@ -11,7 +10,8 @@ class PostModel:
     def get_post(post_id):
         resp = DB.posts.find_one({'_id': post_id})
         LOGGER.info(resp)
-        resp['comments'].sort(key=lambda comment: comment['timestamp'], reverse=True)
+        if len(resp['comments']) > 0:
+            resp['comments'].sort(key=lambda comment: comment['timestamp'], reverse=True)
         if resp:
             return resp
         raise WriteError('Error in getting post. Post may not exist.')
