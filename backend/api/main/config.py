@@ -19,14 +19,13 @@ AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
 AUTH0_CLIENT_ID = os.environ.get('AUTH0_CLIENT_ID')
 AUTH0_CLIENT_SECRET = os.environ.get('AUTH0_CLIENT_SECRET')
 
-
 def get_connection_url(env):
     if env == 'dev':
         return 'mongodb://127.0.0.1:27017'
     if env == 'test':
-        return os.environ.get('DB_TEST_URL')
+        return os.environ.get('MONGODB_CONNECTION')
     if env == 'prod':
-        return os.environ.get('DB_PROD_URL')
+        return os.environ.get('MONGODB_CONNECTION')
 
 
 MONGO_CONNECTION_URL = get_connection_url(ENV)

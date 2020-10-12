@@ -13,8 +13,7 @@ export const setUser = (jwtString) => {
 
   setAuthToken(jwtString);
   const decoded = jwt_decode(jwtString);
-  const username = decoded["https://listent.app/username"];
-  delete decoded["https://listent.app/username"];
+  const username = decoded["sub"].split("|")[1];
 
   return {
     type: SET_USER,
