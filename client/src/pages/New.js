@@ -157,12 +157,13 @@ export default function New() {
       const player = videojs("myAudio", options);
       setPlayer(player);
 
-      player.on("finishRecord", function () {
-        setIsLoading(true);
+      player.on("deviceError", function () {
+        setIsLoading(false);
+        setHasError(true);
       });
 
-      player.on("deviceError", function () {
-        setHasError(true);
+      player.on("startConvert", function () {
+        setIsLoading(true);
       });
 
       player.on("finishConvert", () => {
