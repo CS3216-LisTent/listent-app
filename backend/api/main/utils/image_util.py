@@ -49,6 +49,9 @@ def process_image(image_file, buffer):
     max_size = 2560, 2560
     # downscale if width > max width or height > max height while maintaining aspect ratio
     image.thumbnail(max_size, Image.LANCZOS)
-    image.save(buffer, format=image.format)
+    try:
+        image.save(buffer, format=image.format)
+    except Exception:
+        image.save(buffer, format='JPEG')
     buffer.seek(0)
     # return image_buffer
