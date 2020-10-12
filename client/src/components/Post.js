@@ -122,10 +122,10 @@ export default function Post({
   const commentsRef = useRef(null);
 
   const onCommentsScroll = () => {
-    if (commentsRef.current && commentsRef.current.scrollTop === 0) {
-      setIsCommentScrolled(false);
-    } else {
+    if (commentsRef.current && commentsRef.current.scrollTop > 5) {
       setIsCommentScrolled(true);
+    } else {
+      setIsCommentScrolled(false);
     }
   };
 
@@ -166,7 +166,7 @@ export default function Post({
               wrap="nowrap"
               className={clsx(
                 isCommentScrolled && classes.collapse,
-                isCommentScrolled === false && classes.expand
+                !isCommentScrolled && classes.expand
               )}
             >
               <Grid
@@ -174,7 +174,7 @@ export default function Post({
                 xs={12}
                 className={clsx(
                   isCommentScrolled && classes.collapse,
-                  isCommentScrolled === false && classes.expand
+                  !isCommentScrolled && classes.expand
                 )}
               >
                 <SingleLineContainer

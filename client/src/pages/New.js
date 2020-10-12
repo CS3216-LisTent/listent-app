@@ -49,7 +49,7 @@ WaveSurfer.microphone = MicrophonePlugin;
 
 const CHAR_LIMIT = 200;
 
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isChrome = !!window.chrome;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -287,7 +287,7 @@ export default function New() {
           </Grid>
           <Grid item xs={12}>
             <div className={classes.audioRecorderContainer}>
-              {!isSafari ? (
+              {isChrome ? (
                 <audio
                   ref={recordRef}
                   id="myAudio"
