@@ -1,14 +1,14 @@
 {
   "short_name": "LisTent",
-  "name": "A new social networking app that focuses on audio-based content",
+  "name": "LisTent - A new social networking app that focuses on audio-based content",
   "icons": [
     {
-      "src": "/android-chrome-192x192.png",
+      "src": "logo192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/android-chrome-512x512.png",
+      "src": "logo512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
