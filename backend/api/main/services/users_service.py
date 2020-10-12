@@ -204,11 +204,11 @@ class UserService:
         try:
             if ('picture_filepath' in updates) and (updates['picture_filepath'] is not None):
                 updates['picture'] = upload_file(updates['picture_filepath'], uuid.uuid4().hex)
-            user_auth_data = AuthUtil.update_user(username, **updates)
+            # user_auth_data = AuthUtil.update_user(username, **updates)
             user_app_data = UserModel.update_user(username, **updates)
             data = {
-                'username': user_auth_data['username'],
-                'email': user_auth_data['email'],
+                'username': username,
+                'email': user_app_data['email'],
                 'followers': user_app_data['followers'],
                 'followings': user_app_data['followings'],
                 'posts': user_app_data['posts'],
@@ -216,7 +216,7 @@ class UserService:
                 'number_of_following': len(user_app_data['followings']),
                 'number_of_posts': len(user_app_data['posts']),
                 'description': user_app_data['description'],
-                'picture': user_auth_data['picture'],
+                'picture': user_app_data['picture'],
             }
             return make_response(
                 jsonify({
