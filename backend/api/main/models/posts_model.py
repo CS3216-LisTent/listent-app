@@ -1,4 +1,6 @@
 from pymongo.errors import WriteError
+
+from api.main.config import LOGGER
 from api.main.db import DB
 from api.main.models.users_model import UserModel
 import numpy.random as rng
@@ -8,6 +10,7 @@ class PostModel:
     @staticmethod
     def get_post(post_id):
         resp = DB.posts.find_one({'_id': post_id})
+        LOGGER.info(resp)
         resp['comments'].sort(key=lambda comment: comment['timestamp'], reverse=True)
         if resp:
             return resp
