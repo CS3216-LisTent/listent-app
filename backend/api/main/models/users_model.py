@@ -27,11 +27,9 @@ class UserModel:
     @staticmethod
     def update_user(username, **kwargs):
         updated_document = {'_id': username}
-        if 'email' in kwargs:
-            updated_document['email'] = kwargs['email']
-        if 'description' in kwargs:
+        if ('description' in kwargs) and (kwargs['description'] is not None):
             updated_document['description'] = kwargs['description']
-        if 'picture' in kwargs:
+        if ('picture' in kwargs) and (kwargs['picture'] is not None):
             updated_document['picture'] = kwargs['picture']
         resp = DB.users.find_one_and_update({'_id': username}, {'$set': updated_document})
         if resp:

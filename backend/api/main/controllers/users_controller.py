@@ -19,18 +19,14 @@ class UserController(Resource):
     @TOKEN_AUTH.login_required
     def put(self):
         username = TOKEN_AUTH.current_user()
-        email = request.form.get('email')
-        password = request.form.get('password')
-        description = request.form.get('description')
-        picture_file = request.files.get('picture')
-        picture_filepath = save_file(IMAGES_DIR, picture_file) if picture_file else None
-        return UserService.update_user(
-            username=username,
-            email=email,
-            password=password,
-            description=description,
-            picture_filepath=picture_filepath
-        )
+        updates = {}
+        if request.form.get('description'):
+            updates['description'] = request.form.get('description')
+        if request.files.get('picture'):
+            picture_file = request.files.get('picture')
+            picture_filepath = save_file(IMAGES_DIR, picture_file)
+            updates['picture_filepath'] = picture_filepath
+        return UserService.update_user(username=username, **updates)
 
 
 @API.route('/<string:username>', strict_slashes=False)
