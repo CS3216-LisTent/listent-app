@@ -13,8 +13,18 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # S3 Bucket
 BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
 
+
+def get_auth_cert_path(env):
+    if env == 'dev':
+        return os.path.join(BASEDIR, 'cert.pem')
+    if env == 'test':
+        return '/etc/cert.pem'
+    if env == 'prod':
+        return '/etc/cert.pem'
+
+
 # Auth0
-AUTH0_CERT = os.path.join(BASEDIR, 'cert.pem')
+AUTH0_CERT = get_auth_cert_path(ENV)
 AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
 AUTH0_CLIENT_ID = os.environ.get('AUTH0_CLIENT_ID')
 AUTH0_CLIENT_SECRET = os.environ.get('AUTH0_CLIENT_SECRET')
