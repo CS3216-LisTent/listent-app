@@ -7,21 +7,6 @@ from api.main.utils.file_util import save_file
 
 API = Namespace(name='auth')
 
-# USER_REGISTER_DATA = API.model(
-#     "User register data", {
-#         "username": fields.String(description="username", example="johndoe123", required=True),
-#         "email": fields.String(description="email", example="johndoe@gmail.com", required=True),
-#         "password": fields.String(description="password", example='password1', required=True)
-#         }
-# )
-#
-# USER_LOGIN_DATA = API.model(
-#     "User login data", {
-#         "username": fields.String(description="username", example="johndoe123", required=True),
-#         "password": fields.String(description="password", example='password1', required=True)
-#         }
-# )
-
 
 @API.route('/register', strict_slashes=False)
 class AuthRegisterController(Resource):
