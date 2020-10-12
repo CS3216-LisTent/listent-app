@@ -61,8 +61,8 @@ class PostService:
                 )
             # export in memory, not stored to disk
             audio_buffer = io.BytesIO()
-            audio.export(audio_buffer, format='webm')
-            audio_link = upload(audio_buffer, uuid.uuid4().hex + '.webm')
+            audio.export(audio_buffer, format='mp3')
+            audio_link = upload(audio_buffer, uuid.uuid4().hex + '.mp3')
             audio_buffer.close()
 
             image_link = None
