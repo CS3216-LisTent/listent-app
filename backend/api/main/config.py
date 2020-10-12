@@ -1,7 +1,7 @@
 import os
 import logging
 
-ENV = os.environ.get('ENV')
+ENV = os.environ.get('ENV', 'dev')
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 IMAGES_DIR = os.path.join(BASEDIR, 'images')
@@ -14,11 +14,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
 
 # Auth0
+AUTH0_CERT = os.path.join(BASEDIR, 'cert.pem')
 AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
 AUTH0_CLIENT_ID = os.environ.get('AUTH0_CLIENT_ID')
 AUTH0_CLIENT_SECRET = os.environ.get('AUTH0_CLIENT_SECRET')
-AUTH0_CERT = os.path.join(BASEDIR, 'cert.pem')
-
 
 
 def get_connection_url(env):

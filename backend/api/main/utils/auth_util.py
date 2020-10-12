@@ -2,6 +2,7 @@ import os
 import jwt
 import requests
 from auth0.v3 import Auth0Error
+from flask import make_response, jsonify
 from flask_httpauth import HTTPTokenAuth
 from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
@@ -165,6 +166,16 @@ def verify_token(user_token):
         is_blacklisted = DB.blacklisted_tokens.find_one({'token': user_token})
         if not is_blacklisted:
             username = AuthUtil.decode_user_token(user_token)
-            return username
+            user_auth_data = AuthUtil.get_user(username)
+            if user_auth_data['email_verified']:
+                return username
     except:
         return None
+
+
+@TOKEN_AUTH.error_handler
+def token_auth_error(status):
+    return make_response(jsonify({
+        'status': 'fail',
+        'message': 'Unauthorized user token. Please login again.'
+    }), status)
