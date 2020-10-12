@@ -49,6 +49,8 @@ WaveSurfer.microphone = MicrophonePlugin;
 
 const CHAR_LIMIT = 200;
 
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundImage: ({ uploadedFiles }) => {
@@ -285,14 +287,22 @@ export default function New() {
           </Grid>
           <Grid item xs={12}>
             <div className={classes.audioRecorderContainer}>
-              <audio
-                ref={recordRef}
-                id="myAudio"
-                className={clsx(
-                  "video-js vjs-default-skin",
-                  classes.audioRecorder
-                )}
-              ></audio>
+              {!isSafari ? (
+                <audio
+                  ref={recordRef}
+                  id="myAudio"
+                  className={clsx(
+                    "video-js vjs-default-skin",
+                    classes.audioRecorder
+                  )}
+                ></audio>
+              ) : (
+                <Typography variant="caption">
+                  Audio recording does not work on your browser, upload an audio
+                  file instead!
+                  <br />
+                </Typography>
+              )}
               <input
                 name="audio"
                 accept="audio/*"

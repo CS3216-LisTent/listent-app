@@ -71,6 +71,8 @@ export default function AudioPlayer({
       setAudio(audio);
 
       const loadedMetadataEvent = () => {
+        audioControls.style.display = "block";
+        setIsLoaded(true);
         setDuration(audio.duration);
       };
       const timeUpdateEvent = () => {
@@ -82,11 +84,6 @@ export default function AudioPlayer({
           next();
         }
       };
-      const canPlayEvent = () => {
-        audioControls.style.display = "block";
-        setIsLoaded(true);
-      };
-      audio.addEventListener("canplay", canPlayEvent);
       audio.addEventListener("loadedmetadata", loadedMetadataEvent);
       audio.addEventListener("timeupdate", timeUpdateEvent);
       audio.addEventListener("ended", endedEvent);
@@ -95,7 +92,6 @@ export default function AudioPlayer({
         audio.removeEventListener("loadedmetadata", loadedMetadataEvent);
         audio.removeEventListener("timeupdate", timeUpdateEvent);
         audio.removeEventListener("ended", endedEvent);
-        audio.removeEventListener("canplay", canPlayEvent);
       };
     }
   }, [audioRef, controlsRef, next]);
