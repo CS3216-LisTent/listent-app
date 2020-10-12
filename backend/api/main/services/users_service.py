@@ -32,6 +32,7 @@ class UserService:
             data = {
                 'username': user_auth_data['username'],
                 'email': user_auth_data['email'],
+                'email_verified': user_auth_data['email_verified'],
                 'followers': user_app_data['followers'],
                 'followings': user_app_data['followings'],
                 'posts': user_app_data['posts'],
@@ -91,6 +92,7 @@ class UserService:
             data = {
                 'username': user_auth_data['username'],
                 'email': user_auth_data['email'],
+                'email_verified': user_auth_data['email_verified'],
                 'followers': user_app_data['followers'],
                 'followings': user_app_data['followings'],
                 'posts': user_app_data['posts'],

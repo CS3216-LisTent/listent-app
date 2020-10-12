@@ -27,7 +27,7 @@ class AuthUtil:
         raise Auth0Error(
             status_code=resp.status_code,
             error_code=resp_data.get('errorCode'),
-            message=f'Error in retrieving application access token. {resp_data.get("message", "")}'
+            message=f'Error in retrieving application access token. {resp_data}'
         )
 
     @staticmethod
@@ -55,7 +55,9 @@ class AuthUtil:
 
     @staticmethod
     def decode_user_token(user_token):
-        cert_obj = load_pem_x509_certificate(str.encode(AUTH0_CERT), default_backend())
+        with open(AUTH0_CERT, 'r') as f:
+            certstr = f.read()
+        cert_obj = load_pem_x509_certificate(str.encode(certstr), default_backend())
         payload = jwt.decode(
             user_token,
             key=cert_obj.public_key(),
@@ -91,6 +93,7 @@ class AuthUtil:
             user_info = {
                 'username': resp_data['username'],
                 'email': resp_data['email'],
+                'email_verified': resp_data['email_verified'],
                 'picture': resp_data['picture']
             }
             return user_info
@@ -113,6 +116,7 @@ class AuthUtil:
             user_info = {
                 'username': resp_data['username'],
                 'email': resp_data['email'],
+                'email_verified': resp_data['email_verified'],
                 'picture': resp_data['picture']
             }
             return user_info
