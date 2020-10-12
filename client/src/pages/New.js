@@ -97,6 +97,9 @@ const useStyles = makeStyles((theme) => ({
   loadingBackdrop: {
     zIndex: theme.zIndex.modal,
   },
+  uploadButton: {
+    marginTop: theme.spacing(1),
+  },
 }));
 
 export default function New() {
@@ -329,7 +332,14 @@ export default function New() {
                 onChange={onUpload}
               />
               <label htmlFor="audio-upload">
-                <Button component="span">Upload an audio file instead</Button>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  component="span"
+                  className={classes.uploadButton}
+                >
+                  Upload an audio file instead
+                </Button>
               </label>
             </div>
             {uploadedFiles.audio.blob && (

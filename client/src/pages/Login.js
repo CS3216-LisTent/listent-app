@@ -62,7 +62,7 @@ export default function Login() {
   const [fields, setFields] = useState({
     login: "",
     password: "",
-    isRemember: false,
+    isRemember: true,
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -155,7 +155,13 @@ export default function Login() {
             </Grid>
           </Grid>
           <FormControlLabel
-            control={<Checkbox value={fields.isRemember} color="primary" />}
+            control={
+              <Checkbox
+                defaultChecked
+                value={fields.isRemember}
+                color="primary"
+              />
+            }
             label="Remember me"
             onChange={() =>
               setFields({ ...fields, isRemember: !fields.isRemember })
