@@ -49,7 +49,17 @@ const useStyles = makeStyles((theme) => ({
 const genPostIds = (data) =>
   data.reduce((acc, page) => [...acc, ...page.map((post) => post._id)], []);
 
-export default function Home() {
+export default function HomeWrapper() {
+  return (
+    <ErrorBoundary fallback={<Redirect to="/" />}>
+      <SuspenseLoading>
+        <Home />
+      </SuspenseLoading>
+    </ErrorBoundary>
+  );
+}
+
+function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { data: userInfo } = useSwr(
