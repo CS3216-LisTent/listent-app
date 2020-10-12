@@ -1,5 +1,5 @@
-import pymongo
 from pymongo.errors import WriteError
+from api.main.config import LOGGER
 from api.main.db import DB
 from api.main.models.users_model import UserModel
 import numpy.random as rng
@@ -9,8 +9,8 @@ class PostModel:
     @staticmethod
     def get_post(post_id):
         resp = DB.posts.find_one({'_id': post_id})
-        resp['comments'].sort(key=lambda comment: comment['timestamp'], reverse=True)
         if resp:
+            resp['comments'].sort(key=lambda comment: comment['timestamp'], reverse=True)
             return resp
         raise WriteError('Error in getting post. Post may not exist.')
 
@@ -82,9 +82,9 @@ class PostModel:
     def get_user_posts(username, skip=0, limit=10):
         user = UserModel.get_user(username)
         if user:
-            posts = [PostModel.get_post(post_id) for post_id in user['posts'][skip:skip + limit]]
+            posts = [PostModel.get_post(post_id) for post_id in user['posts']]
             posts.sort(key=lambda post: post['timestamp'], reverse=True)
-            return posts
+            return posts[skip:skip + limit]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod

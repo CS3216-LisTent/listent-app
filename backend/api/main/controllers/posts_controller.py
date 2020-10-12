@@ -2,7 +2,6 @@ from flask import request
 from flask_restplus import Resource, Namespace
 from api.main.services.posts_service import PostService
 from api.main.utils.auth_util import TOKEN_AUTH
-from api.main.config import IMAGES_DIR, AUDIO_DIR
 
 API = Namespace(name='posts')
 

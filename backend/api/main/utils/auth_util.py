@@ -135,11 +135,7 @@ class AuthUtil:
             'Authorization': 'Bearer ' + auth_token
         }
         payload = {}
-        if 'email' in updates:
-            payload['email'] = updates['email']
-        if 'password' in updates:
-            payload['password'] = updates['password']
-        if 'picture' in updates:
+        if ('picture' in updates) and (updates['picture'] is not None):
             payload['picture'] = updates['picture']
         resp = requests.patch(url, headers=headers, data=payload)
         resp_data = resp.json()
