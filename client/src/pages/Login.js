@@ -100,11 +100,19 @@ export default function Login() {
       }
     } catch (e) {
       setFields({ ...fields, password: "" });
-      const message = "Login or password invalid";
-      setErrors({
-        login: message,
-        password: message,
-      });
+      const res = e.response.data;
+
+      if (res.message.includes("User email not verified.")) {
+        setErrors({
+          login: res.message,
+        });
+      } else {
+        const message = "Login or password invalid";
+        setErrors({
+          login: message,
+          password: message,
+        });
+      }
       setIsLoading(false);
     }
   };

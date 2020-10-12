@@ -90,7 +90,9 @@ export default function Register() {
       await axios.post("/api/v1/auth/register", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      dispatch(openSnackbar("Registration successful!", "success"));
+      dispatch(
+        openSnackbar("Check your email to verify your account!", "success")
+      );
       history.push("/login");
     } catch (e) {
       const res = e.response.data;
