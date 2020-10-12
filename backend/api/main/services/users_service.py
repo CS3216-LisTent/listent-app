@@ -2,6 +2,7 @@ import uuid
 from auth0.v3 import Auth0Error
 from botocore.exceptions import ClientError
 from flask import jsonify, make_response
+from flask_api import status
 from pymongo.errors import OperationFailure, ConnectionFailure
 from api.main.models.users_model import UserModel
 from api.main.utils.auth_util import AuthUtil
@@ -19,10 +20,10 @@ class UserService:
                 password=password,
                 picture=picture
             )
-            user_token = AuthUtil.get_user_token(
-                username_or_email=username,
-                password=password
-            )
+            # user_token = AuthUtil.get_user_token(
+            #     username_or_email=username,
+            #     password=password
+            # )
             user_app_data = UserModel.add_user(
                 username=username,
                 email=email,
@@ -32,6 +33,7 @@ class UserService:
             data = {
                 'username': user_auth_data['username'],
                 'email': user_auth_data['email'],
+                'email_verified': user_auth_data['email_verified'],
                 'followers': user_app_data['followers'],
                 'followings': user_app_data['followings'],
                 'posts': user_app_data['posts'],
@@ -40,7 +42,7 @@ class UserService:
                 'number_of_posts': len(user_app_data['posts']),
                 'description': user_app_data['description'],
                 'picture': user_auth_data['picture'],
-                'user_token': user_token
+                # 'user_token': user_token
             }
             return make_response(
                 jsonify({
@@ -87,27 +89,36 @@ class UserService:
             )
             username = AuthUtil.decode_user_token(user_token)
             user_auth_data = AuthUtil.get_user(username)
-            user_app_data = UserModel.get_user(username)
-            data = {
-                'username': user_auth_data['username'],
-                'email': user_auth_data['email'],
-                'followers': user_app_data['followers'],
-                'followings': user_app_data['followings'],
-                'posts': user_app_data['posts'],
-                'number_of_followers': len(user_app_data['followers']),
-                'number_of_following': len(user_app_data['followings']),
-                'number_of_posts': len(user_app_data['posts']),
-                'description': user_app_data['description'],
-                'picture': user_auth_data['picture'],
-                'user_token': user_token
-            }
-            return make_response(
-                jsonify({
-                    'status': 'success',
-                    'message': 'User successfully login.',
-                    'data': data
-                }), 200
-            )
+            if user_auth_data['email_verified']:
+                user_app_data = UserModel.get_user(username)
+                data = {
+                    'username': user_auth_data['username'],
+                    'email': user_auth_data['email'],
+                    'email_verified': user_auth_data['email_verified'],
+                    'followers': user_app_data['followers'],
+                    'followings': user_app_data['followings'],
+                    'posts': user_app_data['posts'],
+                    'number_of_followers': len(user_app_data['followers']),
+                    'number_of_following': len(user_app_data['followings']),
+                    'number_of_posts': len(user_app_data['posts']),
+                    'description': user_app_data['description'],
+                    'picture': user_auth_data['picture'],
+                    'user_token': user_token
+                }
+                return make_response(
+                    jsonify({
+                        'status': 'success',
+                        'message': 'User successfully login.',
+                        'data': data
+                    }), 200
+                )
+            else:
+                return make_response(
+                    jsonify({
+                        'status': 'fail',
+                        'message': 'User email not verified. Please verify email to login.',
+                    }), 400
+                )
         except Auth0Error as e:
             return make_response(
                 jsonify({

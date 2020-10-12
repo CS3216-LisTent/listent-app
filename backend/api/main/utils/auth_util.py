@@ -2,6 +2,7 @@ import os
 import jwt
 import requests
 from auth0.v3 import Auth0Error
+from flask import make_response, jsonify
 from flask_httpauth import HTTPTokenAuth
 from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
@@ -27,7 +28,7 @@ class AuthUtil:
         raise Auth0Error(
             status_code=resp.status_code,
             error_code=resp_data.get('errorCode'),
-            message=f'Error in retrieving application access token. {resp_data.get("message", "")}'
+            message=f'Error in retrieving application access token. {resp_data}'
         )
 
     @staticmethod
@@ -55,7 +56,9 @@ class AuthUtil:
 
     @staticmethod
     def decode_user_token(user_token):
-        cert_obj = load_pem_x509_certificate(str.encode(AUTH0_CERT), default_backend())
+        with open(AUTH0_CERT, 'r') as f:
+            certstr = f.read()
+        cert_obj = load_pem_x509_certificate(str.encode(certstr), default_backend())
         payload = jwt.decode(
             user_token,
             key=cert_obj.public_key(),
@@ -91,6 +94,7 @@ class AuthUtil:
             user_info = {
                 'username': resp_data['username'],
                 'email': resp_data['email'],
+                'email_verified': resp_data['email_verified'],
                 'picture': resp_data['picture']
             }
             return user_info
@@ -113,6 +117,7 @@ class AuthUtil:
             user_info = {
                 'username': resp_data['username'],
                 'email': resp_data['email'],
+                'email_verified': resp_data['email_verified'],
                 'picture': resp_data['picture']
             }
             return user_info
@@ -161,6 +166,16 @@ def verify_token(user_token):
         is_blacklisted = DB.blacklisted_tokens.find_one({'token': user_token})
         if not is_blacklisted:
             username = AuthUtil.decode_user_token(user_token)
-            return username
+            user_auth_data = AuthUtil.get_user(username)
+            if user_auth_data['email_verified']:
+                return username
     except:
         return None
+
+
+@TOKEN_AUTH.error_handler
+def token_auth_error(status):
+    return make_response(jsonify({
+        'status': 'fail',
+        'message': 'Unauthorized user token. Please login again.'
+    }), status)
