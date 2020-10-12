@@ -46,9 +46,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const genPostIds = (data) =>
-  data.reduce((acc, page) => [...acc, ...page.map((post) => post._id)], []);
-
 export default function HomeWrapper() {
   return (
     <ErrorBoundary fallback={<Redirect to="/" />}>
@@ -79,11 +76,6 @@ function Home() {
       : `/api/v1/posts/discover/`,
     3
   );
-  let [postIds, setPostIds] = useState(genPostIds(data));
-
-  useEffect(() => {
-    setPostIds(genPostIds(data));
-  }, [data]);
 
   const [startSlide, setStartSlide] = useState(0);
 
@@ -124,14 +116,6 @@ function Home() {
     dispatch(setHomeTabIndex(user && hasFollowing ? 0 : 1));
   }, [dispatch, user, hasFollowing]);
 
-  const [firstLoad, setFirstLoad] = useState(true);
-  useEffect(() => {
-    if (firstLoad && data && data[0] && data[0][0]) {
-      window.history.pushState({}, "", `/post/${data[0][0]._id}`);
-      setFirstLoad(false);
-    }
-  }, [data, firstLoad]);
-
   const handleChange = (_, newValue) => {
     dispatch(setHomeTabIndex(newValue));
   };
@@ -168,7 +152,6 @@ function Home() {
                 // Load more if next is last
                 setSize(size + 1);
               }
-              window.history.pushState({}, "", `/post/${postIds[index]}`);
             },
           }}
           ref={swipeRef}

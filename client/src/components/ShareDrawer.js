@@ -45,7 +45,8 @@ const useStyles = makeStyles((theme) => ({
   copyButton: { borderRadius: "100px" },
 }));
 
-export default function ShareDrawer({ isOpen, setIsOpen }) {
+export default function ShareDrawer({ isOpen, setIsOpen, postId }) {
+  const link = `${window.location.origin}/post/${postId}`;
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -54,7 +55,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
   };
 
   const copyLink = () => {
-    copy(window.location.href);
+    copy(link);
     dispatch(openSnackbar("Link successfully copied!", "success"));
     closeDrawer();
   };
@@ -68,7 +69,7 @@ export default function ShareDrawer({ isOpen, setIsOpen }) {
           </Grid>
           <Grid item className={classes.center}>
             <Typography className={classes.link} variant="body2">
-              {window.location.href}
+              {link}
             </Typography>
           </Grid>
           <Grid className={classes.center} item>
