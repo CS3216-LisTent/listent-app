@@ -82,9 +82,9 @@ class PostModel:
     def get_user_posts(username, skip=0, limit=10):
         user = UserModel.get_user(username)
         if user:
-            posts = [PostModel.get_post(post_id) for post_id in user['posts'][skip:skip + limit]]
+            posts = [PostModel.get_post(post_id) for post_id in user['posts']]
             posts.sort(key=lambda post: post['timestamp'], reverse=True)
-            return posts
+            return posts[skip:skip + limit]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
