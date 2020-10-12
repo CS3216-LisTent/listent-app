@@ -1,11 +1,16 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
 import { Link } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
 
 // Material UI components
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+
+// Icons
+import HomeIcon from "@material-ui/icons/Home";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,6 +24,11 @@ const useStyles = makeStyles((theme) => ({
     width: theme.spacing(13),
     borderRadius: "100px",
   },
+  homeButton: {
+    position: "fixed",
+    top: theme.spacing(1),
+    left: theme.spacing(1),
+  },
   caption: {
     marginTop: "auto",
     marginBottom: "auto",
@@ -30,28 +40,37 @@ export default function BottomNavigationBar() {
   const classes = useStyles();
 
   return (
-    <BottomNavigation className={classes.root}>
-      <Typography variant="caption" className={classes.caption}>
-        Join LisTent today to enjoy and share more audio content!
-      </Typography>
-      <Button
+    <>
+      <IconButton
         component={Link}
-        to="/login"
-        className={classes.button}
-        variant="contained"
-        color="primary"
+        to="/"
+        className={clsx(classes.homeButton)}
       >
-        Login
-      </Button>
-      <Button
-        component={Link}
-        to="/register"
-        className={classes.button}
-        variant="contained"
-        color="secondary"
-      >
-        Register
-      </Button>
-    </BottomNavigation>
+        <HomeIcon />
+      </IconButton>
+      <BottomNavigation className={classes.root}>
+        <Typography variant="caption" className={classes.caption}>
+          Join LisTent today to enjoy and share more audio content!
+        </Typography>
+        <Button
+          component={Link}
+          to="/login"
+          className={classes.button}
+          variant="contained"
+          color="primary"
+        >
+          Login
+        </Button>
+        <Button
+          component={Link}
+          to="/register"
+          className={classes.button}
+          variant="contained"
+          color="secondary"
+        >
+          Register
+        </Button>
+      </BottomNavigation>
+    </>
   );
 }

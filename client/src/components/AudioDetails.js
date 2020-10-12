@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
 // Material UI components
@@ -10,7 +11,12 @@ import Typography from "@material-ui/core/Typography";
 // Custom components
 import SingleLineContainer from "./SingleLineContainer";
 
-const useStyles = makeStyles({});
+const useStyles = makeStyles((theme) => ({
+  plainLink: {
+    color: theme.palette.common.white,
+    textDecoration: "none",
+  },
+}));
 
 export default function AudioDetails({
   isMinimized,
@@ -24,14 +30,16 @@ export default function AudioDetails({
     <Grid container>
       <Grid container item xs={12} spacing={1} wrap="nowrap">
         <Grid item xs={2}>
-          <Avatar
-            alt={username}
-            src={profilePicture}
-          />
+          <Avatar alt={username} src={profilePicture} />
         </Grid>
         <Grid container item xs={10} alignItems="center">
           <SingleLineContainer component={Grid} item xs={12}>
-            <Typography className={classes.username} variant="caption">
+            <Typography
+              className={classes.plainLink}
+              variant="caption"
+              component={Link}
+              to={`/${username}`}
+            >
               {`@${username}`}
             </Typography>
           </SingleLineContainer>

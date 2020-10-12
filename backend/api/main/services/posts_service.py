@@ -5,11 +5,13 @@ from flask import make_response, jsonify
 from pymongo.errors import OperationFailure, ConnectionFailure
 from api.main.models.users_model import UserModel
 from api.main.models.posts_model import PostModel
-from api.main.utils.file_util import upload_file, upload
+from api.main.utils.file_util import upload
+from api.main.utils.image_util import process_image
 from pydub import AudioSegment
 from pydub.exceptions import CouldntDecodeError, CouldntEncodeError
 import os
 import io
+from PIL import UnidentifiedImageError
 
 
 class PostService:
@@ -43,20 +45,34 @@ class PostService:
             )
 
     @staticmethod
-    def create_user_post(username, title, audio_file, description=None, image_filepath=None):
+    def create_user_post(username, title, audio_file, description=None, image_file=None):
         try:
             post_id = uuid.uuid4().hex
             timestamp = datetime.utcnow().isoformat()
             file_name, file_ext = os.path.splitext(audio_file.filename)
             # todo: multithread or multiprocess the audio conversion cos it's blocking and uses high cpu
             audio = AudioSegment.from_file(audio_file, format=file_ext.lstrip('.'))
+            if len(audio) > 12*60*60*1000: # len(audio) is audio duration in ms
+                return make_response(
+                    jsonify({
+                        'status': 'fail',
+                        'message': f'Audio duration is longer than 12 minutes, actual duration = {len(audio)/1000/60}min.'
+                    }), 400
+                )
             # export in memory, not stored to disk
-            buffer = io.BytesIO()
-            audio.export(buffer, format='webm')
-            audio_link = upload(buffer, uuid.uuid4().hex + '.webm')
-            buffer.close()
-            image_link = upload_file(
-                image_filepath, uuid.uuid4().hex) if image_filepath else None
+            audio_buffer = io.BytesIO()
+            audio.export(audio_buffer, format='webm')
+            audio_link = upload(audio_buffer, uuid.uuid4().hex + '.webm')
+            audio_buffer.close()
+
+            image_link = None
+            if image_file is not None:
+                file_name, file_ext = os.path.splitext(image_file.filename)
+                image_buffer = io.BytesIO()
+                process_image(image_file, image_buffer)
+                image_link = upload(image_buffer, uuid.uuid4().hex + file_ext)
+                image_buffer.close()
+
             post_data = PostModel.add_user_post(
                 username=username,
                 post_id=post_id,
@@ -87,6 +103,13 @@ class PostService:
                     'message': f'PyDub failed to encode: {str(e)}',
                 }), 500
             )
+        except UnidentifiedImageError as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'PIL failed to read image: {str(e)}',
+                }), 400
+            )
         except OperationFailure as e:
             return make_response(
                 jsonify({
@@ -110,15 +133,19 @@ class PostService:
             )
 
     @staticmethod
-    def update_user_post(username, post_id, title=None, description=None, image_filepath=None):
+    def update_user_post(username, post_id, title=None, description=None, image_file=None):
         try:
             updates = {}
             if title is not None:
                 updates['title'] = title
             if description is not None:
                 updates['description'] = description
-            if image_filepath is not None:
-                image_link = upload_file(image_filepath, uuid.uuid4().hex)
+            if image_file is not None:
+                file_name, file_ext = os.path.splitext(image_file.filename)
+                image_buffer = io.BytesIO()
+                process_image(image_file, image_buffer)
+                image_link = upload(image_buffer, uuid.uuid4().hex + file_ext)
+                image_buffer.close()
                 updates['image_link'] = image_link
             post_data = PostModel.update_user_post(username, post_id, **updates)
             return make_response(
@@ -127,6 +154,13 @@ class PostService:
                     'message': 'Post successfully updated.',
                     'data': post_data
                 }), 200
+            )
+        except UnidentifiedImageError as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'PIL failed to read image: {str(e)}',
+                }), 400
             )
         except OperationFailure as e:
             return make_response(

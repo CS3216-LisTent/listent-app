@@ -90,7 +90,9 @@ export default function Register() {
       await axios.post("/api/v1/auth/register", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      dispatch(openSnackbar("Registration successful!", "success"));
+      dispatch(
+        openSnackbar("Check your email to verify your account!", "success")
+      );
       history.push("/login");
     } catch (e) {
       const res = e.response.data;
@@ -102,7 +104,7 @@ export default function Register() {
         });
       }
 
-      if (res.message.includes("username provided is in use already")) {
+      if (res.message.includes("The provided id is already in use.")) {
         setErrors({
           username: "Username already in use",
         });

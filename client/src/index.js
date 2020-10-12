@@ -15,6 +15,9 @@ axios.defaults.headers.post["Content-Type"] = "application/json";
 const theme = createMuiTheme({
   palette: {
     type: "dark",
+    primary: {
+      main: "#00C2FF",
+    },
   },
   overrides: {
     MuiCssBaseline: {

@@ -9,6 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Slider from "@material-ui/core/Slider";
 import Typography from "@material-ui/core/Typography";
+import VisibilitySensor from "react-visibility-sensor";
 
 // Icons
 import Forward10Icon from "@material-ui/icons/Forward10";
@@ -43,9 +44,11 @@ export default function AudioPlayer({
   hideNext,
   hidePrevious,
   src,
-  audioRef,
+  autoplay,
+  autopause,
   ...rest
 }) {
+  const audioRef = useRef(null);
   const controlsRef = useRef(null);
   const [audio, setAudio] = useState(null);
   const [duration, setDuration] = useState(0);
@@ -135,63 +138,75 @@ export default function AudioPlayer({
     skip("-");
   };
 
+  const onChange = (isVisible) => {
+    if (isVisible && autoplay) {
+      audioRef.current.play();
+    } else if (!isVisible && autopause) {
+      audioRef.current.pause();
+    }
+  };
+
   return (
-    <div className={rest.className}>
-      {!isLoaded && <LinearProgress />}
-      <audio preload="metadata" ref={audioRef} controls src={src}>
-        Your browser does not support the
-        <code>audio</code> element.
-      </audio>
-      <Grid container className={classes.controls} ref={controlsRef}>
-        <Grid item container xs={12} justify="center" alignItems="center">
-          <Grid item xs={2} className={classes.center}>
-            <Typography variant="caption">
-              {formatSeconds(currentTime)}
-            </Typography>
+    <VisibilitySensor onChange={onChange}>
+      <div className={rest.className}>
+        {!isLoaded && <LinearProgress />}
+        <audio preload="metadata" ref={audioRef} controls src={src}>
+          Your browser does not support the
+          <code>audio</code> element.
+        </audio>
+        <Grid container className={classes.controls} ref={controlsRef}>
+          <Grid item container xs={12} justify="center" alignItems="center">
+            <Grid item xs={2} className={classes.center}>
+              <Typography variant="caption">
+                {formatSeconds(currentTime)}
+              </Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <Slider value={progress} onChange={changeProgress} />
+            </Grid>
+            <Grid item xs={2} className={classes.center}>
+              <Typography variant="caption">
+                {formatSeconds(duration)}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={8}>
-            <Slider value={progress} onChange={changeProgress} />
-          </Grid>
-          <Grid item xs={2} className={classes.center}>
-            <Typography variant="caption">{formatSeconds(duration)}</Typography>
-          </Grid>
-        </Grid>
-        <Grid item container xs={12} justify="center" wrap="nowrap">
-          <Grid item xs={2} className={classes.center}>
-            <IconButton onClick={skipBackwards}>
-              <Replay10Icon fontSize={isLarge ? "large" : undefined} />
-            </IconButton>
-          </Grid>
-          <Grid item xs={2} className={classes.center}>
-            {!hidePrevious && (
-              <IconButton disabled={!previous} onClick={previous}>
-                <SkipPreviousIcon fontSize={isLarge ? "large" : undefined} />
+          <Grid item container xs={12} justify="center" wrap="nowrap">
+            <Grid item xs={2} className={classes.center}>
+              <IconButton onClick={skipBackwards}>
+                <Replay10Icon fontSize={isLarge ? "large" : undefined} />
               </IconButton>
-            )}
-          </Grid>
-          <Grid item xs={2} className={classes.center}>
-            <IconButton onClick={playPause}>
-              {!audio || audio.paused ? (
-                <PlayArrowIcon fontSize={isLarge ? "large" : undefined} />
-              ) : (
-                <PauseIcon fontSize={isLarge ? "large" : undefined} />
+            </Grid>
+            <Grid item xs={2} className={classes.center}>
+              {!hidePrevious && (
+                <IconButton disabled={!previous} onClick={previous}>
+                  <SkipPreviousIcon fontSize={isLarge ? "large" : undefined} />
+                </IconButton>
               )}
-            </IconButton>
-          </Grid>
-          <Grid item xs={2} className={classes.center}>
-            {!hideNext && (
-              <IconButton disabled={!next} onClick={next}>
-                <SkipNextIcon fontSize={isLarge ? "large" : undefined} />
+            </Grid>
+            <Grid item xs={2} className={classes.center}>
+              <IconButton onClick={playPause}>
+                {!audio || audio.paused ? (
+                  <PlayArrowIcon fontSize={isLarge ? "large" : undefined} />
+                ) : (
+                  <PauseIcon fontSize={isLarge ? "large" : undefined} />
+                )}
               </IconButton>
-            )}
-          </Grid>
-          <Grid item xs={2} className={classes.center}>
-            <IconButton onClick={skipForward}>
-              <Forward10Icon fontSize={isLarge ? "large" : undefined} />
-            </IconButton>
+            </Grid>
+            <Grid item xs={2} className={classes.center}>
+              {!hideNext && (
+                <IconButton disabled={!next} onClick={next}>
+                  <SkipNextIcon fontSize={isLarge ? "large" : undefined} />
+                </IconButton>
+              )}
+            </Grid>
+            <Grid item xs={2} className={classes.center}>
+              <IconButton onClick={skipForward}>
+                <Forward10Icon fontSize={isLarge ? "large" : undefined} />
+              </IconButton>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </div>
+    </VisibilitySensor>
   );
 }

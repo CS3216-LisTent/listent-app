@@ -357,6 +357,16 @@ function EditProfile({ description, profilePicture, endEdit, mutate }) {
           Submit
         </LoadingButton>
       </Grid>
+      <Grid item>
+        <Button
+          onClick={endEdit}
+          fullWidth
+          color="secondary"
+          variant="contained"
+        >
+          Cancel
+        </Button>
+      </Grid>
     </Grid>
   );
 }

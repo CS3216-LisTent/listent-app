@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, createRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useSwr from "swr";
 import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
@@ -21,7 +21,7 @@ import ReactSwipe from "react-swipe";
 import Post from "../components/Post";
 
 // Utils
-import useInfinite, { PAGE_SIZE } from "../utils/use-infinite";
+import useInfinite from "../utils/use-infinite";
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 import { setHomeTabIndex } from "../actions/home-tab-actions";
 
@@ -49,7 +49,17 @@ const useStyles = makeStyles((theme) => ({
 const genPostIds = (data) =>
   data.reduce((acc, page) => [...acc, ...page.map((post) => post._id)], []);
 
-export default function Home() {
+export default function HomeWrapper() {
+  return (
+    <ErrorBoundary fallback={<Redirect to="/" />}>
+      <SuspenseLoading>
+        <Home />
+      </SuspenseLoading>
+    </ErrorBoundary>
+  );
+}
+
+function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { data: userInfo } = useSwr(
@@ -66,10 +76,8 @@ export default function Home() {
       ? `/api/v1/posts/discover/all`
       : tabIndex === 0
       ? `/api/v1/posts/feed/`
-      : `/api/v1/posts/discover/`
-  );
-  let audioRefs = useRef(
-    data.reduce((acc, page) => [...acc, ...page.map(() => createRef())], [])
+      : `/api/v1/posts/discover/`,
+    3
   );
   let [postIds, setPostIds] = useState(genPostIds(data));
 
@@ -83,13 +91,14 @@ export default function Home() {
     (acc, page, i) => [
       ...acc,
       ...page.map((post, j) => {
-        const index = PAGE_SIZE * i + j;
+        const index = 3 * i + j;
         return (
           <div style={{ height: "100%" }} key={index}>
             <ErrorBoundary fallback={<Redirect to="/" />}>
               <SuspenseLoading>
                 <Post
-                  audioRef={audioRefs.current[index]}
+                  autoplay={index !== 0}
+                  autopause
                   postId={post._id}
                   next={() => {
                     swipeRef.current.next();
@@ -155,21 +164,10 @@ export default function Home() {
             continuous: false,
             callback: (index) => {
               setStartSlide(index);
-              if (index - 1 >= 0) {
-                audioRefs.current[index - 1].current.pause();
-              }
-              if (index + 1 < posts.length) {
-                audioRefs.current[index + 1].current.pause();
-              }
-              if (index + 1 === audioRefs.current.length - 1) {
+              if (index + 1 === posts.length) {
                 // Load more if next is last
                 setSize(size + 1);
-                audioRefs.current = [
-                  ...audioRefs.current,
-                  ...Array.from({ length: PAGE_SIZE }, () => createRef()),
-                ];
               }
-              audioRefs.current[index].current.play();
               window.history.pushState({}, "", `/post/${postIds[index]}`);
             },
           }}
