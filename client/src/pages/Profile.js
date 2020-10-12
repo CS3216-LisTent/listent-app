@@ -309,7 +309,9 @@ function EditProfile({ description, profilePicture, endEdit, mutate }) {
     setIsLoading(true);
     const form = new window.FormData();
     form.append("description", newDesc);
-    form.append("picture", imageBlob);
+    if (imageBlob) {
+      form.append("picture", imageBlob);
+    }
     await axios.put("/api/v1/users", form, {
       headers: { "Content-Type": "multipart/form-data" },
     });
