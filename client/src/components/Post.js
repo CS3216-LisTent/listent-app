@@ -137,7 +137,11 @@ export default function Post({
         <CircularProgress color="primary" />
       </Backdrop>
       <div className={classes.root}>
-        <ShareDrawer isOpen={isShareOpen} setIsOpen={setIsShareOpen} />
+        <ShareDrawer
+          isOpen={isShareOpen}
+          setIsOpen={setIsShareOpen}
+          postId={post._id}
+        />
         <div className={classes.likeShareContainer}>
           <Can
             perform="any:delete"
