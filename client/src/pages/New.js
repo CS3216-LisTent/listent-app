@@ -68,6 +68,8 @@ const useStyles = makeStyles((theme) => ({
   audioRecorder: {
     backgroundColor: theme.palette.background.default + "!important",
     borderStyle: "solid!important",
+    borderColor: ({ hasError }) =>
+      hasError ? theme.palette.error.main : undefined,
   },
   audioRecorderContainer: {
     display: ({ uploadedFiles }) =>
@@ -159,6 +161,10 @@ export default function New() {
         setIsLoading(true);
       });
 
+      player.on("deviceError", function () {
+        setHasError(true);
+      });
+
       player.on("finishConvert", () => {
         setIsLoading(false);
         setRecordedBlob(
@@ -185,7 +191,8 @@ export default function New() {
     audio: { blob: null, url: null },
     image: { blob: null, url: null },
   });
-  const classes = useStyles({ uploadedFiles });
+  const [hasError, setHasError] = useState(false);
+  const classes = useStyles({ uploadedFiles, hasError });
   const onUpload = (e) => {
     setErrors({});
     if (e.target.files.length === 1) {
@@ -288,14 +295,23 @@ export default function New() {
           <Grid item xs={12}>
             <div className={classes.audioRecorderContainer}>
               {isChrome ? (
-                <audio
-                  ref={recordRef}
-                  id="myAudio"
-                  className={clsx(
-                    "video-js vjs-default-skin",
-                    classes.audioRecorder
+                <>
+                  <audio
+                    ref={recordRef}
+                    id="myAudio"
+                    className={clsx(
+                      "video-js vjs-default-skin",
+                      classes.audioRecorder
+                    )}
+                  ></audio>
+                  {hasError && (
+                    <Typography color="error" variant="caption">
+                      To record audio, please allow browser access to your
+                      microphone and then refresh this page.
+                      <br />
+                    </Typography>
                   )}
-                ></audio>
+                </>
               ) : (
                 <Typography variant="caption">
                   Audio recording does not work on your browser, upload an audio
