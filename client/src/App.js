@@ -1,4 +1,5 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
+import axios from "axios";
 import { Switch, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
 
@@ -11,6 +12,7 @@ import jwt_decode from "jwt-decode";
 // Redux
 import store from "./store";
 import { setUser, logoutUser } from "./actions/auth-actions";
+import { setHomeTabIndex } from "./actions/home-tab-actions";
 
 // Custom components
 import BottomNavigationBar from "./components/BottomNavigationBar";
@@ -40,6 +42,26 @@ if (jwt) {
     // Redirect to login
     window.location.href = "./login";
   }
+}
+
+// Set home tab
+const user = store.getState().user;
+if (user) {
+  axios
+    .get(`/api/v1/users/${user.username}`)
+    .then((res) => {
+      if (res.data.data.number_of_following > 0) {
+        // Default tab is feed
+        store.dispatch(setHomeTabIndex(0));
+      } else {
+        store.dispatch(setHomeTabIndex(1));
+      }
+    })
+    .catch(() => {
+      store.dispatch(setHomeTabIndex(1));
+    });
+} else {
+  store.dispatch(setHomeTabIndex(1));
 }
 
 const useStyles = makeStyles({

@@ -9,6 +9,8 @@ import IconButton from "@material-ui/core/IconButton";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Slider from "@material-ui/core/Slider";
 import Typography from "@material-ui/core/Typography";
+
+// Other components
 import VisibilitySensor from "react-visibility-sensor";
 
 // Icons
@@ -46,6 +48,7 @@ export default function AudioPlayer({
   src,
   autoplay,
   autopause,
+  isPaused,
   ...rest
 }) {
   const audioRef = useRef(null);
@@ -95,6 +98,12 @@ export default function AudioPlayer({
       };
     }
   }, [audioRef, controlsRef, next]);
+
+  useEffect(() => {
+    if (isPaused) {
+      audio.pause();
+    }
+  }, [isPaused, audio]);
 
   const playPause = () => {
     if (audio.paused || audio.ended) {

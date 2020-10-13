@@ -33,6 +33,7 @@ import AudioDetails from "./AudioDetails";
 import AudioPlayer from "./AudioPlayer";
 import Can from "./Can";
 import Comments from "./Comments";
+import LoadingCenter from "./LoadingCenter";
 import ShareDrawer from "./ShareDrawer";
 import SingleLineContainer from "./SingleLineContainer";
 
@@ -43,9 +44,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: theme.spacing(7),
     backgroundImage: ({ imageUrl }) =>
-      imageUrl
-        ? `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${imageUrl})`
-        : undefined,
+      `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${
+        imageUrl ? imageUrl : ""
+      })`,
     backgroundRepeat: "no-repeat",
     backgroundAttachment: "fixed",
     backgroundPosition: "center center",
@@ -113,13 +114,31 @@ export default function Post({
   hidePrevious,
   autoplay,
   autopause,
+  startSlide,
+  index,
 }) {
-  const { data, mutate } = useSwr(`/api/v1/posts/${postId}`);
-  const post = data.data;
+  const isRender =
+    startSlide && index ? Math.abs(startSlide - index) <= 1 : true;
+
+  const { data, mutate } = useSwr(isRender ? `/api/v1/posts/${postId}` : null);
+
+  const post = data && data.data;
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const classes = useStyles({ imageUrl: post.image_link, isCommentScrolled });
+  const classes = useStyles(
+    post ? { imageUrl: post.image_link, isCommentScrolled } : undefined
+  );
+  const [isLoading, setIsLoading] = useState(false);
   const commentsRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  if (!isRender) {
+    return (
+      <div className={classes.root}>
+        <LoadingCenter />
+      </div>
+    );
+  }
 
   const onCommentsScroll = () => {
     if (commentsRef.current && commentsRef.current.scrollTop > 5) {
@@ -128,8 +147,6 @@ export default function Post({
       setIsCommentScrolled(false);
     }
   };
-
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
@@ -204,6 +221,7 @@ export default function Post({
                   hideNext={hideNext}
                   hidePrevious={hidePrevious}
                   src={post.audio_link}
+                  isPaused={isPaused}
                 />
               </Grid>
             </Grid>
@@ -219,6 +237,7 @@ export default function Post({
                 postId={post._id}
                 comments={post.comments}
                 mutate={mutate}
+                setIsPaused={setIsPaused}
               />
             </Grid>
           </Grid>

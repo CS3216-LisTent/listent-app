@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import useSwr from "swr";
 import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
@@ -46,27 +45,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HomeWrapper() {
-  return (
-    <ErrorBoundary fallback={<Redirect to="/" />}>
-      <SuspenseLoading>
-        <Home />
-      </SuspenseLoading>
-    </ErrorBoundary>
-  );
-}
-
-function Home() {
+export default function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const { data: userInfo } = useSwr(
-    user ? `/api/v1/users/${user.username}` : null
-  );
-  const hasFollowing =
-    user && userInfo && userInfo.data && userInfo.data.number_of_following > 0;
   const tabIndex = useSelector((state) => state.homeTab.index);
   const classes = useStyles();
-  const swipeRef = useRef(null);
 
   const { data, size, setSize, isEmpty } = useInfinite(
     !user
@@ -77,8 +60,8 @@ function Home() {
     3
   );
 
+  const swipeRef = useRef(null);
   const [startSlide, setStartSlide] = useState(0);
-
   const posts = data.reduce(
     (acc, page, i) => [
       ...acc,
@@ -98,6 +81,8 @@ function Home() {
                   previous={() => {
                     swipeRef.current.prev();
                   }}
+                  startSlide={startSlide}
+                  index={index}
                 />
               </SuspenseLoading>
             </ErrorBoundary>
@@ -109,12 +94,15 @@ function Home() {
   );
 
   useEffect(() => {
-    dispatch(setBottomNavigationIndex(0));
-  }, [dispatch]);
+    // On change tab, set size to 1 page
+    setSize(1);
+    // Reset start index of slide
+    setStartSlide(0);
+  }, [tabIndex, setSize]);
 
   useEffect(() => {
-    dispatch(setHomeTabIndex(user && hasFollowing ? 0 : 1));
-  }, [dispatch, user, hasFollowing]);
+    dispatch(setBottomNavigationIndex(0));
+  }, [dispatch]);
 
   const handleChange = (_, newValue) => {
     dispatch(setHomeTabIndex(newValue));

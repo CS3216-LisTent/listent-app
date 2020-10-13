@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
   plainLink: {
     color: theme.palette.common.white,
     textDecoration: "none",
+    fontWeight: theme.typography.fontWeightMedium,
   },
   marginTop: {
     marginTop: theme.spacing(1),
@@ -63,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Comments({ postId, comments, mutate }) {
+export default function Comments({ postId, comments, mutate, setIsPaused }) {
   const classes = useStyles();
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -92,6 +93,8 @@ export default function Comments({ postId, comments, mutate }) {
         perform="comments:create"
         yes={() => (
           <TextField
+            onFocus={() => setIsPaused(true)}
+            onBlur={() => setIsPaused(false)}
             className={classes.commentInputContainer}
             InputProps={{
               className: classes.commentInput,
