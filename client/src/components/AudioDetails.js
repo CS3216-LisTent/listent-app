@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
   plainLink: {
     color: theme.palette.common.white,
     textDecoration: "none",
+    fontWeight: theme.typography.fontWeightMedium,
   },
 }));
 

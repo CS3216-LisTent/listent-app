@@ -43,9 +43,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: theme.spacing(7),
     backgroundImage: ({ imageUrl }) =>
-      imageUrl
-        ? `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${imageUrl})`
-        : undefined,
+      `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${
+        imageUrl ? imageUrl : ""
+      })`,
     backgroundRepeat: "no-repeat",
     backgroundAttachment: "fixed",
     backgroundPosition: "center center",
