@@ -9,6 +9,8 @@ import IconButton from "@material-ui/core/IconButton";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Slider from "@material-ui/core/Slider";
 import Typography from "@material-ui/core/Typography";
+
+// Other components
 import VisibilitySensor from "react-visibility-sensor";
 
 // Icons

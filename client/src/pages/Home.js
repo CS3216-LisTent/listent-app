@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import useSwr from "swr";
 import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
@@ -46,8 +45,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const genPosts = (data, swipeRef) =>
-  data.reduce(
+export default function Home() {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const tabIndex = useSelector((state) => state.homeTab.index);
+  const classes = useStyles();
+
+  const { data, size, setSize, isEmpty } = useInfinite(
+    !user
+      ? `/api/v1/posts/discover/all`
+      : tabIndex === 0
+      ? `/api/v1/posts/feed/`
+      : `/api/v1/posts/discover/`,
+    3
+  );
+
+  const swipeRef = useRef(null);
+  const [startSlide, setStartSlide] = useState(0);
+  const posts = data.reduce(
     (acc, page, i) => [
       ...acc,
       ...page.map((post, j) => {
@@ -66,6 +81,8 @@ const genPosts = (data, swipeRef) =>
                   previous={() => {
                     swipeRef.current.prev();
                   }}
+                  startSlide={startSlide}
+                  index={index}
                 />
               </SuspenseLoading>
             </ErrorBoundary>
@@ -76,39 +93,12 @@ const genPosts = (data, swipeRef) =>
     []
   );
 
-export default function Home() {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
-  const tabIndex = useSelector((state) => state.homeTab.index);
-  const classes = useStyles();
-
-  const { data, size, setSize, isEmpty } = useInfinite(
-    !user
-      ? `/api/v1/posts/discover/all`
-      : tabIndex === 0
-      ? `/api/v1/posts/feed/`
-      : `/api/v1/posts/discover/`,
-    3
-  );
-  useEffect(() => {
-  }, [tabIndex]);
-
-  const swipeRef = useRef(null);
-  const [posts, setPosts] = useState(genPosts(data, swipeRef));
-
-  const [startSlide, setStartSlide] = useState(0);
   useEffect(() => {
     // On change tab, set size to 1 page
     setSize(1);
     // Reset start index of slide
     setStartSlide(0);
-    setPosts(genPosts(data, swipeRef));
-  }, [tabIndex]);
-
-  useEffect(() => {
-    // On data update, update posts too
-    setPosts(genPosts(data, swipeRef));
-  }, [data]);
+  }, [tabIndex, setSize]);
 
   useEffect(() => {
     dispatch(setBottomNavigationIndex(0));

@@ -33,6 +33,7 @@ import AudioDetails from "./AudioDetails";
 import AudioPlayer from "./AudioPlayer";
 import Can from "./Can";
 import Comments from "./Comments";
+import LoadingCenter from "./LoadingCenter";
 import ShareDrawer from "./ShareDrawer";
 import SingleLineContainer from "./SingleLineContainer";
 
@@ -113,13 +114,30 @@ export default function Post({
   hidePrevious,
   autoplay,
   autopause,
+  startSlide,
+  index,
 }) {
-  const { data, mutate } = useSwr(`/api/v1/posts/${postId}`);
-  const post = data.data;
+  const isRender =
+    startSlide && index ? Math.abs(startSlide - index) <= 1 : true;
+
+  const { data, mutate } = useSwr(isRender ? `/api/v1/posts/${postId}` : null);
+
+  const post = data && data.data;
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const classes = useStyles({ imageUrl: post.image_link, isCommentScrolled });
+  const classes = useStyles(
+    post ? { imageUrl: post.image_link, isCommentScrolled } : undefined
+  );
+  const [isLoading, setIsLoading] = useState(false);
   const commentsRef = useRef(null);
+
+  if (!isRender) {
+    return (
+      <div className={classes.root}>
+        <LoadingCenter />
+      </div>
+    );
+  }
 
   const onCommentsScroll = () => {
     if (commentsRef.current && commentsRef.current.scrollTop > 5) {
@@ -128,8 +146,6 @@ export default function Post({
       setIsCommentScrolled(false);
     }
   };
-
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
