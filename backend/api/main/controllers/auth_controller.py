@@ -18,9 +18,9 @@ class AuthRegisterController(Resource):
         picture_file = request.files.get('picture')
         picture_filepath = save_file(IMAGES_DIR, picture_file) if picture_file else None
         return UserService.register_user(
-            username=username,
+            username=username.lower(),
             password=password,
-            email=email,
+            email=email.lower(),
             description=description,
             picture_filepath=picture_filepath
         )
