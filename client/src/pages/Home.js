@@ -46,27 +46,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HomeWrapper() {
-  return (
-    <ErrorBoundary fallback={<Redirect to="/" />}>
-      <SuspenseLoading>
-        <Home />
-      </SuspenseLoading>
-    </ErrorBoundary>
-  );
-}
-
-function Home() {
+export default function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const { data: userInfo } = useSwr(
-    user ? `/api/v1/users/${user.username}` : null
-  );
-  const hasFollowing =
-    user && userInfo && userInfo.data && userInfo.data.number_of_following > 0;
+
   const tabIndex = useSelector((state) => state.homeTab.index);
+
   const classes = useStyles();
-  const swipeRef = useRef(null);
 
   const { data, size, setSize, isEmpty } = useInfinite(
     !user
@@ -79,6 +65,7 @@ function Home() {
 
   const [startSlide, setStartSlide] = useState(0);
 
+  const swipeRef = useRef(null);
   const posts = data.reduce(
     (acc, page, i) => [
       ...acc,
@@ -111,10 +98,6 @@ function Home() {
   useEffect(() => {
     dispatch(setBottomNavigationIndex(0));
   }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(setHomeTabIndex(user && hasFollowing ? 0 : 1));
-  }, [dispatch, user, hasFollowing]);
 
   const handleChange = (_, newValue) => {
     dispatch(setHomeTabIndex(newValue));
