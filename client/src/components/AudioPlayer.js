@@ -48,6 +48,7 @@ export default function AudioPlayer({
   src,
   autoplay,
   autopause,
+  isPaused,
   ...rest
 }) {
   const audioRef = useRef(null);
@@ -97,6 +98,12 @@ export default function AudioPlayer({
       };
     }
   }, [audioRef, controlsRef, next]);
+
+  useEffect(() => {
+    if (isPaused) {
+      audio.pause();
+    }
+  }, [isPaused, audio]);
 
   const playPause = () => {
     if (audio.paused || audio.ended) {

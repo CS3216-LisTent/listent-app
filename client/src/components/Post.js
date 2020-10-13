@@ -130,6 +130,7 @@ export default function Post({
   );
   const [isLoading, setIsLoading] = useState(false);
   const commentsRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   if (!isRender) {
     return (
@@ -220,6 +221,7 @@ export default function Post({
                   hideNext={hideNext}
                   hidePrevious={hidePrevious}
                   src={post.audio_link}
+                  isPaused={isPaused}
                 />
               </Grid>
             </Grid>
@@ -235,6 +237,7 @@ export default function Post({
                 postId={post._id}
                 comments={post.comments}
                 mutate={mutate}
+                setIsPaused={setIsPaused}
               />
             </Grid>
           </Grid>
