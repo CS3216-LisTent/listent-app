@@ -49,21 +49,23 @@ class PostService:
         try:
             post_id = uuid.uuid4().hex
             timestamp = datetime.utcnow().isoformat()
-            file_name, file_ext = os.path.splitext(audio_file.filename)
+            # file_name, file_ext = os.path.splitext(audio_file.filename)
             # todo: multithread or multiprocess the audio conversion cos it's blocking and uses high cpu
-            audio = AudioSegment.from_file(audio_file, format=file_ext.lstrip('.'))
-            if len(audio) > 12*60*1000: # len(audio) is audio duration in ms
-                return make_response(
-                    jsonify({
-                        'status': 'fail',
-                        'message': f'Audio duration is longer than 12 minutes, actual duration = {len(audio)/1000/60}min.'
-                    }), 400
-                )
-            # export in memory, not stored to disk
-            audio_buffer = io.BytesIO()
-            audio.export(audio_buffer, format='mp3')
-            audio_link = upload(audio_buffer, uuid.uuid4().hex + '.mp3')
-            audio_buffer.close()
+            # audio = AudioSegment.from_file(audio_file, format=file_ext.lstrip('.'))
+            # if len(audio) > 12*60*1000: # len(audio) is audio duration in ms
+            #     return make_response(
+            #         jsonify({
+            #             'status': 'fail',
+            #             'message': f'Audio duration is longer than 12 minutes, actual duration = {len(audio)/1000/60}min.'
+            #         }), 400
+            #     )
+            # # export in memory, not stored to disk
+            # audio_buffer = io.BytesIO()
+            # audio.export(audio_buffer, format='mp3')
+            # audio_link = upload(audio_buffer, uuid.uuid4().hex + '.mp3')
+            # audio_buffer.close()
+
+            audio_link = upload(audio_file, uuid.uuid4().hex + '.mp3')
 
             image_link = None
             if image_file is not None:
