@@ -1,0 +1,6 @@
+[webservers]
+54.225.80.51
+
+[webservers:vars]
+app_name=listent-app
+ansible_ssh_user=ubuntu
