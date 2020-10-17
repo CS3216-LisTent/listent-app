@@ -19,6 +19,9 @@ import Typography from "@material-ui/core/Typography";
 // Icons
 import DeleteIcon from "@material-ui/icons/Delete";
 
+// Custom components
+import AudioRecorder from "../components/AudioRecorder";
+
 // VideoJS
 import "video.js/dist/video-js.min.css";
 import "videojs-record/dist/css/videojs.record.css";
@@ -277,6 +280,7 @@ export default function New() {
         <CircularProgress color="primary" />
       </Backdrop>
       <Container>
+        <AudioRecorder />
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Grid container justify="space-between" alignItems="center">
