@@ -279,7 +279,7 @@ export default function New() {
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
         <CircularProgress color="primary" />
       </Backdrop>
-      <Container>
+      <Container maxWidth="sm">
         <AudioRecorder />
         <Grid container spacing={2}>
           <Grid item xs={12}>

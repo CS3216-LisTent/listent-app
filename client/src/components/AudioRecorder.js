@@ -1,6 +1,9 @@
 import React, { useRef } from "react";
 import RecordRTC from "recordrtc";
 
+// Custom components
+import AudioPlayer from "../components/AudioPlayer";
+
 const isEdge =
   navigator.userAgent.indexOf("Edge") !== -1 &&
   (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
@@ -13,8 +16,6 @@ export default function AudioRecorder() {
   const audioRef = useRef(null);
 
   const captureMicrophone = (callback) => {
-    // btnReleaseMicrophone.disabled = false;
-
     if (microphone) {
       callback(microphone);
       return;
@@ -47,10 +48,13 @@ export default function AudioRecorder() {
         callback(mic);
       })
       .catch((error) => {
-        // alert(
-        //   "Placeholder Unable to capture your microphone. Please check console logs."
-        // );
-        console.error(error);
+        if (error.message === "Permission denied") {
+          alert("Placeholder permission denied");
+        } else {
+          alert(
+            "Placeholder Unable to capture your microphone. Please check console logs."
+          );
+        }
       });
   };
 
@@ -112,7 +116,7 @@ export default function AudioRecorder() {
           audioRef.current.srcObject = microphone;
 
           alert(
-            "Please click startRecording button again. First time we tried to access your microphone. Now we will record it."
+            "Please click start recording button again. First time we tried to access your microphone. Now we will record it."
           );
           return;
         }
@@ -174,3 +178,5 @@ export default function AudioRecorder() {
     </div>
   );
 }
+
+function RecordButton({ isRecording, startRecord, endRecord }) {}

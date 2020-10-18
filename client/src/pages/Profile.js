@@ -76,7 +76,7 @@ export default function Profile() {
   }, [dispatch, user, username]);
 
   return (
-    <Container className={classes.root}>
+    <Container maxWidth="sm" className={classes.root}>
       <ErrorBoundary fallback={<Redirect to="/" />}>
         <SuspenseLoading>
           <UserProfile username={username} />

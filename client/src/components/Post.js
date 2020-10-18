@@ -33,7 +33,6 @@ import AudioDetails from "./AudioDetails";
 import AudioPlayer from "./AudioPlayer";
 import Can from "./Can";
 import Comments from "./Comments";
-import LoadingCenter from "./LoadingCenter";
 import ShareDrawer from "./ShareDrawer";
 import SingleLineContainer from "./SingleLineContainer";
 
@@ -104,6 +103,14 @@ const useStyles = makeStyles((theme) => ({
   loadingBackdrop: {
     zIndex: theme.zIndex.modal,
   },
+  loadingTextContainer: {
+    position: "absolute",
+    top: "calc(50% - 16px)",
+    width: "100%",
+  },
+  loadingText: {
+    textAlign: "center",
+  },
 }));
 
 export default function Post({
@@ -134,8 +141,10 @@ export default function Post({
 
   if (!isRender) {
     return (
-      <div className={classes.root}>
-        <LoadingCenter />
+      <div className={classes.loadingTextContainer}>
+        <Typography className={classes.loadingText} variant="h6">
+          Loading...
+        </Typography>
       </div>
     );
   }
@@ -172,7 +181,7 @@ export default function Post({
             <ShareIcon />
           </IconButton>
         </div>
-        <Container className={classes.container}>
+        <Container maxWidth="sm" className={classes.container}>
           <Grid
             container
             direction="column"

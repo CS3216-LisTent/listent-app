@@ -124,7 +124,7 @@ export default function Home() {
         </Tabs>
       )}
       {isEmpty ? (
-        <Container className={classes.emptyContainer}>
+        <Container maxWidth="sm" className={classes.emptyContainer}>
           <Typography variant="h5">
             It seems a little lonely here... Start following other accounts now!
           </Typography>
