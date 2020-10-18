@@ -49,10 +49,8 @@ export default function AudioDetails({
           </Grid> */}
         </Grid>
       </Grid>
-      <Collapse in={!isMinimized} timeout={1000}>
-        <Grid item>
-          <Typography variant="caption">{description}</Typography>
-        </Grid>
+      <Collapse in={!isMinimized} timeout={1000} component={Grid} item xs={12}>
+        <Typography variant="caption">{description}</Typography>
       </Collapse>
     </Grid>
   );
