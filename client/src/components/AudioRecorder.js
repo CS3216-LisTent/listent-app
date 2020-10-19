@@ -92,7 +92,7 @@ export default function AudioRecorder({ setRecordedBlob }) {
         callback(mic);
       })
       .catch((error) => {
-        if (error.message === "Permission denied") {
+        if (error.message.toLowerCase().includes("permission")) {
           setErrors(
             "Microphone permission denied. Please enable the site access to your microphone before refreshing this page."
           );
