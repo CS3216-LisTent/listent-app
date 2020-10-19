@@ -1,5 +1,8 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import RecordRTC from "recordrtc";
+
+// Utils
+import injectMetadata from "../utils/inject-metadata";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
@@ -13,7 +16,7 @@ let microphone = null;
 let recorder = null;
 
 export default function AudioRecorder() {
-  const audioRef = useRef(null);
+  const [audioSrc, setAudioSrc] = useState(null);
 
   const captureMicrophone = (callback) => {
     if (microphone) {
@@ -58,22 +61,6 @@ export default function AudioRecorder() {
       });
   };
 
-  const replaceAudio = (src) => {
-    const newAudio = document.createElement("audio");
-    newAudio.controls = true;
-    newAudio.autoplay = true;
-
-    if (src) {
-      newAudio.src = src;
-    }
-
-    const parentNode = audioRef.current.parentNode;
-    parentNode.innerHTML = "";
-    parentNode.appendChild(newAudio);
-
-    audioRef.current = newAudio;
-  };
-
   const releaseMicrophone = () => {
     if (microphone) {
       microphone.stop();
@@ -82,26 +69,17 @@ export default function AudioRecorder() {
   };
 
   const stopRecordingCallback = () => {
-    RecordRTC.getSeekableBlob(recorder.getBlob(), (seekableBlob) => {
-      replaceAudio(URL.createObjectURL(seekableBlob));
-
-      setTimeout(() => {
-        if (!audioRef.current.paused) return;
-
-        setTimeout(() => {
-          if (!audioRef.current.paused) return;
-          audioRef.current.play();
-        }, 1000);
-
-        audioRef.current.play();
-      }, 300);
-
-      audioRef.current.play();
-
-      if (isSafari) {
-        releaseMicrophone();
-      }
-    });
+    if (isSafari) {
+      setAudioSrc(URL.createObjectURL(recorder.getBlob()));
+      releaseMicrophone();
+    } else {
+      injectMetadata(recorder.getBlob()).then((seekableBlob) => {
+        setAudioSrc(URL.createObjectURL(seekableBlob));
+        if (isSafari) {
+          releaseMicrophone();
+        }
+      });
+    }
   };
 
   const startRecording = () => {
@@ -110,11 +88,6 @@ export default function AudioRecorder() {
         microphone = mic;
 
         if (isSafari) {
-          replaceAudio();
-
-          audioRef.current.muted = true;
-          audioRef.current.srcObject = microphone;
-
           alert(
             "Please click start recording button again. First time we tried to access your microphone. Now we will record it."
           );
@@ -124,11 +97,6 @@ export default function AudioRecorder() {
         startRecording();
       });
     }
-
-    replaceAudio();
-
-    audioRef.current.muted = true;
-    audioRef.current.srcObject = microphone;
 
     const options = {
       type: "audio",
@@ -171,10 +139,7 @@ export default function AudioRecorder() {
     <div>
       <button onClick={startRecording}>Start Recording</button>
       <button onClick={stopRecording}>Stop Recording</button>
-      <button onClick={releaseMicrophone}>Release Microphone</button>
-      <div>
-        <audio ref={audioRef} controls autoPlay playsInline></audio>
-      </div>
+      {audioSrc && <AudioPlayer src={audioSrc} hideNext hidePrevious />}
     </div>
   );
 }

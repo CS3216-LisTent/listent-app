@@ -66,6 +66,8 @@ export default function AudioPlayer({
   useEffect(() => {
     const isSupportAudio = !!document.createElement("audio").canPlayType;
     if (isSupportAudio && audioRef.current && controlsRef.current) {
+      setCurrentTime(0);
+      setProgress(0);
       const audio = audioRef.current;
       const audioControls = controlsRef.current;
 
@@ -97,7 +99,7 @@ export default function AudioPlayer({
         audio.removeEventListener("ended", endedEvent);
       };
     }
-  }, [audioRef, controlsRef, next]);
+  }, [audioRef, controlsRef, next, src]);
 
   useEffect(() => {
     if (isPaused) {
