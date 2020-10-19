@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import isEmpty from "validator/lib/isEmpty";
 import { makeStyles } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { useTheme } from "@material-ui/core/styles";
 
 // Material UI components
 import Backdrop from "@material-ui/core/Backdrop";
@@ -19,21 +18,8 @@ import Typography from "@material-ui/core/Typography";
 // Icons
 import DeleteIcon from "@material-ui/icons/Delete";
 
-// VideoJS
-import "video.js/dist/video-js.min.css";
-import "videojs-record/dist/css/videojs.record.css";
-import "videojs-wavesurfer/dist/css/videojs.wavesurfer.css";
-import MicrophonePlugin from "wavesurfer.js/dist/plugin/wavesurfer.microphone.js";
-// eslint-disable-next-line
-import Record from "videojs-record/dist/videojs.record.js";
-// eslint-disable-next-line
-import RecordRTC from "recordrtc";
-import WaveSurfer from "wavesurfer.js";
-// eslint-disable-next-line
-import Wavesurfer from "videojs-wavesurfer/dist/videojs.wavesurfer.js";
-import videojs from "video.js";
-// eslint-disable-next-line
-import TsEBMLEngine from "videojs-record/dist/plugins/videojs.record.ts-ebml.js";
+// Custom components
+import AudioRecorder from "../components/AudioRecorder";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
@@ -41,15 +27,12 @@ import AudioPlayer from "../components/AudioPlayer";
 // Actions
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 import { openSnackbar } from "../actions/snackbar-actions";
+import { openAlert } from "../actions/alert-actions";
 
 // Utils
 import { newPostErrors } from "../utils/validators";
 
-WaveSurfer.microphone = MicrophonePlugin;
-
 const CHAR_LIMIT = 200;
-
-const isChrome = !!window.chrome;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,27 +48,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundSize: "cover",
     paddingBottom: theme.spacing(8),
   },
-  audioRecorder: {
-    backgroundColor: theme.palette.background.default + "!important",
-    borderStyle: "solid!important",
-    borderColor: ({ hasError }) =>
-      hasError ? theme.palette.error.main : undefined,
-  },
-  audioRecorderContainer: {
-    display: ({ uploadedFiles }) =>
-      uploadedFiles.audio.blob ? "none" : "block",
-    "& .vjs-record .vjs-device-button.vjs-control": {
-      zIndex: 1,
-      [theme.breakpoints.down("sm")]: {
-        fontSize: "1.5em",
-      },
-    },
-    "& .vjs-record-button.vjs-control.vjs-button.vjs-icon-record-start": {
-      color: "#FF0000",
-    },
-  },
   input: {
-    display: "none",
+    position: "absolute",
+    top: "-100px",
   },
   audioUploadContainer: {
     display: ({ uploadedFiles }) =>
@@ -103,108 +68,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function New() {
-  const theme = useTheme();
-
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(setBottomNavigationIndex(1));
   }, [dispatch]);
 
-  const recordRef = useRef(null);
-  const [player, setPlayer] = useState(null);
-
   const [recordedBlob, setRecordedBlob] = useState(null);
-  useEffect(() => {
-    if (recordRef.current) {
-      const options = {
-        controls: true,
-        bigPlayButton: false,
-        aspectRatio: "10:3",
-        fluid: true,
-        controlBar: {
-          // hide fullscreen control
-          fullscreenToggle: false,
-        },
-        plugins: {
-          wavesurfer: {
-            backend: "WebAudio",
-            waveColor: theme.palette.primary.main,
-            progressColor: theme.palette.background.default,
-            debug: true,
-            cursorWidth: 1,
-            hideScrollbar: true,
-            plugins: [
-              // enable microphone plugin
-              WaveSurfer.microphone.create({
-                bufferSize: 4096,
-                numberOfInputChannels: 1,
-                numberOfOutputChannels: 1,
-                constraints: {
-                  video: false,
-                  audio: true,
-                },
-              }),
-            ],
-          },
-          record: {
-            audio: true,
-            video: false,
-            maxLength: 720,
-            displayMilliseconds: true,
-            convertEngine: "ts-ebml",
-          },
-        },
-      };
-
-      const player = videojs("myAudio", options);
-      setPlayer(player);
-
-      player.on("deviceError", function () {
-        setIsLoading(false);
-        setHasError(true);
-      });
-
-      player.on("startConvert", function () {
-        setIsLoading(true);
-      });
-
-      player.on("finishConvert", () => {
-        setIsLoading(false);
-        setRecordedBlob(
-          new File([player.convertedData], player.convertedData.name, {
-            type: player.convertedData.type,
-          })
-        );
-      });
-
-      return () => {
-        player.dispose();
-      };
-    }
-  }, [recordRef, theme]);
-
   const [fields, setFields] = useState({ title: "", description: "" });
   const onChange = (e) => {
     if (e.target.value.length <= 200) {
       setFields({ ...fields, [e.target.name]: e.target.value });
     }
   };
-
   const [uploadedFiles, setUploadedFiles] = useState({
     audio: { blob: null, url: null },
     image: { blob: null, url: null },
   });
-  const [hasError, setHasError] = useState(false);
-  const classes = useStyles({ uploadedFiles, hasError });
+  const classes = useStyles({ uploadedFiles });
   const onUpload = (e) => {
     setErrors({});
     if (e.target.files.length === 1) {
-      if (e.target.name === "audio") {
-        player.wavesurfer().surfer.stop();
-        player.record().stopDevice();
-      }
-
       const file = e.target.files[0];
       setUploadedFiles({
         ...uploadedFiles,
@@ -271,12 +155,35 @@ export default function New() {
     }
   };
 
+  const [allowUpload, setAllowUpload] = useState(false);
+  useEffect(() => {
+    if (allowUpload) {
+      document.getElementById("audio-upload").click();
+      setAllowUpload(false);
+    }
+  }, [allowUpload]);
+  const onClickUpload = (e) => {
+    if (!allowUpload && recordedBlob) {
+      e.preventDefault();
+      dispatch(
+        openAlert(
+          "Overwrite previous recording?",
+          "This action will lead to the deletion of your previous recording!",
+          "OK",
+          () => {
+            setAllowUpload(true);
+          },
+          "CANCEL"
+        )
+      );
+    }
+  };
   return (
     <div className={classes.root}>
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
         <CircularProgress color="primary" />
       </Backdrop>
-      <Container>
+      <Container maxWidth="sm">
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Grid container justify="space-between" alignItems="center">
@@ -297,51 +204,29 @@ export default function New() {
             </Grid>
           </Grid>
           <Grid item xs={12}>
-            <div className={classes.audioRecorderContainer}>
-              {isChrome ? (
-                <>
-                  <audio
-                    ref={recordRef}
-                    id="myAudio"
-                    className={clsx(
-                      "video-js vjs-default-skin",
-                      classes.audioRecorder
-                    )}
-                  ></audio>
-                  {hasError && (
-                    <Typography color="error" variant="caption">
-                      To record audio, please allow browser access to your
-                      microphone and then refresh this page.
-                      <br />
-                    </Typography>
-                  )}
-                </>
-              ) : (
-                <Typography variant="caption">
-                  Audio recording does not work on your browser, upload an audio
-                  file instead!
-                  <br />
-                </Typography>
-              )}
-              <input
-                name="audio"
-                accept="audio/*"
-                className={classes.input}
-                id="audio-upload"
-                type="file"
-                onChange={onUpload}
-              />
-              <label htmlFor="audio-upload">
-                <Button
-                  color="primary"
-                  variant="contained"
-                  component="span"
-                  className={classes.uploadButton}
-                >
-                  Upload an audio file instead
-                </Button>
-              </label>
-            </div>
+            {!uploadedFiles.audio.blob && (
+              <>
+                <AudioRecorder setRecordedBlob={setRecordedBlob} />
+                <input
+                  name="audio"
+                  accept="audio/*"
+                  className={classes.input}
+                  id="audio-upload"
+                  type="file"
+                  onChange={onUpload}
+                />
+                <label htmlFor="audio-upload">
+                  <Button
+                    component="span"
+                    variant="outlined"
+                    className={classes.uploadButton}
+                    onClick={onClickUpload}
+                  >
+                    Upload an audio file instead
+                  </Button>
+                </label>
+              </>
+            )}
             {uploadedFiles.audio.blob && (
               <div className={classes.audioUploadContainer}>
                 <AudioPlayer
@@ -349,7 +234,11 @@ export default function New() {
                   hideNext
                   hidePrevious
                 />
-                <Button onClick={() => removeUpload("audio")} component="span">
+                <Button
+                  variant="outlined"
+                  onClick={() => removeUpload("audio")}
+                  component="span"
+                >
                   Record audio instead
                 </Button>
               </div>

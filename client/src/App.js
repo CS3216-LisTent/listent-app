@@ -15,10 +15,11 @@ import { setUser, logoutUser } from "./actions/auth-actions";
 import { setHomeTabIndex } from "./actions/home-tab-actions";
 
 // Custom components
+import Alert from "./components/Alert";
 import BottomNavigationBar from "./components/BottomNavigationBar";
-import LoginBar from "./components/LoginBar";
 import Can from "./components/Can";
 import LoadingCenter from "./components/LoadingCenter";
+import LoginBar from "./components/LoginBar";
 import PrivateRoute from "./components/PrivateRoute";
 import TopSnackbar from "./components/TopSnackbar";
 
@@ -88,6 +89,7 @@ function App() {
     <div className={classes.root}>
       <CssBaseline />
       <TopSnackbar />
+      <Alert />
       <Suspense fallback={<LoadingCenter />}>
         <Switch>
           <Route exact path="/">
