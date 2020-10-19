@@ -193,7 +193,7 @@ export default function AudioRecorder({ setRecordedBlob }) {
       });
     }
 
-    if (audioSrc !== null) {
+    if (audioSrc !== null && microphone) {
       dispatch(
         openAlert(
           "Overwrite previous recording?",
