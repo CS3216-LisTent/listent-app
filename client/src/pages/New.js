@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import isEmpty from "validator/lib/isEmpty";
 import { makeStyles } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { useTheme } from "@material-ui/core/styles";
 
 // Material UI components
 import Backdrop from "@material-ui/core/Backdrop";
@@ -28,6 +27,7 @@ import AudioPlayer from "../components/AudioPlayer";
 // Actions
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 import { openSnackbar } from "../actions/snackbar-actions";
+import { openAlert } from "../actions/alert-actions";
 
 // Utils
 import { newPostErrors } from "../utils/validators";
@@ -47,12 +47,6 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "calc(100vh - 48px)",
     backgroundSize: "cover",
     paddingBottom: theme.spacing(8),
-  },
-  audioRecorder: {
-    backgroundColor: theme.palette.background.default + "!important",
-    borderStyle: "solid!important",
-    borderColor: ({ hasError }) =>
-      hasError ? theme.palette.error.main : undefined,
   },
   input: {
     display: "none",
@@ -79,7 +73,6 @@ export default function New() {
     dispatch(setBottomNavigationIndex(1));
   }, [dispatch]);
 
-  const [isRecording, setIsRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [fields, setFields] = useState({ title: "", description: "" });
   const onChange = (e) => {
@@ -91,8 +84,7 @@ export default function New() {
     audio: { blob: null, url: null },
     image: { blob: null, url: null },
   });
-  const [hasError, setHasError] = useState(false);
-  const classes = useStyles({ uploadedFiles, hasError });
+  const classes = useStyles({ uploadedFiles });
   const onUpload = (e) => {
     setErrors({});
     if (e.target.files.length === 1) {
@@ -162,6 +154,30 @@ export default function New() {
     }
   };
 
+  const [allowUpload, setAllowUpload] = useState(false);
+  useEffect(() => {
+    if (allowUpload) {
+      document.getElementById("upload").click();
+    }
+  }, [allowUpload]);
+  const onClickUpload = (e) => {
+    if (!allowUpload && recordedBlob) {
+      e.preventDefault();
+      dispatch(
+        openAlert(
+          "Overwrite previous recording?",
+          "This action will lead to the deletion of your previous recording!",
+          "OK",
+          () => {
+            setAllowUpload(true);
+          },
+          "CANCEL"
+        )
+      );
+    } else {
+      setAllowUpload(false);
+    }
+  };
   return (
     <div className={classes.root}>
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
@@ -190,7 +206,7 @@ export default function New() {
           <Grid item xs={12}>
             {!uploadedFiles.audio.blob && (
               <>
-                <AudioRecorder />
+                <AudioRecorder setRecordedBlob={setRecordedBlob} />
                 <input
                   name="audio"
                   accept="audio/*"
@@ -202,8 +218,10 @@ export default function New() {
                 <label htmlFor="audio-upload">
                   <Button
                     component="span"
+                    id="upload"
                     variant="outlined"
                     className={classes.uploadButton}
+                    onClick={onClickUpload}
                   >
                     Upload an audio file instead
                   </Button>
@@ -218,7 +236,6 @@ export default function New() {
                   hidePrevious
                 />
                 <Button
-                  component="span"
                   variant="outlined"
                   onClick={() => removeUpload("audio")}
                   component="span"

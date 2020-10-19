@@ -40,7 +40,7 @@ const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 let microphone = null;
 let recorder = null;
 
-export default function AudioRecorder() {
+export default function AudioRecorder({ setRecordedBlob }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [audioSrc, setAudioSrc] = useState(null);
@@ -50,10 +50,14 @@ export default function AudioRecorder() {
 
   useEffect(
     () => () => {
-      microphone = null;
-      recorder = null;
+      setRecordedBlob(null);
+      releaseMicrophone();
+      if (recorder) {
+        recorder.destroy();
+        recorder = null;
+      }
     },
-    []
+    [setRecordedBlob]
   );
 
   const captureMicrophone = (callback) => {
@@ -110,15 +114,17 @@ export default function AudioRecorder() {
   const stopRecordingCallback = () => {
     if (isSafari || isEdge) {
       setAudioSrc(URL.createObjectURL(recorder.getBlob()));
-
+      if (setRecordedBlob) {
+        setRecordedBlob(recorder.getBlob());
+      }
       if (isSafari) {
         releaseMicrophone();
       }
     } else {
       injectMetadata(recorder.getBlob()).then((seekableBlob) => {
         setAudioSrc(URL.createObjectURL(seekableBlob));
-        if (isSafari) {
-          releaseMicrophone();
+        if (setRecordedBlob) {
+          setRecordedBlob(seekableBlob);
         }
       });
     }
@@ -187,7 +193,7 @@ export default function AudioRecorder() {
       dispatch(
         openAlert(
           "Overwrite previous recording?",
-          "This action will lead to the deletion of your old recording!",
+          "This action will lead to the deletion of your previous recording!",
           "OK",
           initializeRecorder,
           "CANCEL",
@@ -257,6 +263,7 @@ function RecordButtons({
   if (!isRecording) {
     return (
       <Button
+        size="large"
         variant="contained"
         disabled={isRecordDisabled}
         startIcon={<FiberManualRecordIcon className={classes.red} />}
@@ -268,6 +275,7 @@ function RecordButtons({
   } else {
     return (
       <Button
+        size="large"
         variant="contained"
         startIcon={<StopIcon className={classes.red} />}
         onClick={endRecord}
