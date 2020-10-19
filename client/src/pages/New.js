@@ -280,7 +280,6 @@ export default function New() {
         <CircularProgress color="primary" />
       </Backdrop>
       <Container maxWidth="sm">
-        <AudioRecorder />
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Grid container justify="space-between" alignItems="center">
@@ -301,8 +300,9 @@ export default function New() {
             </Grid>
           </Grid>
           <Grid item xs={12}>
+            <AudioRecorder />
             <div className={classes.audioRecorderContainer}>
-              {isChrome ? (
+              {/* {isChrome ? (
                 <>
                   <audio
                     ref={recordRef}
@@ -326,7 +326,7 @@ export default function New() {
                   file instead!
                   <br />
                 </Typography>
-              )}
+              )} */}
               <input
                 name="audio"
                 accept="audio/*"

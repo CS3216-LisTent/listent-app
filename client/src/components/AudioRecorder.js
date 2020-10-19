@@ -1,11 +1,22 @@
-import React, { useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
 import RecordRTC from "recordrtc";
+import { makeStyles } from "@material-ui/core/styles";
+
+// Material UI components
+import Button from "@material-ui/core/Button";
+
+// Icons
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import StopIcon from "@material-ui/icons/Stop";
 
 // Utils
 import injectMetadata from "../utils/inject-metadata";
+import { formatSeconds } from "../utils/general-utils";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
+
+const useStyles = makeStyles({ recordIcon: { color: "#FF0000" } });
 
 const isEdge =
   navigator.userAgent.indexOf("Edge") !== -1 &&
@@ -17,6 +28,8 @@ let recorder = null;
 
 export default function AudioRecorder() {
   const [audioSrc, setAudioSrc] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isRecordDisabled, setIsRecordDisabled] = useState(false);
 
   const captureMicrophone = (callback) => {
     if (microphone) {
@@ -83,9 +96,11 @@ export default function AudioRecorder() {
         }
       });
     }
+    setIsRecording(false);
   };
 
   const startRecording = () => {
+    setIsRecordDisabled(true);
     if (!microphone) {
       captureMicrophone((mic) => {
         microphone = mic;
@@ -94,6 +109,7 @@ export default function AudioRecorder() {
           alert(
             "Please click start recording button again. First time we tried to access your microphone. Now we will record it."
           );
+          setIsRecordDisabled(false);
           return;
         }
 
@@ -132,6 +148,9 @@ export default function AudioRecorder() {
 
     recorder = RecordRTC(microphone, options);
     recorder.startRecording();
+    setIsRecordDisabled(false);
+    setAudioSrc(null);
+    setIsRecording(true);
   };
 
   const stopRecording = () => {
@@ -140,11 +159,66 @@ export default function AudioRecorder() {
 
   return (
     <div>
-      <button onClick={startRecording}>Start Recording</button>
-      <button onClick={stopRecording}>Stop Recording</button>
+      <RecordButtons
+        isRecording={isRecording}
+        startRecord={startRecording}
+        endRecord={stopRecording}
+        isRecordDisabled={isRecordDisabled}
+      />
       {audioSrc && <AudioPlayer src={audioSrc} hideNext hidePrevious />}
     </div>
   );
 }
 
-function RecordButton({ isRecording, startRecord, endRecord }) {}
+function RecordButtons({
+  isRecording,
+  startRecord,
+  endRecord,
+  isRecordDisabled,
+}) {
+  const classes = useStyles();
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    let interval = null;
+    if (isRecording) {
+      interval = setInterval(() => {
+        setSeconds((seconds) => seconds + 1);
+      }, 1000);
+    } else if (!isRecording && seconds !== 0) {
+      setSeconds(0);
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isRecording, seconds]);
+
+  useEffect(() => {
+    if (seconds >= 720) {
+      // Stop in 12 mins
+      endRecord();
+    }
+  }, [seconds, endRecord]);
+
+  if (!isRecording) {
+    return (
+      <Button
+        variant="contained"
+        disabled={isRecordDisabled}
+        startIcon={<FiberManualRecordIcon className={classes.recordIcon} />}
+        onClick={startRecord}
+      >
+        Start Recording
+      </Button>
+    );
+  } else {
+    return (
+      <Button
+        variant="contained"
+        startIcon={<StopIcon className={classes.recordIcon} />}
+        onClick={endRecord}
+      >
+        {`Stop Recording ${formatSeconds(seconds)}`}
+      </Button>
+    );
+  }
+}
