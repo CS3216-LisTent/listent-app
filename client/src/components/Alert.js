@@ -9,11 +9,9 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 // Redux
-import { useDispatch, useSelector } from "react-redux";
-import { closeAlert } from "../actions/alert-actions";
+import { useSelector } from "react-redux";
 
 export default function Alert() {
-  const dispatch = useDispatch();
   const {
     isOpen,
     title,
@@ -24,12 +22,8 @@ export default function Alert() {
     leftCallback,
   } = useSelector((state) => state.alert);
 
-  const handleClose = () => {
-    dispatch(closeAlert());
-  };
-
   return (
-    <Dialog open={isOpen} onClose={handleClose}>
+    <Dialog open={isOpen}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{description}</DialogContentText>

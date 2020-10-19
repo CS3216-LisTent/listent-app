@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import RecordRTC from "recordrtc";
+import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 
 // Material UI components
 import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
 
 // Icons
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
@@ -16,7 +18,19 @@ import { formatSeconds } from "../utils/general-utils";
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
 
-const useStyles = makeStyles({ recordIcon: { color: "#FF0000" } });
+// Redux
+import { useDispatch } from "react-redux";
+import { openAlert } from "../actions/alert-actions";
+
+const useStyles = makeStyles((theme) => ({
+  error: {
+    borderStyle: "solid",
+    borderColor: theme.palette.error.main,
+    padding: theme.spacing(1),
+  },
+  red: { color: "#FF0000" },
+  errorText: { color: theme.palette.error.main },
+}));
 
 const isEdge =
   navigator.userAgent.indexOf("Edge") !== -1 &&
@@ -27,9 +41,20 @@ let microphone = null;
 let recorder = null;
 
 export default function AudioRecorder() {
+  const classes = useStyles();
+  const dispatch = useDispatch();
   const [audioSrc, setAudioSrc] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isRecordDisabled, setIsRecordDisabled] = useState(false);
+  const [errors, setErrors] = useState(null);
+
+  useEffect(
+    () => () => {
+      microphone = null;
+      recorder = null;
+    },
+    []
+  );
 
   const captureMicrophone = (callback) => {
     if (microphone) {
@@ -41,15 +66,14 @@ export default function AudioRecorder() {
       typeof navigator.mediaDevices === "undefined" ||
       !navigator.mediaDevices.getUserMedia
     ) {
-      alert(
-        "Placeholder This browser does not supports WebRTC getUserMedia API."
+      dispatch(
+        openAlert(
+          "This browser does not support audio recording.",
+          "Please update your browser."
+        )
       );
 
-      if (!!navigator.getUserMedia) {
-        alert(
-          "Placeholder This browser seems supporting deprecated getUserMedia API."
-        );
-      }
+      return;
     }
 
     navigator.mediaDevices
@@ -65,10 +89,12 @@ export default function AudioRecorder() {
       })
       .catch((error) => {
         if (error.message === "Permission denied") {
-          alert("Placeholder permission denied");
+          setErrors(
+            "Microphone permission denied. Please enable the site access to your microphone before refreshing this page."
+          );
         } else {
-          alert(
-            "Placeholder Unable to capture your microphone. Please check console logs."
+          setErrors(
+            "An unspecified error occurred. Please refresh the page and try again."
           );
         }
       });
@@ -99,24 +125,7 @@ export default function AudioRecorder() {
     setIsRecording(false);
   };
 
-  const startRecording = () => {
-    setIsRecordDisabled(true);
-    if (!microphone) {
-      captureMicrophone((mic) => {
-        microphone = mic;
-
-        if (isSafari) {
-          alert(
-            "Please click start recording button again. First time we tried to access your microphone. Now we will record it."
-          );
-          setIsRecordDisabled(false);
-          return;
-        }
-
-        startRecording();
-      });
-    }
-
+  const initializeRecorder = () => {
     const options = {
       type: "audio",
       numberOfAudioChannels: isEdge ? 1 : 2,
@@ -153,12 +162,49 @@ export default function AudioRecorder() {
     setIsRecording(true);
   };
 
+  const startRecording = () => {
+    setIsRecordDisabled(true);
+    if (!microphone) {
+      captureMicrophone((mic) => {
+        microphone = mic;
+
+        if (isSafari) {
+          dispatch(
+            openAlert(
+              'Please click the "START RECORDING" button again',
+              "On the first click, we tried to access your microphone. Now we will record it."
+            )
+          );
+          setIsRecordDisabled(false);
+          return;
+        }
+
+        startRecording();
+      });
+    }
+
+    if (audioSrc !== null) {
+      dispatch(
+        openAlert(
+          "Overwrite previous recording?",
+          "This action will lead to the deletion of your old recording!",
+          "OK",
+          initializeRecorder,
+          "CANCEL",
+          () => setIsRecordDisabled(false)
+        )
+      );
+    } else {
+      initializeRecorder();
+    }
+  };
+
   const stopRecording = () => {
     recorder.stopRecording(stopRecordingCallback);
   };
 
   return (
-    <div>
+    <div className={clsx(errors && classes.error)}>
       {audioSrc && <AudioPlayer src={audioSrc} hideNext hidePrevious />}
       <RecordButtons
         isRecording={isRecording}
@@ -166,6 +212,15 @@ export default function AudioRecorder() {
         endRecord={stopRecording}
         isRecordDisabled={isRecordDisabled}
       />
+      {errors && (
+        <Typography
+          component="p"
+          className={classes.errorText}
+          variant="caption"
+        >
+          {errors}
+        </Typography>
+      )}
     </div>
   );
 }
@@ -204,7 +259,7 @@ function RecordButtons({
       <Button
         variant="contained"
         disabled={isRecordDisabled}
-        startIcon={<FiberManualRecordIcon className={classes.recordIcon} />}
+        startIcon={<FiberManualRecordIcon className={classes.red} />}
         onClick={startRecord}
       >
         Start Recording
@@ -214,7 +269,7 @@ function RecordButtons({
     return (
       <Button
         variant="contained"
-        startIcon={<StopIcon className={classes.recordIcon} />}
+        startIcon={<StopIcon className={classes.red} />}
         onClick={endRecord}
       >
         {`Stop Recording ${formatSeconds(seconds)}`}
