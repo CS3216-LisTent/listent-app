@@ -36,6 +36,7 @@ const isEdge =
   navigator.userAgent.indexOf("Edge") !== -1 &&
   (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
 
 let microphone = null;
 let recorder = null;
@@ -92,7 +93,10 @@ export default function AudioRecorder({ setRecordedBlob }) {
         callback(mic);
       })
       .catch((error) => {
-        if (error.message.toLowerCase().includes("permission")) {
+        if (
+          error.message.toLowerCase().includes("permission") ||
+          error.message.toLowerCase().includes("not allowed")
+        ) {
           setErrors(
             "Microphone permission denied. Please enable the site access to your microphone before refreshing this page."
           );
@@ -112,7 +116,7 @@ export default function AudioRecorder({ setRecordedBlob }) {
   };
 
   const stopRecordingCallback = () => {
-    if (isSafari || isEdge) {
+    if (isSafari || isEdge || isFirefox) {
       setAudioSrc(URL.createObjectURL(recorder.getBlob()));
       if (setRecordedBlob) {
         setRecordedBlob(recorder.getBlob());
@@ -139,7 +143,7 @@ export default function AudioRecorder({ setRecordedBlob }) {
       bufferSize: 16384,
     };
 
-    if (isSafari || isEdge) {
+    if (isSafari || isEdge || isFirefox) {
       options.recorderType = RecordRTC.StereoAudioRecorder;
     }
 

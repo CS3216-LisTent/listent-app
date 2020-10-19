@@ -49,7 +49,8 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(8),
   },
   input: {
-    display: "none",
+    position: "absolute",
+    top: "-100px",
   },
   audioUploadContainer: {
     display: ({ uploadedFiles }) =>
@@ -157,7 +158,8 @@ export default function New() {
   const [allowUpload, setAllowUpload] = useState(false);
   useEffect(() => {
     if (allowUpload) {
-      document.getElementById("upload").click();
+      document.getElementById("audio-upload").click();
+      setAllowUpload(false);
     }
   }, [allowUpload]);
   const onClickUpload = (e) => {
@@ -174,8 +176,6 @@ export default function New() {
           "CANCEL"
         )
       );
-    } else {
-      setAllowUpload(false);
     }
   };
   return (
@@ -218,7 +218,6 @@ export default function New() {
                 <label htmlFor="audio-upload">
                   <Button
                     component="span"
-                    id="upload"
                     variant="outlined"
                     className={classes.uploadButton}
                     onClick={onClickUpload}
