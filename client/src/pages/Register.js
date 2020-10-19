@@ -65,7 +65,13 @@ export default function Register() {
 
   const onChange = (e) => {
     setErrors({});
-    setFields({ ...fields, [e.target.name]: e.target.value });
+    setFields({
+      ...fields,
+      [e.target.name]:
+        e.target.name === "username" || e.target.name === "email"
+          ? e.target.value.toLowerCase()
+          : e.target.value,
+    });
   };
 
   const onSubmit = async (e) => {

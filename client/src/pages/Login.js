@@ -69,7 +69,13 @@ export default function Login() {
 
   const onChange = (e) => {
     setErrors({});
-    setFields({ ...fields, [e.target.name]: e.target.value });
+    setFields({
+      ...fields,
+      [e.target.name]:
+        e.target.name === "login"
+          ? e.target.value.toLowerCase()
+          : e.target.value,
+    });
   };
 
   const onSubmit = async (e) => {
