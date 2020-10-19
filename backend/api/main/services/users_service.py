@@ -2,7 +2,6 @@ import uuid
 from auth0.v3 import Auth0Error
 from botocore.exceptions import ClientError
 from flask import jsonify, make_response
-from flask_api import status
 from pymongo.errors import OperationFailure, ConnectionFailure
 from api.main.models.users_model import UserModel
 from api.main.utils.auth_util import AuthUtil
@@ -11,44 +10,42 @@ from api.main.utils.file_util import upload_file
 
 class UserService:
     @staticmethod
-    def register_user(username, email, password, description=None, picture_filepath=None):
+    def register_user(username, email, password, description=None, picture=None):
         try:
-            picture = upload_file(picture_filepath, uuid.uuid4().hex) if picture_filepath else None
-            user_auth_data = AuthUtil.create_user(
-                username=username,
-                email=email,
-                password=password,
-                picture=picture
-            )
-            # user_token = AuthUtil.get_user_token(
-            #     username_or_email=username,
-            #     password=password
-            # )
-            user_app_data = UserModel.add_user(
+
+            # Add to MongoDB
+            user_db_data = UserModel.add_user(
                 username=username,
                 email=email,
                 description=description,
                 picture=picture
             )
-            data = {
+
+            # Add to Auth0
+            user_auth_data = AuthUtil.create_user(
+                username=username,
+                email=email,
+                password=password
+            )
+
+            rtn_user_data = {
                 'username': user_auth_data['username'],
                 'email': user_auth_data['email'],
                 'email_verified': user_auth_data['email_verified'],
-                'followers': user_app_data['followers'],
-                'followings': user_app_data['followings'],
-                'posts': user_app_data['posts'],
-                'number_of_followers': len(user_app_data['followers']),
-                'number_of_following': len(user_app_data['followings']),
-                'number_of_posts': len(user_app_data['posts']),
-                'description': user_app_data['description'],
-                'picture': user_auth_data['picture'],
-                # 'user_token': user_token
+                'followers': user_db_data['followers'],
+                'followings': user_db_data['followings'],
+                'posts': user_db_data['posts'],
+                'number_of_followers': len(user_db_data['followers']),
+                'number_of_following': len(user_db_data['followings']),
+                'number_of_posts': len(user_db_data['posts']),
+                'description': user_db_data['description'],
+                'picture': user_db_data['picture'],
             }
             return make_response(
                 jsonify({
                     'status': 'success',
                     'message': 'User successfully registered.',
-                    'data': data
+                    'data': rtn_user_data
                 }), 201
             )
         except Auth0Error as e:
@@ -150,6 +147,87 @@ class UserService:
                     'message': 'Successfully logout',
                 }), 200
             )
+
+    @staticmethod
+    def change_password(username, current_password, new_password):
+        try:
+            AuthUtil.get_user_token(
+                username_or_email=username,
+                password=current_password
+            )
+            data = AuthUtil.update_user(username, password=new_password)
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': 'Password successfully changed.',
+                    'data': data
+                }), 200
+            )
+        except Auth0Error as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'Auth0 Error: {str(e)}',
+                }), 400
+            )
+
+    @staticmethod
+    def change_email(username, new_email):
+        try:
+            data = AuthUtil.update_user(username, email=new_email)
+            AuthUtil.send_email_verification(username)
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': 'Email successfully changed. Please verify your email again',
+                    'data': data
+                }), 200
+            )
+        except Auth0Error as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'Auth0 Error: {str(e)}',
+                }), 400
+            )
+
+    @staticmethod
+    def send_email_verification(username):
+        try:
+            AuthUtil.send_email_verification(username)
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': 'Email Verification sent.'
+                }), 201
+            )
+        except Auth0Error as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'Auth0 Error: {str(e)}',
+                }), 400
+            )
+
+    @staticmethod
+    def verify_user(username):
+        try:
+            data = AuthUtil.update_user(username, email_verified=True)
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': 'User successfully verified.',
+                    'data': data
+                }), 200
+            )
+        except Auth0Error as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'Auth0 Error: {str(e)}',
+                }), 400
+            )
+
 
     @staticmethod
     def get_user(username, auth_info=True):
