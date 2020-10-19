@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "calc(100vh - 48px)",
     backgroundSize: "cover",
     paddingBottom: theme.spacing(8),
+    paddingTop: theme.spacing(6),
   },
   input: {
     position: "absolute",

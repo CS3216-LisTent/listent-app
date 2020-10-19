@@ -16,6 +16,7 @@ import { setHomeTabIndex } from "./actions/home-tab-actions";
 
 // Custom components
 import Alert from "./components/Alert";
+import BackButton from "./components/BackButton";
 import BottomNavigationBar from "./components/BottomNavigationBar";
 import Can from "./components/Can";
 import LoadingCenter from "./components/LoadingCenter";
@@ -88,6 +89,7 @@ function App() {
   return (
     <div className={classes.root}>
       <CssBaseline />
+      <BackButton />
       <TopSnackbar />
       <Alert />
       <Suspense fallback={<LoadingCenter />}>
