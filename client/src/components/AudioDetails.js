@@ -9,6 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 
 // Custom components
+import DetectLinks from "./DetectLinks";
 import SingleLineContainer from "./SingleLineContainer";
 
 const useStyles = makeStyles((theme) => ({
@@ -50,7 +51,9 @@ export default function AudioDetails({
         </Grid>
       </Grid>
       <Collapse in={!isMinimized} timeout={1000} component={Grid} item xs={12}>
-        <Typography variant="caption">{description}</Typography>
+        <Typography variant="caption">
+          <DetectLinks>{description}</DetectLinks>
+        </Typography>
       </Collapse>
     </Grid>
   );
