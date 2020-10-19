@@ -38,6 +38,7 @@ import SingleLineContainer from "./SingleLineContainer";
 
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
+import { openAlert } from "../actions/alert-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -301,14 +302,8 @@ function UpdateMenu({ postId, setIsLoading }) {
     setAnchorEl(null);
   };
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-    handleClose();
-  };
-
   const onDelete = async () => {
-    handleDialogClose();
+    handleClose();
     setIsLoading(true);
     await axios.delete(`/api/v1/posts/${postId}`);
     dispatch(openSnackbar("Post deleted!", "success"));
@@ -316,43 +311,34 @@ function UpdateMenu({ postId, setIsLoading }) {
   };
 
   return (
-    <>
-      <div>
-        <Dialog open={isDialogOpen} onClose={handleDialogClose}>
-          <DialogTitle>Delete post?</DialogTitle>
-          <DialogContent>
-            <DialogContentText>This action is irreversible!</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleDialogClose} color="primary">
-              No
-            </Button>
-            <Button onClick={onDelete} color="primary" autoFocus>
-              Yes
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-      <div>
-        <IconButton onClick={handleClick}>
-          <MoreVertIcon />
-        </IconButton>
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
+    <div>
+      <IconButton onClick={handleClick}>
+        <MoreVertIcon />
+      </IconButton>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem
+          onClick={() => {
+            dispatch(
+              openAlert(
+                "Delete post?",
+                "This action is irreversible",
+                "Yes",
+                onDelete,
+                "No",
+                () => handleClose()
+              )
+            );
+          }}
         >
-          <MenuItem
-            onClick={() => {
-              setIsDialogOpen(true);
-            }}
-          >
-            Delete
-          </MenuItem>
-        </Menu>
-      </div>
-    </>
+          Delete
+        </MenuItem>
+      </Menu>
+    </div>
   );
 }

@@ -22,22 +22,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 // Custom components
 import AudioRecorder from "../components/AudioRecorder";
 
-// VideoJS
-import "video.js/dist/video-js.min.css";
-import "videojs-record/dist/css/videojs.record.css";
-import "videojs-wavesurfer/dist/css/videojs.wavesurfer.css";
-import MicrophonePlugin from "wavesurfer.js/dist/plugin/wavesurfer.microphone.js";
-// eslint-disable-next-line
-import Record from "videojs-record/dist/videojs.record.js";
-// eslint-disable-next-line
-import RecordRTC from "recordrtc";
-import WaveSurfer from "wavesurfer.js";
-// eslint-disable-next-line
-import Wavesurfer from "videojs-wavesurfer/dist/videojs.wavesurfer.js";
-import videojs from "video.js";
-// eslint-disable-next-line
-import TsEBMLEngine from "videojs-record/dist/plugins/videojs.record.ts-ebml.js";
-
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
 
@@ -48,11 +32,7 @@ import { openSnackbar } from "../actions/snackbar-actions";
 // Utils
 import { newPostErrors } from "../utils/validators";
 
-WaveSurfer.microphone = MicrophonePlugin;
-
 const CHAR_LIMIT = 200;
-
-const isChrome = !!window.chrome;
 
 const useStyles = makeStyles((theme) => ({
   root: {

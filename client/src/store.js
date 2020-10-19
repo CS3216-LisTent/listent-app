@@ -9,6 +9,15 @@ const initialState = {
   snackbar: { isOpen: false, message: "", type: "success" },
   user: false,
   redirect: false,
+  alert: {
+    isOpen: false,
+    title: "",
+    description: "",
+    rightText: null,
+    rightCallback: null,
+    leftText: null,
+    leftCallback: null,
+  },
 };
 
 const middleware = [thunk];

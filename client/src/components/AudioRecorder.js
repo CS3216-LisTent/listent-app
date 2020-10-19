@@ -159,13 +159,13 @@ export default function AudioRecorder() {
 
   return (
     <div>
+      {audioSrc && <AudioPlayer src={audioSrc} hideNext hidePrevious />}
       <RecordButtons
         isRecording={isRecording}
         startRecord={startRecording}
         endRecord={stopRecording}
         isRecordDisabled={isRecordDisabled}
       />
-      {audioSrc && <AudioPlayer src={audioSrc} hideNext hidePrevious />}
     </div>
   );
 }
