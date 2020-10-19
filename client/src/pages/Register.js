@@ -119,9 +119,9 @@ export default function Register() {
       if (res.message.includes("is too weak")) {
         setErrors({
           password:
-            "Password should be at least 8 characters long, include lower case, uppercase, and numbers, and include a special character",
+            "Password should be at least 8 characters long, include lower case, uppercase, and numbers.",
           password2:
-            "Password should be at least 8 characters long, include lower case, uppercase, and numbers, and include a special character",
+            "Password should be at least 8 characters long, include lower case, uppercase, and numbers.",
         });
       }
       setIsLoading(false);
