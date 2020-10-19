@@ -69,9 +69,12 @@ export default function AudioRecorder() {
   };
 
   const stopRecordingCallback = () => {
-    if (isSafari) {
+    if (isSafari || isEdge) {
       setAudioSrc(URL.createObjectURL(recorder.getBlob()));
-      releaseMicrophone();
+
+      if (isSafari) {
+        releaseMicrophone();
+      }
     } else {
       injectMetadata(recorder.getBlob()).then((seekableBlob) => {
         setAudioSrc(URL.createObjectURL(seekableBlob));
