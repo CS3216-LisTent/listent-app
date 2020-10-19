@@ -17,6 +17,7 @@
     "lodash": "^4.17.20",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-helmet": "^6.1.0",
     "react-lazyload": "^3.0.0",
     "react-lines-ellipsis": "^0.14.1",
     "react-linkify": "^1.0.0-alpha",
