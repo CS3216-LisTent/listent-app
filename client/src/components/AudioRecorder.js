@@ -136,40 +136,42 @@ export default function AudioRecorder({ setRecordedBlob }) {
   };
 
   const initializeRecorder = () => {
-    const options = {
-      type: "audio",
-      numberOfAudioChannels: isEdge ? 1 : 2,
-      checkForInactiveTracks: true,
-      bufferSize: 16384,
-    };
+    if (microphone) {
+      const options = {
+        type: "audio",
+        numberOfAudioChannels: isEdge ? 1 : 2,
+        checkForInactiveTracks: true,
+        bufferSize: 16384,
+      };
 
-    if (isSafari || isEdge || isFirefox) {
-      options.recorderType = RecordRTC.StereoAudioRecorder;
+      if (isSafari || isEdge || isFirefox) {
+        options.recorderType = RecordRTC.StereoAudioRecorder;
+      }
+
+      if (
+        navigator.platform &&
+        navigator.platform.toString().toLowerCase().indexOf("win") === -1
+      ) {
+        options.sampleRate = 48000; // or 44100 or remove this line for default
+      }
+
+      if (isSafari) {
+        options.sampleRate = 44100;
+        options.bufferSize = 4096;
+        options.numberOfAudioChannels = 2;
+      }
+
+      if (recorder) {
+        recorder.destroy();
+        recorder = null;
+      }
+
+      recorder = RecordRTC(microphone, options);
+      recorder.startRecording();
+      setIsRecordDisabled(false);
+      setAudioSrc(null);
+      setIsRecording(true);
     }
-
-    if (
-      navigator.platform &&
-      navigator.platform.toString().toLowerCase().indexOf("win") === -1
-    ) {
-      options.sampleRate = 48000; // or 44100 or remove this line for default
-    }
-
-    if (isSafari) {
-      options.sampleRate = 44100;
-      options.bufferSize = 4096;
-      options.numberOfAudioChannels = 2;
-    }
-
-    if (recorder) {
-      recorder.destroy();
-      recorder = null;
-    }
-
-    recorder = RecordRTC(microphone, options);
-    recorder.startRecording();
-    setIsRecordDisabled(false);
-    setAudioSrc(null);
-    setIsRecording(true);
   };
 
   const startRecording = () => {
