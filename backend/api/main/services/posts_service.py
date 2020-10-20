@@ -61,6 +61,11 @@ class PostService:
                 )
             # export in memory, not stored to disk
             audio_buffer = io.BytesIO()
+            # normalize audio amplitude (volume) to -20 dBFS (smaller is quieter)
+            # src: https://github.com/jiaaro/pydub/issues/90#issuecomment-75551606
+            target_dBFS = -20
+            change_in_dBFS = target_dBFS - audio.dBFS
+            audio.apply_gain(change_in_dBFS)
             audio.export(audio_buffer, format='mp3')
             audio_link = upload(audio_buffer, uuid.uuid4().hex + '.mp3')
             audio_buffer.close()
