@@ -18,7 +18,7 @@ def get_auth_cert_path(env):
     if env == 'dev':
         return os.path.join(BASEDIR, 'cert.pem')
     if env == 'test':
-        return os.path.join(BASEDIR, 'cert.pem')
+        return '/etc/cert.pem'
     if env == 'prod':
         return '/etc/cert.pem'
 
