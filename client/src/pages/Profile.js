@@ -21,6 +21,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 // Custom components
 import Can from "../components/Can";
+import DetectLinks from "../components/DetectLinks";
 import ErrorBoundary from "../components/ErrorBoundary";
 import GreenButton from "../components/GreenButton";
 import ImageUpload from "../components/ImageUpload";
@@ -207,7 +208,7 @@ function UserProfile({ username }) {
         </Grid>
         <Grid item xs={12} className={classes.center}>
           <Typography variant="caption" color="textSecondary">
-            {description}
+            <DetectLinks>{description}</DetectLinks>
           </Typography>
         </Grid>
         <Can

@@ -1,5 +1,4 @@
 import React from "react";
-import clsx from "clsx";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -7,10 +6,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-
-// Icons
-import HomeIcon from "@material-ui/icons/Home";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,37 +35,28 @@ export default function BottomNavigationBar() {
   const classes = useStyles();
 
   return (
-    <>
-      <IconButton
+    <BottomNavigation className={classes.root}>
+      <Typography variant="caption" className={classes.caption}>
+        Join LisTent today to enjoy and share more audio content!
+      </Typography>
+      <Button
         component={Link}
-        to="/"
-        className={clsx(classes.homeButton)}
+        to="/login"
+        className={classes.button}
+        variant="contained"
+        color="primary"
       >
-        <HomeIcon />
-      </IconButton>
-      <BottomNavigation className={classes.root}>
-        <Typography variant="caption" className={classes.caption}>
-          Join LisTent today to enjoy and share more audio content!
-        </Typography>
-        <Button
-          component={Link}
-          to="/login"
-          className={classes.button}
-          variant="contained"
-          color="primary"
-        >
-          Login
-        </Button>
-        <Button
-          component={Link}
-          to="/register"
-          className={classes.button}
-          variant="contained"
-          color="secondary"
-        >
-          Register
-        </Button>
-      </BottomNavigation>
-    </>
+        Login
+      </Button>
+      <Button
+        component={Link}
+        to="/register"
+        className={classes.button}
+        variant="contained"
+        color="secondary"
+      >
+        Register
+      </Button>
+    </BottomNavigation>
   );
 }

@@ -2,9 +2,10 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
+import { Helmet } from "react-helmet";
 import { makeStyles } from "@material-ui/core/styles";
-import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
 import Backdrop from "@material-ui/core/Backdrop";
@@ -154,6 +155,21 @@ export default function Post({
 
   return (
     <>
+      {hideNext && (
+        <Helmet>
+          <title>{post.title}</title>
+          <meta name="title" content={post.title} />
+          <meta name="description" content={post.description} />
+
+          <meta property="og:title" content={post.title} />
+          <meta property="og:description" content={post.description} />
+          <meta property="og:image" content={post.image_url} />
+          <meta property="og:url" content="https://listent.app" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta property="og:site_name" content="LisTent" />
+          <meta name="twitter:image:alt" content={post.title} />
+        </Helmet>
+      )}
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
         <CircularProgress color="primary" />
       </Backdrop>

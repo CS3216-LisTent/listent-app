@@ -71,11 +71,8 @@ export default function AudioRecorder({ setRecordedBlob }) {
       typeof navigator.mediaDevices === "undefined" ||
       !navigator.mediaDevices.getUserMedia
     ) {
-      dispatch(
-        openAlert(
-          "This browser does not support audio recording.",
-          "Please update your browser."
-        )
+      setErrors(
+        "This browser does not support audio recording. Please switch to a more up to date browser. For iOS users, please use Safari."
       );
 
       return;

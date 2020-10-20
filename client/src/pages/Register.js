@@ -65,7 +65,13 @@ export default function Register() {
 
   const onChange = (e) => {
     setErrors({});
-    setFields({ ...fields, [e.target.name]: e.target.value });
+    setFields({
+      ...fields,
+      [e.target.name]:
+        e.target.name === "username" || e.target.name === "email"
+          ? e.target.value.toLowerCase()
+          : e.target.value,
+    });
   };
 
   const onSubmit = async (e) => {
@@ -113,9 +119,9 @@ export default function Register() {
       if (res.message.includes("is too weak")) {
         setErrors({
           password:
-            "Password should be at least 8 characters long, include lower case, uppercase, and numbers, and include a special character",
+            "Password should be at least 8 characters long, include lower case, uppercase, and numbers.",
           password2:
-            "Password should be at least 8 characters long, include lower case, uppercase, and numbers, and include a special character",
+            "Password should be at least 8 characters long, include lower case, uppercase, and numbers.",
         });
       }
       setIsLoading(false);
