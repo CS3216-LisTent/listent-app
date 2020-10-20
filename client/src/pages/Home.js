@@ -45,7 +45,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+export default function HomeWrapper() {
+  return (
+    <ErrorBoundary fallback={<Redirect to="/" />}>
+      <SuspenseLoading>
+        <Home />
+      </SuspenseLoading>
+    </ErrorBoundary>
+  );
+}
+
+function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const tabIndex = useSelector((state) => state.homeTab.index);
