@@ -65,8 +65,8 @@ class PostService:
             # src: https://github.com/jiaaro/pydub/issues/90#issuecomment-75551606
             target_dBFS = -20
             change_in_dBFS = target_dBFS - audio.dBFS
-            audio.apply_gain(change_in_dBFS)
-            audio.export(audio_buffer, format='mp3')
+            normalized_audio = audio.apply_gain(change_in_dBFS)
+            normalized_audio.export(audio_buffer, format='mp3')
             audio_link = upload(audio_buffer, uuid.uuid4().hex + '.mp3')
             audio_buffer.close()
 
