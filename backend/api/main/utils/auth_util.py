@@ -44,7 +44,7 @@ class AuthUtil:
 
         url = os.path.join(AUTH0_DOMAIN, 'oauth/token/')
 
-        headers = {'content-type: application/json'}
+        headers = {'content-type': 'application/json'}
 
         payload = {
             "client_id": AUTH0_CLIENT_ID,
