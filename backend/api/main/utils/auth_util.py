@@ -44,7 +44,7 @@ class AuthUtil:
 
         url = os.path.join(AUTH0_DOMAIN, 'oauth/token/')
 
-
+        headers = {'content-type: application/json'}
 
         payload = {
             "client_id": AUTH0_CLIENT_ID,
@@ -57,7 +57,7 @@ class AuthUtil:
         }
 
         LOGGER.info(f'Making request to Auth0 API: POST {url} with payload {payload}')
-        resp = requests.post(url, data=payload)
+        resp = requests.post(url, headers=headers, data=payload)
         resp_data = resp.json()
         LOGGER.info(f'Response {resp} {resp_data}')
         if resp.status_code == 200:
