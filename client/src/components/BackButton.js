@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     top: 0,
     zIndex: theme.zIndex.modal,
+    width: "fit-content",
   },
 }));
 
