@@ -1,6 +1,11 @@
 import os
 import logging
 
+
+# Setup Logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s: %(levelname)s - %(message)s')
+LOGGER = logging.getLogger(__name__)
+
 ENV = os.environ.get('ENV', 'dev')
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
@@ -41,9 +46,18 @@ def get_connection_url(env):
 MONGO_CONNECTION_URL = get_connection_url(ENV)
 DB_NAME = os.environ.get('MONGODB_DB_NAME')
 
-# Setup Logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s: %(levelname)s - %(message)s')
-LOGGER = logging.getLogger(__name__)
+
+
+
+## LOGGING SHIT FOR DEBUGGING
+LOGGER.info('ENV: ' + ENV)
+LOGGER.info('SECRET_KEY: ' + SECRET_KEY)
+LOGGER.info('BUCKET_NAME: ' + BUCKET_NAME)
+LOGGER.info('AUTH0_CERT: ' + AUTH0_CERT)
+LOGGER.info('AUTH0_CLIENT_ID: ' + AUTH0_CLIENT_ID)
+LOGGER.info('AUTH0_CLIENT_ID: ' + AUTH0_CLIENT_ID)
+
+
 
 
 class Config:

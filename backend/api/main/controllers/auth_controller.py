@@ -1,6 +1,7 @@
 from flask import request, make_response, jsonify
 from flask_restplus import Resource, Namespace
-from api.main.config import IMAGES_DIR, LOGGER
+from api.main.config import IMAGES_DIR, LOGGER, ENV, SECRET_KEY, BUCKET_NAME, AUTH0_CERT, AUTH0_CLIENT_ID, \
+    AUTH0_CLIENT_SECRET
 from api.main.services.users_service import UserService
 from api.main.utils.auth_util import TOKEN_AUTH
 from api.main.utils.file_util import save_file, upload
@@ -35,6 +36,15 @@ class AuthRegisterController(Resource):
 class UserLoginController(Resource):
     def post(self):
         try:
+
+            ## LOGGING SHIT FOR DEBUGGING
+            LOGGER.info('ENV: ' + ENV)
+            LOGGER.info('SECRET_KEY: ' + SECRET_KEY)
+            LOGGER.info('BUCKET_NAME: ' + BUCKET_NAME)
+            LOGGER.info('AUTH0_CERT: ' + AUTH0_CERT)
+            LOGGER.info('AUTH0_CLIENT_ID: ' + AUTH0_CLIENT_ID)
+            LOGGER.info('AUTH0_CLIENT_SECRET: ' + AUTH0_CLIENT_SECRET)
+
             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
             login_info = {}
             if 'username' in request.json:
