@@ -36,15 +36,6 @@ class AuthRegisterController(Resource):
 class UserLoginController(Resource):
     def post(self):
         try:
-
-            ## LOGGING SHIT FOR DEBUGGING
-            LOGGER.info('ENV: ' + ENV)
-            LOGGER.info('SECRET_KEY: ' + SECRET_KEY)
-            LOGGER.info('BUCKET_NAME: ' + BUCKET_NAME)
-            LOGGER.info('AUTH0_CERT: ' + AUTH0_CERT)
-            LOGGER.info('AUTH0_CLIENT_ID: ' + AUTH0_CLIENT_ID)
-            LOGGER.info('AUTH0_CLIENT_SECRET: ' + AUTH0_CLIENT_SECRET)
-
             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
             login_info = {}
             if 'username' in request.json:
