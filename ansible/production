@@ -4,3 +4,4 @@
 [webservers:vars]
 app_name=listent-app
 ansible_ssh_user=ubuntu
+domain=listent.app

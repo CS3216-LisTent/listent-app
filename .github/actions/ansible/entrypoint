@@ -1,8 +1,16 @@
-#!/bin/sh
+#!/bin/bash
 
 mkdir -p ~/.ssh
 echo "$AWS_EC2_KEY" > ~/.ssh/aws.pem
 
+# split by '/', get last occurence, src: https://stackoverflow.com/a/3162500/4858751
+branch=${GITHUB_REF##*/}
+declare -A branch_inventory
+branch_inventory['master']='production'
+branch_inventory['dev']='staging'
+inventory=${branch_inventory["$branch"]}
+
 ls -lah
 cd /github/workspace/ansible
-ansible-playbook --key-file ~/.ssh/aws.pem deploy.yaml
+
+ansible-playbook --key-file ~/.ssh/aws.pem -i "$inventory" deploy.yaml

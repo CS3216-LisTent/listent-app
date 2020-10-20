@@ -5,6 +5,7 @@ import bottomNavigationReducer from "./bottom-navigation-reducer";
 import homeTabReducer from "./home-tab-reducer";
 import snackbarReducer from "./snackbar-reducer";
 import redirectReducer from "./redirect-reducer";
+import alertReducer from "./alert-reducer";
 
 export default combineReducers({
   bottomNavigation: bottomNavigationReducer,
@@ -12,4 +13,5 @@ export default combineReducers({
   snackbar: snackbarReducer,
   user: authReducer,
   redirect: redirectReducer,
+  alert: alertReducer,
 });

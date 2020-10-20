@@ -2,9 +2,10 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
+import { Helmet } from "react-helmet";
 import { makeStyles } from "@material-ui/core/styles";
-import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
 import Backdrop from "@material-ui/core/Backdrop";
@@ -16,12 +17,6 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
 
 // Icons
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
@@ -33,12 +28,12 @@ import AudioDetails from "./AudioDetails";
 import AudioPlayer from "./AudioPlayer";
 import Can from "./Can";
 import Comments from "./Comments";
-import LoadingCenter from "./LoadingCenter";
 import ShareDrawer from "./ShareDrawer";
 import SingleLineContainer from "./SingleLineContainer";
 
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
+import { openAlert } from "../actions/alert-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -104,6 +99,14 @@ const useStyles = makeStyles((theme) => ({
   loadingBackdrop: {
     zIndex: theme.zIndex.modal,
   },
+  loadingTextContainer: {
+    position: "absolute",
+    top: "calc(50% - 16px)",
+    width: "100%",
+  },
+  loadingText: {
+    textAlign: "center",
+  },
 }));
 
 export default function Post({
@@ -134,8 +137,10 @@ export default function Post({
 
   if (!isRender) {
     return (
-      <div className={classes.root}>
-        <LoadingCenter />
+      <div className={classes.loadingTextContainer}>
+        <Typography className={classes.loadingText} variant="h6">
+          Loading...
+        </Typography>
       </div>
     );
   }
@@ -150,6 +155,21 @@ export default function Post({
 
   return (
     <>
+      {hideNext && (
+        <Helmet>
+          <title>{post.title}</title>
+          <meta name="title" content={post.title} />
+          <meta name="description" content={post.description} />
+
+          <meta property="og:title" content={post.title} />
+          <meta property="og:description" content={post.description} />
+          <meta property="og:image" content={post.image_url} />
+          <meta property="og:url" content="https://listent.app" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta property="og:site_name" content="LisTent" />
+          <meta name="twitter:image:alt" content={post.title} />
+        </Helmet>
+      )}
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
         <CircularProgress color="primary" />
       </Backdrop>
@@ -172,7 +192,7 @@ export default function Post({
             <ShareIcon />
           </IconButton>
         </div>
-        <Container className={classes.container}>
+        <Container maxWidth="sm" className={classes.container}>
           <Grid
             container
             direction="column"
@@ -292,14 +312,8 @@ function UpdateMenu({ postId, setIsLoading }) {
     setAnchorEl(null);
   };
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-    handleClose();
-  };
-
   const onDelete = async () => {
-    handleDialogClose();
+    handleClose();
     setIsLoading(true);
     await axios.delete(`/api/v1/posts/${postId}`);
     dispatch(openSnackbar("Post deleted!", "success"));
@@ -307,43 +321,34 @@ function UpdateMenu({ postId, setIsLoading }) {
   };
 
   return (
-    <>
-      <div>
-        <Dialog open={isDialogOpen} onClose={handleDialogClose}>
-          <DialogTitle>Delete post?</DialogTitle>
-          <DialogContent>
-            <DialogContentText>This action is irreversible!</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleDialogClose} color="primary">
-              No
-            </Button>
-            <Button onClick={onDelete} color="primary" autoFocus>
-              Yes
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-      <div>
-        <IconButton onClick={handleClick}>
-          <MoreVertIcon />
-        </IconButton>
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
+    <div>
+      <IconButton onClick={handleClick}>
+        <MoreVertIcon />
+      </IconButton>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem
+          onClick={() => {
+            dispatch(
+              openAlert(
+                "Delete post?",
+                "This action is irreversible",
+                "Yes",
+                onDelete,
+                "No",
+                () => handleClose()
+              )
+            );
+          }}
         >
-          <MenuItem
-            onClick={() => {
-              setIsDialogOpen(true);
-            }}
-          >
-            Delete
-          </MenuItem>
-        </Menu>
-      </div>
-    </>
+          Delete
+        </MenuItem>
+      </Menu>
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
 import axios from "axios";
+import { Helmet } from "react-helmet";
 import { Switch, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
 
@@ -15,10 +16,12 @@ import { setUser, logoutUser } from "./actions/auth-actions";
 import { setHomeTabIndex } from "./actions/home-tab-actions";
 
 // Custom components
+import Alert from "./components/Alert";
+import BackButton from "./components/BackButton";
 import BottomNavigationBar from "./components/BottomNavigationBar";
-import LoginBar from "./components/LoginBar";
 import Can from "./components/Can";
 import LoadingCenter from "./components/LoadingCenter";
+import LoginBar from "./components/LoginBar";
 import PrivateRoute from "./components/PrivateRoute";
 import TopSnackbar from "./components/TopSnackbar";
 
@@ -86,8 +89,13 @@ function App() {
 
   return (
     <div className={classes.root}>
+      <Helmet>
+        <title>LisTent</title>
+      </Helmet>
       <CssBaseline />
+      <BackButton />
       <TopSnackbar />
+      <Alert />
       <Suspense fallback={<LoadingCenter />}>
         <Switch>
           <Route exact path="/">

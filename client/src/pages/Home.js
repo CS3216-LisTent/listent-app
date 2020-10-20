@@ -45,7 +45,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+export default function HomeWrapper() {
+  return (
+    <ErrorBoundary fallback={<Redirect to="/" />}>
+      <SuspenseLoading>
+        <Home />
+      </SuspenseLoading>
+    </ErrorBoundary>
+  );
+}
+
+function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const tabIndex = useSelector((state) => state.homeTab.index);
@@ -124,7 +134,7 @@ export default function Home() {
         </Tabs>
       )}
       {isEmpty ? (
-        <Container className={classes.emptyContainer}>
+        <Container maxWidth="sm" className={classes.emptyContainer}>
           <Typography variant="h5">
             It seems a little lonely here... Start following other accounts now!
           </Typography>
