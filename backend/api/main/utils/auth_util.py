@@ -40,15 +40,15 @@ class AuthUtil:
     def get_user_token(username_or_email, password):
         LOGGER.info(f'Auth0: Retrieving user token with username or email: {username_or_email}')
 
-        AUTH0_DOMAIN = 'https://listent.us.auth0.com'
+        # AUTH0_DOMAIN = 'https://listent.us.auth0.com'
 
         url = os.path.join(AUTH0_DOMAIN, 'oauth/token/')
 
 
 
         payload = {
-            "client_id": 'KZAlBGkk3YDGxNBQv0TdrSSBaUBnYdUI',
-            "client_secret": 'PgBw_GwuIMxG4Svtp3lUzBWnpa8ru_GgYO9K0QjN_WnI19Vv1sI--xJa0Cg6lLVN',
+            "client_id": AUTH0_CLIENT_ID,
+            "client_secret": AUTH0_CLIENT_SECRET,
             "audience": os.path.join(AUTH0_DOMAIN, 'api/v2/'),
             "username": username_or_email,
             "password": password,
