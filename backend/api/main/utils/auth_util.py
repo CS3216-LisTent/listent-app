@@ -40,7 +40,6 @@ class AuthUtil:
     def get_user_token(username_or_email, password):
         LOGGER.info(f'Auth0: Retrieving user token with username or email: {username_or_email}')
         url = os.path.join(AUTH0_DOMAIN, 'oauth/token/')
-        headers = {'Content-type': 'application/json'}
         payload = {
             "client_id": AUTH0_CLIENT_ID,
             "client_secret": AUTH0_CLIENT_SECRET,
@@ -50,7 +49,7 @@ class AuthUtil:
             "connection": "Username-Password-Authentication"
         }
         LOGGER.info(f'Making request to Auth0 API: POST {url} with payload {payload}')
-        resp = requests.post(url, headers=headers, data=payload)
+        resp = requests.post(url, data=payload)
         LOGGER.info(resp)
         LOGGER.info(resp.content)
         resp_data = resp.json()
