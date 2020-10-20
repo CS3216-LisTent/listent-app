@@ -50,9 +50,10 @@ class AuthUtil:
             "connection": "Username-Password-Authentication",
         }
 
-        LOGGER.info(f'Making request to Auth0 API: POST {url}.')
+        LOGGER.info(f'Making request to Auth0 API: POST {url} with payload {payload}')
         resp = requests.post(url, data=payload)
         resp_data = resp.json()
+        LOGGER.info(f'Response {resp} {resp_data}')
         if resp.status_code == 200:
             token = resp_data['access_token']
             LOGGER.info(f'Successfully retrieved user token: {token[:10]}...')
