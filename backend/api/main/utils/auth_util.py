@@ -58,6 +58,8 @@ class AuthUtil:
 
         LOGGER.info(f'Making request to Auth0 API: POST {url} with payload {payload}')
         resp = requests.post(url, headers=headers, data=payload)
+        LOGGER.info(resp)
+        LOGGER.info(resp.content)
         resp_data = resp.json()
         LOGGER.info(f'Response {resp} {resp_data}')
         if resp.status_code == 200:
