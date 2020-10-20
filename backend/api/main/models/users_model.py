@@ -1,5 +1,4 @@
 from pymongo.errors import WriteError
-
 from api.main.config import LOGGER
 from api.main.db import DB
 

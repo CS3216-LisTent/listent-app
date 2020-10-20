@@ -13,7 +13,6 @@ class AuthRegisterController(Resource):
     def post(self):
         try:
             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
-            LOGGER.info(f'Request form data: {request.form} and {request.files}')
             register_info = {}
             if 'username' in request.form:
                 register_info['username'] = request.form['username'].lower()
@@ -27,7 +26,6 @@ class AuthRegisterController(Resource):
                 file = request.files['picture']
                 picture = upload(file, file.filename)
                 register_info['picture'] = picture
-            LOGGER.info(f'Register info: {register_info}')
             return UserService.register_user(**register_info)
         except Exception as e:
             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
@@ -38,7 +36,6 @@ class UserLoginController(Resource):
     def post(self):
         try:
             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
-            LOGGER.info(f'Request payload data: {request.json}')
             login_info = {}
             if 'username' in request.json:
                 login_info['username_or_email'] = request.json['username'].lower()
@@ -69,7 +66,6 @@ class UserChangePassword(Resource):
     def put(self):
         try:
             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
-            LOGGER.info(f'Request payload data: {request.json}')
             username = TOKEN_AUTH.current_user()
             change_password_info = {'username': username}
             if 'current_password' in request.json:
@@ -81,18 +77,18 @@ class UserChangePassword(Resource):
             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
 
 
-@API.route('/change-email', strict_slashes=False)
-class UserChangePassword(Resource):
-    @TOKEN_AUTH.login_required
-    def put(self):
-        try:
-            LOGGER.info(f'Endpoint called: {request.method} {request.path}')
-            LOGGER.info(f'Request payload data: {request.json}')
-            username = TOKEN_AUTH.current_user()
-            new_email = request.json['new_email']
-            return UserService.change_email(username, new_email)
-        except Exception as e:
-            return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
+# @API.route('/change-email', strict_slashes=False)
+# class UserChangePassword(Resource):
+#     @TOKEN_AUTH.login_required
+#     def put(self):
+#         try:
+#             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
+#             LOGGER.info(f'Request payload data: {request.json}')
+#             username = TOKEN_AUTH.current_user()
+#             new_email = request.json['new_email']
+#             return UserService.change_email(username, new_email)
+#         except Exception as e:
+#             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
 
 
 @API.route('/verify-email/<string:username>', strict_slashes=False)
@@ -100,7 +96,6 @@ class UserVerifyEmail(Resource):
     def post(self, username):
         try:
             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
-            LOGGER.info(f'Request payload data: {request.json}')
             return UserService.verify_user(username)
         except Exception as e:
             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
@@ -111,7 +106,6 @@ class UserVerifyEmail(Resource):
     def post(self, username):
         try:
             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
-            LOGGER.info(f'Request payload data: {request.json}')
             return UserService.send_email_verification(username)
         except Exception as e:
             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)

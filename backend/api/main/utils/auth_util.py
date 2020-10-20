@@ -21,13 +21,13 @@ class AuthUtil:
             "audience": os.path.join(AUTH0_DOMAIN, 'api/v2/'),
             "grant_type": "client_credentials"
         }
-        LOGGER.info(f'Making request to Auth0 API: POST {url}. Payload: {payload}')
+        LOGGER.info(f'Making request to Auth0 API: POST {url}.')
         resp = requests.post(url, data=payload)
         resp_data = resp.json()
-        LOGGER.info(f'Response: {resp} {resp_data}')
+        LOGGER.info(f'Response: {resp}')
         if resp.status_code == 200:
             token = resp_data.get('access_token')
-            LOGGER.info(f'Successfully retrieved auth token: {token}')
+            LOGGER.info(f'Successfully retrieved auth token: {token[:10]}...')
             return token
         LOGGER.error(f'An error occurred when retrieving auth token: {resp} {resp_data}')
         raise Auth0Error(
@@ -38,7 +38,7 @@ class AuthUtil:
 
     @staticmethod
     def get_user_token(username_or_email, password):
-        LOGGER.info(f'Auth0: Retrieving user token with username or email: {username_or_email} and password: {password}')
+        LOGGER.info(f'Auth0: Retrieving user token with username or email: {username_or_email}')
         url = os.path.join(AUTH0_DOMAIN, 'oauth/token/')
         payload = {
             "client_id": AUTH0_CLIENT_ID,
@@ -50,12 +50,12 @@ class AuthUtil:
             "connection": "Username-Password-Authentication",
         }
 
-        LOGGER.info(f'Making request to Auth0 API: POST {url}. Payload: {payload}')
+        LOGGER.info(f'Making request to Auth0 API: POST {url}.')
         resp = requests.post(url, data=payload)
         resp_data = resp.json()
         if resp.status_code == 200:
             token = resp_data['access_token']
-            LOGGER.info(f'Successfully retrieved user token: {token}')
+            LOGGER.info(f'Successfully retrieved user token: {token[:10]}...')
             return token
 
         LOGGER.error(f'An error occurred when retrieving user token: {resp} {resp_data}')
@@ -81,12 +81,12 @@ class AuthUtil:
 
     @staticmethod
     def blacklist_user_token(user_token):
-        LOGGER.info(f'Blacklisting user_token {user_token}')
+        LOGGER.info(f'Blacklisting user_token {user_token[:10]}...')
         DB.blacklisted_tokens.save({'token': user_token})
 
     @staticmethod
     def create_user(username, password, email):
-        LOGGER.info(f'Auth0: Creating user with username: {username}, password: {password}, email: {email}.')
+        LOGGER.info(f'Auth0: Creating user with username: {username}, email: {email}.')
         auth_token = AuthUtil.get_auth_token()
         url = os.path.join(AUTH0_DOMAIN, 'api/v2/users')
         headers = {'Authorization': 'Bearer ' + auth_token}
@@ -97,10 +97,10 @@ class AuthUtil:
             'email': email,
             "connection": "Username-Password-Authentication",
         }
-        LOGGER.info(f'Making request to Auth0 API: POST {url}. Header: {headers}. Payload: {payload}')
+        LOGGER.info(f'Making request to Auth0 API: POST {url}.')
         resp = requests.post(url, headers=headers, data=payload)
         resp_data = resp.json()
-        LOGGER.info(f'Response: {resp} {resp_data}')
+        LOGGER.info(f'Response: {resp}')
         if resp.status_code == 201:
             user_info = {
                 'username': resp_data['username'],
@@ -146,7 +146,7 @@ class AuthUtil:
         url = os.path.join(AUTH0_DOMAIN, f'api/v2/jobs/verification-email')
         headers = {'Authorization': 'Bearer ' + auth_token}
         payload = {'user_id': 'auth0|' + username}
-        LOGGER.info(f'Making request to Auth0 API: POST {url}. Header: {headers}. Payload: {payload}')
+        LOGGER.info(f'Making request to Auth0 API: POST {url}. Payload: {payload}')
         resp = requests.post(url, headers=headers, data=payload)
         resp_data = resp.json()
         if resp.status_code == 201:
@@ -161,7 +161,7 @@ class AuthUtil:
 
     @staticmethod
     def update_user(username, **updates):
-        LOGGER.info(f'Auth0: Updating user with username: {username}, updates: {updates}.')
+        LOGGER.info(f'Auth0: Updating user with username: {username}.')
         auth_token = AuthUtil.get_auth_token()
         url = os.path.join(AUTH0_DOMAIN, f'api/v2/users/auth0|{username}')
         headers = {'Authorization': 'Bearer ' + auth_token}
@@ -172,18 +172,18 @@ class AuthUtil:
             payload['password'] = updates['password']
 
         # Change Email
-        if ('email' in updates) and (updates['email'] is not None):
-            payload['email'] = updates['email']
+        # if ('email' in updates) and (updates['email'] is not None):
+        #     payload['email'] = updates['email']
 
         # change email verification status
         if ('email_verified' in updates) and (updates['email_verified'] is not None):
             payload['email_verified'] = str(updates['email_verified']).lower()
 
-        LOGGER.info(f'Making request to Auth0 API: PATCH {url}. Header: {headers}. Payload: {payload}')
+        LOGGER.info(f'Making request to Auth0 API: PATCH {url}.')
         resp = requests.patch(url, headers=headers, data=payload)
         resp_data = resp.json()
         if resp.status_code == 200:
-            LOGGER.info(f'Successfully updated Auth0 user: {resp_data}')
+            LOGGER.info(f'Successfully updated Auth0 user: {resp} {resp_data}')
             user_info = {
                 'username': resp_data['username'],
                 'email': resp_data['email'],

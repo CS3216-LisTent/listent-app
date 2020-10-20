@@ -171,25 +171,25 @@ class UserService:
                 }), 400
             )
 
-    @staticmethod
-    def change_email(username, new_email):
-        try:
-            data = AuthUtil.update_user(username, email=new_email)
-            AuthUtil.send_email_verification(username)
-            return make_response(
-                jsonify({
-                    'status': 'success',
-                    'message': 'Email successfully changed. Please verify your email again',
-                    'data': data
-                }), 200
-            )
-        except Auth0Error as e:
-            return make_response(
-                jsonify({
-                    'status': 'fail',
-                    'message': f'Auth0 Error: {str(e)}',
-                }), 400
-            )
+    # @staticmethod
+    # def change_email(username, new_email):
+    #     try:
+    #         data = AuthUtil.update_user(username, email=new_email)
+    #         AuthUtil.send_email_verification(username)
+    #         return make_response(
+    #             jsonify({
+    #                 'status': 'success',
+    #                 'message': 'Email successfully changed. Please verify your email again',
+    #                 'data': data
+    #             }), 200
+    #         )
+    #     except Auth0Error as e:
+    #         return make_response(
+    #             jsonify({
+    #                 'status': 'fail',
+    #                 'message': f'Auth0 Error: {str(e)}',
+    #             }), 400
+    #         )
 
     @staticmethod
     def send_email_verification(username):
