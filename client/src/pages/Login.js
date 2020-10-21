@@ -51,6 +51,7 @@ export default function Login() {
   const history = useHistory();
   const user = useSelector((state) => state.user);
   const redirect = useSelector((state) => state.redirect);
+  const [isShowResend, setIsShowResend] = useState(false);
   useEffect(() => {
     if (redirect && user) {
       history.push(redirect);
@@ -109,6 +110,7 @@ export default function Login() {
       const res = e.response.data;
 
       if (res.message.includes("User email not verified.")) {
+        setIsShowResend(true);
         setErrors({
           login: res.message,
         });
@@ -183,12 +185,19 @@ export default function Login() {
           >
             Log In
           </LoadingButton>
-          <Grid container justify="flex-end">
+          <Grid container justify="flex-end" spacing={1}>
             <Grid item>
               <Link component={LinkRouter} to="/register" variant="body2">
                 Don't have an account? Register
               </Link>
             </Grid>
+            {isShowResend && (
+              <Grid item>
+                <Link component={LinkRouter} to="/verify" variant="body2">
+                  Resend verification email
+                </Link>
+              </Grid>
+            )}
           </Grid>
         </form>
       </div>

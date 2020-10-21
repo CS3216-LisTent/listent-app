@@ -18,6 +18,16 @@ export function loginErrors(login, password) {
   return Object.keys(errors).length === 0 ? false : errors;
 }
 
+export function verifyError(username) {
+  const errors = {};
+
+  if (isEmpty(username, { ignore_whitespace: true })) {
+    errors.username = "Username cannot be empty";
+  }
+
+  return Object.keys(errors).length === 0 ? false : errors;
+}
+
 export function editPasswordErrors(current_password, password, password2) {
   const errors = {};
 
