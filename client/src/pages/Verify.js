@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 // Material UI components
 import Container from "@material-ui/core/Container";
@@ -38,12 +39,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login() {
+export default function Verify() {
+  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState("");
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [username, setUsername] = useState("");
-  const [errors, setErrors] = useState({});
+  const history = useHistory();
+  const user = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (user) {
+      history.push("/");
+    }
+  }, [user, history]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
