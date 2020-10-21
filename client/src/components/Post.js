@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
     top: "10%",
     display: "flex",
     flexDirection: "column",
+    zIndex: theme.zIndex.speedDial,
   },
   likeButton: {
     display: "flex",
