@@ -1,6 +1,11 @@
 import os
 import logging
 
+
+# Setup Logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s: %(levelname)s - %(message)s')
+LOGGER = logging.getLogger(__name__)
+
 ENV = os.environ.get('ENV', 'dev')
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
@@ -18,7 +23,7 @@ def get_auth_cert_path(env):
     if env == 'dev':
         return os.path.join(BASEDIR, 'cert.pem')
     if env == 'test':
-        return os.path.join(BASEDIR, 'cert.pem')
+        return '/etc/cert.pem'
     if env == 'prod':
         return '/etc/cert.pem'
 
@@ -40,10 +45,6 @@ def get_connection_url(env):
 
 MONGO_CONNECTION_URL = get_connection_url(ENV)
 DB_NAME = os.environ.get('MONGODB_DB_NAME')
-
-# Setup Logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s: %(levelname)s - %(message)s')
-LOGGER = logging.getLogger(__name__)
 
 
 class Config:
