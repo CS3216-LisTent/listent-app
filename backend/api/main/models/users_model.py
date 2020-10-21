@@ -6,12 +6,26 @@ from api.main.db import DB
 class UserModel:
 
     @staticmethod
-    def get_user(username):
+    def get_user(username, show_follower_pics=True, show_following_pics=True):
         LOGGER.info(f'DB: Retrieving user with username {username}')
         resp = DB.users.find_one({'_id': username})
+
+        # TODO: Optimise this
+        if show_follower_pics:
+            for i, un in enumerate(resp['followers']):
+                picture = UserModel.get_user(un, False, False)['picture']
+                resp['followers'][i] = {'username': un, 'picture': picture}
+
+        # TODO: Optimise this
+        if show_following_pics:
+            for i, un in enumerate(resp['followings']):
+                picture = UserModel.get_user(un, False, False)['picture']
+                resp['followings'][i] = {'username': un, 'picture': picture}
+
         if resp:
             LOGGER.info(f'Successfully retrieving user: {resp}')
             return resp
+
         raise WriteError(f'Error in querying for {username}. User may not exist.')
 
     @staticmethod
@@ -54,8 +68,8 @@ class UserModel:
         user = UserModel.get_user(username)
         other_user = UserModel.get_user(other_username)
         if user and other_user:
-            DB.users.find_one_and_update(user, {'$addToSet': {'followings': other_username}})
-            DB.users.find_one_and_update(other_user, {'$addToSet': {'followers': username}})
+            DB.users.find_one_and_update({'_id': username}, {'$addToSet': {'followings': other_username}})
+            DB.users.find_one_and_update({'_id': other_username}, {'$addToSet': {'followers': username}})
             updated_user = UserModel.get_user(username)
             updated_other_user = UserModel.get_user(other_username)
             return updated_user, updated_other_user
@@ -68,8 +82,8 @@ class UserModel:
         user = UserModel.get_user(username)
         other_user = UserModel.get_user(other_username)
         if user and other_user:
-            DB.users.find_one_and_update(user, {'$pull': {'followings': other_username}})
-            DB.users.find_one_and_update(other_user, {'$pull': {'followers': username}})
+            DB.users.find_one_and_update({'_id': username}, {'$pull': {'followings': other_username}})
+            DB.users.find_one_and_update({'_id': other_username}, {'$pull': {'followers': username}})
             updated_user = UserModel.get_user(username)
             updated_other_user = UserModel.get_user(other_username)
             return updated_user, updated_other_user
@@ -81,3 +95,12 @@ class UserModel:
     def is_following(username, other_username):
         user = UserModel.get_user(username)
         return other_username in user["followings"]
+
+    @staticmethod
+    def search_user(query='', skip=0, limit=10):
+        users = DB.users.find({'_id': {'$regex': query}}, {'_id': 1}).skip(skip).limit(limit)
+        rtn = []
+        for user in users:
+            username = user['_id']
+            rtn.append(UserModel.get_user(username))
+        return rtn
