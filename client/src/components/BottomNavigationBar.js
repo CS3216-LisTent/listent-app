@@ -11,6 +11,7 @@ import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import HomeIcon from "@material-ui/icons/Home";
 import MicIcon from "@material-ui/icons/Mic";
 import PersonIcon from "@material-ui/icons/Person";
+import SearchIcon from "@material-ui/icons/Search";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,9 +37,12 @@ export default function BottomNavigationBar() {
             history.push("/");
             break;
           case 1:
-            history.push("/new");
+            history.push("/search");
             break;
           case 2:
+            history.push("/new");
+            break;
+          case 3:
             history.push(`/${user.username}`);
             break;
           default:
@@ -49,6 +53,7 @@ export default function BottomNavigationBar() {
       className={classes.root}
     >
       <BottomNavigationAction label="Home" icon={<HomeIcon />} />
+      <BottomNavigationAction label="Search" icon={<SearchIcon />} />
       <BottomNavigationAction label="Record" icon={<MicIcon />} />
       <BottomNavigationAction label="Profile" icon={<PersonIcon />} />
     </BottomNavigation>

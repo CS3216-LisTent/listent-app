@@ -31,6 +31,7 @@ const Login = lazy(() => import("./pages/Login"));
 const New = lazy(() => import("./pages/New"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Register = lazy(() => import("./pages/Register"));
+const Search = lazy(() => import("./pages/Search"));
 const SinglePost = lazy(() => import("./pages/SinglePost"));
 const Verify = lazy(() => import("./pages/Verify"));
 
@@ -102,6 +103,9 @@ function App() {
           <Route exact path="/">
             <Home />
           </Route>
+          <PrivateRoute exact path="/search">
+            <Search />
+          </PrivateRoute>
           <PrivateRoute exact path="/new">
             <New />
           </PrivateRoute>

@@ -18,6 +18,12 @@ const initialState = {
     leftText: null,
     leftCallback: null,
   },
+  search: {
+    searchTerm: "",
+    searchedTags: [],
+    searchedUsers: [],
+    searchTab: 0,
+  },
 };
 
 const middleware = [thunk];
