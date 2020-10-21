@@ -1,4 +1,5 @@
 from pymongo.errors import WriteError
+from api.main.config import LOGGER
 from api.main.db import DB
 
 
@@ -6,13 +7,17 @@ class UserModel:
 
     @staticmethod
     def get_user(username):
+        LOGGER.info(f'DB: Retrieving user with username {username}')
         resp = DB.users.find_one({'_id': username})
         if resp:
+            LOGGER.info(f'Successfully retrieving user: {resp}')
             return resp
         raise WriteError(f'Error in querying for {username}. User may not exist.')
 
     @staticmethod
     def add_user(username, email, description=None, picture=None):
+        LOGGER.info(f'DB: Adding user with username {username}, email: {email}, '
+                    f'description: {description}, picture: {picture}')
         DB.users.save({
             '_id': username,
             'email': email,
@@ -22,6 +27,7 @@ class UserModel:
             'followings': [],
             'posts': [],
         })
+        LOGGER.info('Successfully added user to DB.')
         return UserModel.get_user(username)
 
     @staticmethod
