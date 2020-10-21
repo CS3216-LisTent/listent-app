@@ -18,6 +18,40 @@ export function loginErrors(login, password) {
   return Object.keys(errors).length === 0 ? false : errors;
 }
 
+export function editPasswordErrors(current_password, password, password2) {
+  const errors = {};
+
+  if (isEmpty(current_password, { ignore_whitespace: true })) {
+    errors.password = "Password cannot be empty";
+  }
+  if (Object.keys(errors).length > 0) {
+    return errors;
+  }
+
+  if (isEmpty(password, { ignore_whitespace: true })) {
+    errors.password = "New password cannot be empty";
+  }
+  if (Object.keys(errors).length > 0) {
+    return errors;
+  }
+
+  if (equals(current_password, password)) {
+    errors.current_password =
+      "New password cannot be the same as current password";
+    errors.password = "New password cannot be the same as current password";
+  }
+  if (Object.keys(errors).length > 0) {
+    return errors;
+  }
+
+  if (!equals(password, password2)) {
+    errors.password = "New password do not match";
+    errors.password2 = "New password do not match";
+  }
+
+  return Object.keys(errors).length === 0 ? false : errors;
+}
+
 export function registerErrors(email, username, password, password2) {
   const errors = {};
 
@@ -82,7 +116,7 @@ export async function newPostErrors(title, audioBlob, imageBlob) {
   if (Object.keys(errors).length > 0) {
     return errors;
   }
-  
+
   if ((await getBlobDuration(audioBlob)) > 720 || audioBlob.size > 25000000) {
     errors.audio =
       "*Audio recorded or uploaded cannot exceed 12 minutes and must be less than 25MB";
