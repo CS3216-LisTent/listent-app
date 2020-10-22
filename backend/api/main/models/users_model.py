@@ -6,23 +6,26 @@ from api.main.db import DB
 class UserModel:
 
     @staticmethod
-    def get_user(username, show_follower_pics=True, show_following_pics=True):
+    def get_user(username, show_follower_pics=False, show_following_pics=False):
         LOGGER.info(f'DB: Retrieving user with username {username}')
         resp = DB.users.find_one({'_id': username})
 
-        # TODO: Optimise this in the future when no. followers grow
-        if show_follower_pics:
-            for i, un in enumerate(resp['followers']):
-                picture = UserModel.get_user(un, False, False)['picture']
-                resp['followers'][i] = {'username': un, 'picture': picture}
-
-        # TODO: Optimise this in the future when no. followings grow
-        if show_following_pics:
-            for i, un in enumerate(resp['followings']):
-                picture = UserModel.get_user(un, False, False)['picture']
-                resp['followings'][i] = {'username': un, 'picture': picture}
-
         if resp:
+
+            # TODO: Optimise this in the future when no. followers grow
+            if show_follower_pics:
+                print(resp)
+                print('HERE')
+                for i, un in enumerate(resp['followers']):
+                    picture = UserModel.get_user(un)['picture']
+                    resp['followers'][i] = {'username': un, 'picture': picture}
+
+            # TODO: Optimise this in the future when no. followings grow
+            if show_following_pics:
+                for i, un in enumerate(resp['followings']):
+                    picture = UserModel.get_user(un)['picture']
+                    resp['followings'][i] = {'username': un, 'picture': picture}
+
             LOGGER.info(f'Successfully retrieving user: {resp}')
             return resp
 
@@ -42,7 +45,7 @@ class UserModel:
             'posts': [],
         })
         LOGGER.info('Successfully added user to DB.')
-        return UserModel.get_user(username)
+        return UserModel.get_user(username, show_following_pics=True, show_follower_pics=True)
 
     @staticmethod
     def update_user(username, **kwargs):
@@ -53,7 +56,7 @@ class UserModel:
             updated_document['picture'] = kwargs['picture']
         resp = DB.users.find_one_and_update({'_id': username}, {'$set': updated_document})
         if resp:
-            return UserModel.get_user(username)
+            return UserModel.get_user(username, show_following_pics=True, show_follower_pics=True)
         raise WriteError(f'Error in updating {username}. User may not exist.')
 
     @staticmethod
@@ -70,8 +73,8 @@ class UserModel:
         if user and other_user:
             DB.users.find_one_and_update({'_id': username}, {'$addToSet': {'followings': other_username}})
             DB.users.find_one_and_update({'_id': other_username}, {'$addToSet': {'followers': username}})
-            updated_user = UserModel.get_user(username)
-            updated_other_user = UserModel.get_user(other_username)
+            updated_user = UserModel.get_user(username, show_follower_pics=True, show_following_pics=True)
+            updated_other_user = UserModel.get_user(other_username, show_follower_pics=True, show_following_pics=True)
             return updated_user, updated_other_user
         raise WriteError(
             f'Error in making {username} follow {other_username}. One or both users may not exist.'
@@ -84,8 +87,8 @@ class UserModel:
         if user and other_user:
             DB.users.find_one_and_update({'_id': username}, {'$pull': {'followings': other_username}})
             DB.users.find_one_and_update({'_id': other_username}, {'$pull': {'followers': username}})
-            updated_user = UserModel.get_user(username)
-            updated_other_user = UserModel.get_user(other_username)
+            updated_user = UserModel.get_user(username, show_follower_pics=True, show_following_pics=True)
+            updated_other_user = UserModel.get_user(other_username, show_follower_pics=True, show_following_pics=True)
             return updated_user, updated_other_user
         raise WriteError(
             f'Error in making {username} unfollow {other_username}. One or both users may not exist.'
@@ -94,10 +97,7 @@ class UserModel:
     @staticmethod
     def is_following(username, other_username):
         user = UserModel.get_user(username)
-        for usr in user["followings"]:
-            if usr['username'] == other_username:
-                return True
-        return False
+        return other_username in user["followings"]
 
     @staticmethod
     def search_user(query='', skip=0, limit=10):
@@ -105,5 +105,5 @@ class UserModel:
         rtn = []
         for user in users:
             username = user['_id']
-            rtn.append(UserModel.get_user(username))
+            rtn.append(UserModel.get_user(username, show_follower_pics=True, show_following_pics=True))
         return rtn
