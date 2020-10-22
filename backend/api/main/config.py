@@ -36,7 +36,7 @@ AUTH0_CLIENT_SECRET = os.environ.get('AUTH0_CLIENT_SECRET')
 
 def get_connection_url(env):
     if env == 'dev':
-        return 'mongodb://127.0.0.1:27017'
+        return os.environ.get('MONGODB_CONNECTION')
     if env == 'test':
         return os.environ.get('MONGODB_CONNECTION')
     if env == 'prod':

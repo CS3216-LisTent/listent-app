@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: "none",
     fontWeight: theme.typography.fontWeightMedium,
   },
+  followContainer: {
+    textAlign: "right",
+  },
 }));
 
 export default function AudioDetails({
@@ -74,7 +77,7 @@ export default function AudioDetails({
           <Avatar alt={username} src={profilePicture} />
         </Grid>
         <Grid container item xs={10} alignItems="center">
-          <SingleLineContainer component={Grid} item xs={9}>
+          <SingleLineContainer component={Grid} item xs={8}>
             <Typography
               className={classes.plainLink}
               variant="caption"
@@ -88,7 +91,7 @@ export default function AudioDetails({
             data={{ username: user && user.username, profile: username }}
             perform="user:view_follow_button"
             yes={() => (
-              <Grid item xs={3}>
+              <Grid item xs={3} className={classes.followContainer}>
                 <Can
                   data={{ canFollow: !isFollowing }}
                   perform="user:follow"

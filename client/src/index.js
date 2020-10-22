@@ -11,6 +11,7 @@ import App from "./App";
 import store from "./store";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
+axios.defaults.headers.put["Content-Type"] = "application/json";
 
 const theme = createMuiTheme({
   palette: {
