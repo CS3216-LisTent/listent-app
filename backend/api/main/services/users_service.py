@@ -336,10 +336,9 @@ class UserService:
     def follow(username, other_username):
         try:
             user_app_data = UserModel.follow(username, other_username)[0]
-            user_auth_data = AuthUtil.get_user(username)
             data = {
-                'username': user_auth_data['username'],
-                'email': user_auth_data['email'],
+                'username': user_app_data['_id'],
+                'email': user_app_data['email'],
                 'followers': user_app_data['followers'],
                 'followings': user_app_data['followings'],
                 'posts': user_app_data['posts'],
@@ -425,6 +424,32 @@ class UserService:
                     'status': 'success',
                     'message': f'{username} {message_verb} {other_username}.',
                     'data': res
+                }), 200
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Operation Error: {str(e)}',
+                }), 400
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
+
+    @staticmethod
+    def search_user(query='', skip=0, limit=10):
+        try:
+            users = UserModel.search_user(query=query, skip=skip, limit=limit)
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'Successfully retrieved users.',
+                    'data': users
                 }), 200
             )
         except OperationFailure as e:
