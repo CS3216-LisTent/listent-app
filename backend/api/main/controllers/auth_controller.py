@@ -1,10 +1,9 @@
 from flask import request, make_response, jsonify
 from flask_restplus import Resource, Namespace
-from api.main.config import IMAGES_DIR, LOGGER, ENV, SECRET_KEY, BUCKET_NAME, AUTH0_CERT, AUTH0_CLIENT_ID, \
-    AUTH0_CLIENT_SECRET
+from api.main.config import LOGGER
 from api.main.services.users_service import UserService
 from api.main.utils.auth_util import TOKEN_AUTH
-from api.main.utils.file_util import save_file, upload
+from api.main.utils.file_util import upload
 
 API = Namespace(name='auth')
 
@@ -15,15 +14,15 @@ class AuthRegisterController(Resource):
         try:
             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
             register_info = {}
-            if 'username' in request.form:
+            if ('username' in request.form) and (request.form['username'] is not None):
                 register_info['username'] = request.form['username'].lower()
-            if 'email' in request.form:
+            if ('email' in request.form) and (request.form['email'] is not None):
                 register_info['email'] = request.form['email'].lower()
-            if 'password' in request.form:
+            if ('password' in request.form) and (request.form['password'] is not None):
                 register_info['password'] = request.form['password']
-            if 'description' in request.form:
+            if ('description' in request.form) and (request.form['description'] is not None):
                 register_info['description'] = request.form['description']
-            if 'picture' in request.files:
+            if ('picture' in request.files) and (request.files['picture'] is not None):
                 file = request.files['picture']
                 picture = upload(file, file.filename)
                 register_info['picture'] = picture
@@ -38,11 +37,11 @@ class UserLoginController(Resource):
         try:
             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
             login_info = {}
-            if 'username' in request.json:
+            if ('username' in request.json) and (request.json['username'] is not None):
                 login_info['username_or_email'] = request.json['username'].lower()
-            elif 'email' in request.json:
+            elif ('email' in request.json) and (request.json['email'] is not None):
                 login_info['username_or_email'] = request.json['email'].lower()
-            if 'password' in request.json:
+            if ('password' in request.json) and (request.json['password'] is not None):
                 login_info['password'] = request.json['password']
             return UserService.login_user(**login_info)
         except Exception as e:
@@ -69,11 +68,21 @@ class UserChangePassword(Resource):
             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
             username = TOKEN_AUTH.current_user()
             change_password_info = {'username': username}
-            if 'current_password' in request.json:
+            if ('current_password' in request.json) and (request.json['current_password'] is not None):
                 change_password_info['current_password'] = request.json['current_password']
-            if 'new_password' in request.json:
+            if ('new_password' in request.json) and (request.json['new_password'] is not None):
                 change_password_info['new_password'] = request.json['new_password']
             return UserService.change_password(**change_password_info)
+        except Exception as e:
+            return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
+
+
+@API.route('/send-email-verification/<string:username>', strict_slashes=False)
+class UserVerifyEmail(Resource):
+    def post(self, username):
+        try:
+            LOGGER.info(f'Endpoint called: {request.method} {request.path}')
+            return UserService.send_email_verification(username)
         except Exception as e:
             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
 
@@ -92,21 +101,11 @@ class UserChangePassword(Resource):
 #             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
 
 
-@API.route('/verify-email/<string:username>', strict_slashes=False)
-class UserVerifyEmail(Resource):
-    def post(self, username):
-        try:
-            LOGGER.info(f'Endpoint called: {request.method} {request.path}')
-            return UserService.verify_user(username)
-        except Exception as e:
-            return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
-
-
-@API.route('/send-email-verification/<string:username>', strict_slashes=False)
-class UserVerifyEmail(Resource):
-    def post(self, username):
-        try:
-            LOGGER.info(f'Endpoint called: {request.method} {request.path}')
-            return UserService.send_email_verification(username)
-        except Exception as e:
-            return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
+# @API.route('/verify-email/<string:username>', strict_slashes=False)
+# class UserVerifyEmail(Resource):
+#     def post(self, username):
+#         try:
+#             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
+#             return UserService.verify_user(username)
+#         except Exception as e:
+#             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
