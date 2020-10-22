@@ -87,7 +87,7 @@ class UserService:
             username = AuthUtil.decode_user_token(user_token)
             user_auth_data = AuthUtil.get_user(username)
             if user_auth_data['email_verified']:
-                user_app_data = UserModel.get_user(username)
+                user_app_data = UserModel.get_user(username, show_following_pics=True, show_follower_pics=True)
                 data = {
                     'username': user_auth_data['username'],
                     'email': user_auth_data['email'],
@@ -232,7 +232,7 @@ class UserService:
     @staticmethod
     def get_user(username, auth_info=True):
         try:
-            user_data = UserModel.get_user(username)
+            user_data = UserModel.get_user(username, show_following_pics=True, show_follower_pics=True)
             data = {'username': username}
             data.update({
                 'followers': user_data['followers'],
