@@ -207,7 +207,10 @@ export default function New() {
           <Grid item xs={12}>
             {!uploadedFiles.audio.blob && (
               <>
-                <AudioRecorder setRecordedBlob={setRecordedBlob} />
+                <AudioRecorder
+                  setRecordedBlob={setRecordedBlob}
+                  hasRecorded={!!recordedBlob}
+                />
                 <input
                   name="audio"
                   accept="audio/*"
