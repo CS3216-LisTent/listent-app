@@ -20,8 +20,6 @@ const initialState = {
   },
   search: {
     searchTerm: "",
-    searchedTags: [],
-    searchedUsers: [],
     searchTab: 0,
   },
 };

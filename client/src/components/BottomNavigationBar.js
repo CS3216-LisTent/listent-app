@@ -26,6 +26,7 @@ export default function BottomNavigationBar() {
   const classes = useStyles();
   const index = useSelector((state) => state.bottomNavigation.index);
   const user = useSelector((state) => state.user);
+  const { searchTerm, searchTab } = useSelector((state) => state.search);
   const history = useHistory();
 
   return (
@@ -37,7 +38,9 @@ export default function BottomNavigationBar() {
             history.push("/");
             break;
           case 1:
-            history.push("/search");
+            history.push(
+              `/search/${searchTab === 0 ? "users" : "tags"}/${searchTerm}`
+            );
             break;
           case 2:
             history.push("/new");

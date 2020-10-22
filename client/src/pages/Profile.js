@@ -267,7 +267,7 @@ function UserProfile({ username }) {
         xs={12}
         spacing={1}
         className={classes.postsContainer}
-        apiPath={`/api/v1/users/${username}/posts`}
+        apiPath={`/api/v1/users/${username}/posts?`}
         noEntriesText={
           <Typography variant="caption">
             You haven't posted anything yet

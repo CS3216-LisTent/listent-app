@@ -103,7 +103,7 @@ function App() {
           <Route exact path="/">
             <Home />
           </Route>
-          <PrivateRoute exact path="/search">
+          <PrivateRoute exact path="/search/:section/:query?">
             <Search />
           </PrivateRoute>
           <PrivateRoute exact path="/new">

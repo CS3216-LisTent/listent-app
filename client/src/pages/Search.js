@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Redirect } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory, useParams, Link } from "react-router-dom";
 
 // Material UI components
 import Avatar from "@material-ui/core/Avatar";
 import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import InputBase from "@material-ui/core/InputBase";
@@ -24,29 +25,23 @@ import ClearIcon from "@material-ui/icons/Clear";
 // Custom components
 import ErrorBoundary from "../components/ErrorBoundary";
 import SuspenseLoading from "../components/SuspenseLoading";
-
-// Other components
-import ReactSwipe from "react-swipe";
-
-// Pages
-import Post from "../components/Post";
+import InfiniteScroll from "../components/InfiniteScroll";
 
 // Utils
-import useInfinite from "../utils/use-infinite";
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
-import { setHomeTabIndex } from "../actions/home-tab-actions";
 import isEmpty from "validator/lib/isEmpty";
 
 // Actions
-import {
-  setSearchTab,
-  setSearchTerm,
-  setSearchedTags,
-  setSearchedUsers,
-} from "../actions/search-actions";
+import { setSearchTab, setSearchTerm } from "../actions/search-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: { paddingTop: theme.spacing(6) },
+  pageContainer: {
+    height: `calc(100vh - ${theme.spacing(13)}px)`,
+  },
+  tabs: {
+    marginBottom: theme.spacing(1),
+  },
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -75,11 +70,14 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create("width"),
     width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
+  },
+  errorContainer: {
+    padding: theme.spacing(1, 0),
+    textAlign: "center",
+  },
+  resultsContainer: {
+    overflowY: "scroll",
   },
 }));
 
@@ -88,105 +86,150 @@ export default function SearchWrapper() {
   useEffect(() => {
     dispatch(setBottomNavigationIndex(1));
   }, [dispatch]);
+  const { searchTerm, searchTab } = useSelector((state) => state.search);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const { section, query } = useParams();
 
-  return (
-    <ErrorBoundary
-      fallback={
-        <Typography variant="caption">
-          An error occurred, please try again!
-        </Typography>
+  useEffect(() => {
+    // Clear old results if a new search is executed
+    if (isFirstLoad) {
+      if (query !== undefined) {
+        dispatch(setSearchTerm(query));
+      } else {
+        dispatch(setSearchTerm(""));
       }
-    >
-      <SuspenseLoading>
-        <Search />
-      </SuspenseLoading>
-    </ErrorBoundary>
-  );
+
+      setIsFirstLoad(false);
+    }
+
+    if (section === "users") {
+      dispatch(setSearchTab(0));
+    } else {
+      dispatch(setSearchTab(1));
+    }
+  }, [dispatch, query, searchTab, searchTerm, section, isFirstLoad]);
+
+  return <Search />;
 }
 
 function Search() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const { searchTerm, searchedTags, searchedUsers, searchTab } = useSelector(
-    (state) => state.search
-  );
+  const { searchTerm, searchTab } = useSelector((state) => state.search);
 
   const tabChange = (_, newValue) => {
-    dispatch(setSearchTab(newValue));
+    history.push(`/search/${newValue === 0 ? "users" : "tags"}/${searchTerm}`);
   };
 
   const updateSearchTerm = (newTerm) => {
     dispatch(setSearchTerm(newTerm));
   };
 
+  const onSearch = (e) => {
+    e.preventDefault();
+    history.push(`/search/${searchTab === 0 ? "users" : "tags"}/${searchTerm}`);
+  };
+  const { query } = useParams();
+
   return (
     <Container maxWidth="sm" className={classes.root}>
-      <div className={classes.search}>
-        <div className={classes.searchIcon}>
-          <SearchIcon />
-        </div>
-        <InputBase
-          value={searchTerm}
-          onChange={(e) => {
-            updateSearchTerm(e.target.value);
-          }}
-          endAdornment={
-            !isEmpty(searchTerm, { ignore_whitespace: true }) ? (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => {
-                    updateSearchTerm("");
-                  }}
-                  className={classes.clearIcon}
-                  size="small"
-                >
-                  <ClearIcon />
-                </IconButton>
-              </InputAdornment>
-            ) : undefined
-          }
-          placeholder="Search…"
-          classes={{
-            root: classes.inputRoot,
-            input: classes.inputInput,
-          }}
-        />
-      </div>
-      <Tabs
-        value={searchTab}
-        onChange={tabChange}
-        indicatorColor="primary"
-        textColor="primary"
-        centered
+      <Grid
+        container
+        direction="column"
+        className={classes.pageContainer}
+        wrap="nowrap"
       >
-        <Tab label="Users" />
-        <Tab label="Tags" />
-      </Tabs>
-      <List>
-        <ListItemLink>
-          <ListItemAvatar>
-            <Avatar />
-          </ListItemAvatar>
-          <ListItemText primary="@nelson" />
-        </ListItemLink>
-        <ListItemLink>
-          <ListItemAvatar>
-            <Avatar src={`${process.env.PUBLIC_URL}/ChickenWing.jpeg`} />
-          </ListItemAvatar>
-          <ListItemText primary="@nelson" />
-        </ListItemLink>
-        <ListItemLink>
-          <ListItemAvatar>
-            <Avatar />
-          </ListItemAvatar>
-          <ListItemText primary="@nelson" />
-        </ListItemLink>
-      </List>
+        <Grid item>
+          <form onSubmit={onSearch}>
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                value={searchTerm}
+                onChange={(e) => {
+                  updateSearchTerm(e.target.value);
+                }}
+                endAdornment={
+                  !isEmpty(searchTerm, { ignore_whitespace: true }) ? (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => {
+                          updateSearchTerm("");
+                        }}
+                        className={classes.clearIcon}
+                        size="small"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ) : undefined
+                }
+                placeholder="Search…"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+              />
+            </div>
+          </form>
+          <Tabs
+            className={classes.tabs}
+            value={searchTab}
+            onChange={tabChange}
+            indicatorColor="primary"
+            textColor="primary"
+            centered
+          >
+            <Tab label="Users" />
+            <Tab label="Tags" />
+          </Tabs>
+        </Grid>
+
+        <Grid item className={classes.resultsContainer}>
+          <ErrorBoundary
+            fallback={
+              <div className={classes.errorContainer}>
+                <Typography variant="caption">
+                  An error occurred. Please refresh and try again.
+                </Typography>
+              </div>
+            }
+          >
+            <SuspenseLoading>
+              <InfiniteScroll
+                pageSize={10}
+                component={List}
+                apiPath={`/api/v1/users/search?q=${query || ""}&`}
+                noEntriesText={
+                  <Typography variant="caption">No results found</Typography>
+                }
+              >
+                {(data) => {
+                  return data.map((page) =>
+                    page.map((result, i) => {
+                      return (
+                        <ListItemLink key={i} to={`/${result._id}`}>
+                          <ListItemAvatar>
+                            <Avatar src={result.picture} />
+                          </ListItemAvatar>
+                          <ListItemText primary={`@${result._id}`} />
+                        </ListItemLink>
+                      );
+                    })
+                  );
+                }}
+              </InfiniteScroll>
+            </SuspenseLoading>
+          </ErrorBoundary>
+        </Grid>
+      </Grid>
     </Container>
   );
 }
 
 function ListItemLink(props) {
-  return <ListItem button component="a" {...props} />;
+  return <ListItem component={Link} button {...props} />;
 }
