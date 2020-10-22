@@ -10,13 +10,13 @@ class UserModel:
         LOGGER.info(f'DB: Retrieving user with username {username}')
         resp = DB.users.find_one({'_id': username})
 
-        # TODO: Optimise this
+        # TODO: Optimise this in the future when no. followers grow
         if show_follower_pics:
             for i, un in enumerate(resp['followers']):
                 picture = UserModel.get_user(un, False, False)['picture']
                 resp['followers'][i] = {'username': un, 'picture': picture}
 
-        # TODO: Optimise this
+        # TODO: Optimise this in the future when no. followings grow
         if show_following_pics:
             for i, un in enumerate(resp['followings']):
                 picture = UserModel.get_user(un, False, False)['picture']
@@ -94,7 +94,10 @@ class UserModel:
     @staticmethod
     def is_following(username, other_username):
         user = UserModel.get_user(username)
-        return other_username in user["followings"]
+        for usr in user["followings"]:
+            if usr['username'] == other_username:
+                return True
+        return False
 
     @staticmethod
     def search_user(query='', skip=0, limit=10):
