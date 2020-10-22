@@ -23,6 +23,7 @@ export default function InfiniteScroll({
   children,
   noEntriesText,
   className,
+  pageSize,
   ...rest
 }) {
   const classes = useStyles();
@@ -33,7 +34,7 @@ export default function InfiniteScroll({
     isLoadingMore,
     isEmpty,
     isReachingEnd,
-  } = useInfinite(apiPath);
+  } = useInfinite(apiPath, pageSize);
 
   const requestNextPage = (isVisible) => {
     if (isVisible && !isReachingEnd && !isLoadingMore) {

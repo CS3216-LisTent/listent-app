@@ -444,7 +444,7 @@ class UserService:
     @staticmethod
     def search_user(query='', skip=0, limit=10):
         try:
-            users = UserModel.search_user(query=query, skip=skip, limit=limit)
+            users = [] if query == '' else UserModel.search_user(query=query, skip=skip, limit=limit)
             return make_response(
                 jsonify({
                     'status': 'success',
@@ -455,9 +455,10 @@ class UserService:
         except OperationFailure as e:
             return make_response(
                 jsonify({
-                    'status': 'fail',
-                    'message': f'DB Operation Error: {str(e)}',
-                }), 400
+                    'status': 'success',
+                    'message': f'Successfully retrieved users.',
+                    'data': []
+                }), 200
             )
         except ConnectionFailure as e:
             return make_response(

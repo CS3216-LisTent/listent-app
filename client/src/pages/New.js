@@ -72,7 +72,7 @@ export default function New() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setBottomNavigationIndex(1));
+    dispatch(setBottomNavigationIndex(2));
   }, [dispatch]);
 
   const [recordedBlob, setRecordedBlob] = useState(null);

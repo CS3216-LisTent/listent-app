@@ -9,7 +9,7 @@ export default function useInfinite(apiPath, pageSize) {
       if (previousPageData && !previousPageData.length) {
         return null;
       }
-      return `${apiPath}?skip=${
+      return `${apiPath}skip=${
         pageIndex * (pageSize ? pageSize : PAGE_SIZE)
       }&limit=${pageSize ? pageSize : PAGE_SIZE}`;
     },

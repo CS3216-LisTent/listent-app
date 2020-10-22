@@ -63,10 +63,10 @@ function Home() {
 
   const { data, size, setSize, isEmpty } = useInfinite(
     !user
-      ? `/api/v1/posts/discover/all`
+      ? `/api/v1/posts/discover/all?`
       : tabIndex === 0
-      ? `/api/v1/posts/feed/`
-      : `/api/v1/posts/discover/`,
+      ? `/api/v1/posts/feed?`
+      : `/api/v1/posts/discover?`,
     3
   );
 
