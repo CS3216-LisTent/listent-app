@@ -91,14 +91,12 @@ export default function SearchWrapper() {
   const { section, query } = useParams();
 
   useEffect(() => {
-    // Clear old results if a new search is executed
     if (isFirstLoad) {
       if (query !== undefined) {
         dispatch(setSearchTerm(query));
       } else {
         dispatch(setSearchTerm(""));
       }
-
       setIsFirstLoad(false);
     }
 
@@ -127,11 +125,11 @@ function Search() {
     dispatch(setSearchTerm(newTerm));
   };
 
+  const { query, section } = useParams();
   const onSearch = (e) => {
     e.preventDefault();
-    history.push(`/search/${searchTab === 0 ? "users" : "tags"}/${searchTerm}`);
+    history.push(`/search/${section}/${searchTerm}`);
   };
-  const { query } = useParams();
 
   return (
     <Container maxWidth="sm" className={classes.root}>
