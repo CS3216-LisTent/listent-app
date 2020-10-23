@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
     width: theme.spacing(6),
     position: "absolute",
     top: 0,
+    left: 0,
     backgroundColor: theme.palette.background.default,
     zIndex: theme.zIndex.snackbar,
   },
