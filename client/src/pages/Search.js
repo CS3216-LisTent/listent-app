@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory, useParams, Link } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 // Material UI components
-import Avatar from "@material-ui/core/Avatar";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import InputBase from "@material-ui/core/InputBase";
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import SearchIcon from "@material-ui/icons/Search";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
@@ -25,9 +20,9 @@ import ClearIcon from "@material-ui/icons/Clear";
 
 // Custom components
 import ErrorBoundary from "../components/ErrorBoundary";
-import FollowButton from "../components/FollowButton";
 import InfiniteScroll from "../components/InfiniteScroll";
 import SuspenseLoading from "../components/SuspenseLoading";
+import UserListItem from "../components/UserListItem";
 
 // Utils
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
@@ -210,17 +205,7 @@ function Search() {
                 {(data) => {
                   return data.map((page) =>
                     page.map((result, i) => {
-                      return (
-                        <ListItemLink key={i} to={`/${result._id}`}>
-                          <ListItemAvatar>
-                            <Avatar src={result.picture} />
-                          </ListItemAvatar>
-                          <ListItemText primary={`@${result._id}`} />
-                          <ListItemSecondaryAction>
-                            <FollowButton size="small" username={result._id} />
-                          </ListItemSecondaryAction>
-                        </ListItemLink>
-                      );
+                      return <UserListItem key={i} user={result} />;
                     })
                   );
                 }}
@@ -231,8 +216,4 @@ function Search() {
       </Grid>
     </Container>
   );
-}
-
-function ListItemLink(props) {
-  return <ListItem component={Link} button {...props} />;
 }
