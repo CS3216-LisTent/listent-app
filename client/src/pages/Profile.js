@@ -153,6 +153,11 @@ function UserProfile({ username }) {
         >
           <Typography variant="body1">{`@${username}`}</Typography>
         </SingleLineContainer>
+        <Grid item xs={12} className={classes.center}>
+            <Typography variant="body1" color="textPrimary">
+              <DetectLinks>{description}</DetectLinks>
+            </Typography>
+          </Grid>
         <Grid container item xs={12} className={classes.center}>
           <Grid
             container
@@ -168,7 +173,7 @@ function UserProfile({ username }) {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="caption" color="textSecondary">
+              <Typography variant="caption" color="textPrimary">
                 Following
               </Typography>
             </Grid>
@@ -186,7 +191,7 @@ function UserProfile({ username }) {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="caption" color="textSecondary">
+              <Typography variant="caption" color="textPrimary">
                 Followers
               </Typography>
             </Grid>
@@ -198,16 +203,11 @@ function UserProfile({ username }) {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="caption" color="textSecondary">
+              <Typography variant="caption" color="textPrimary">
                 Posts
               </Typography>
             </Grid>
           </Grid>
-        </Grid>
-        <Grid item xs={12} className={classes.center}>
-          <Typography variant="caption" color="textSecondary">
-            <DetectLinks>{description}</DetectLinks>
-          </Typography>
         </Grid>
         <Grid item xs={12}>
           <FollowButton username={username} />

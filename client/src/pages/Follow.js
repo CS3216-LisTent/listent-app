@@ -38,9 +38,7 @@ export default function Follow() {
       <Typography variant="h5">{capitalizeFirstLetter(urlType)}</Typography>
       {follow.length === 0 ? (
         <div className={classes.errorContainer}>
-          <Typography variant="caption">
-            No results found, go follow some users now!
-          </Typography>
+          <Typography variant="caption">{`No ${urlType} yet!`}</Typography>
         </div>
       ) : (
         <ErrorBoundary
