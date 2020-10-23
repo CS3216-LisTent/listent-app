@@ -121,7 +121,7 @@ function App() {
           <Route exact path="/post/:id">
             <SinglePost />
           </Route>
-          <Route exact path="/:username">
+          <Route path="/:username">
             <Profile />
           </Route>
         </Switch>

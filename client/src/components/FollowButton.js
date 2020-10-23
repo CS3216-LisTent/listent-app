@@ -14,7 +14,7 @@ import RedButton from "../components/RedButton";
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
 
-export default function FollowButton({ username, ...rest }) {
+export default function FollowButton({ username, callback, ...rest }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { data: followingData, mutate: mutateFollowing } = useSwr(
@@ -32,6 +32,9 @@ export default function FollowButton({ username, ...rest }) {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
     } finally {
       setIsLoading(false);
+      if (callback) {
+        callback();
+      }
     }
   };
 
@@ -44,6 +47,9 @@ export default function FollowButton({ username, ...rest }) {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
     } finally {
       setIsLoading(false);
+      if (callback) {
+        callback();
+      }
     }
   };
 

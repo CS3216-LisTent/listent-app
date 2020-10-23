@@ -9,20 +9,15 @@ import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import InputBase from "@material-ui/core/InputBase";
-import List from "@material-ui/core/List";
 import SearchIcon from "@material-ui/icons/Search";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
-import Typography from "@material-ui/core/Typography";
 
 // Icons
 import ClearIcon from "@material-ui/icons/Clear";
 
 // Custom components
-import ErrorBoundary from "../components/ErrorBoundary";
-import InfiniteScroll from "../components/InfiniteScroll";
-import SuspenseLoading from "../components/SuspenseLoading";
-import UserListItem from "../components/UserListItem";
+import UsersList from "../components/UsersList";
 
 // Utils
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
@@ -68,10 +63,6 @@ const useStyles = makeStyles((theme) => ({
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
     width: "100%",
-  },
-  errorContainer: {
-    padding: theme.spacing(1, 0),
-    textAlign: "center",
   },
   resultsContainer: {
     overflowY: "scroll",
@@ -182,36 +173,11 @@ function Search() {
             <Tab label="Tags" />
           </Tabs>
         </Grid>
-
         <Grid item className={classes.resultsContainer}>
-          <ErrorBoundary
-            fallback={
-              <div className={classes.errorContainer}>
-                <Typography variant="caption">
-                  An error occurred. Please refresh and try again.
-                </Typography>
-              </div>
-            }
-          >
-            <SuspenseLoading>
-              <InfiniteScroll
-                pageSize={10}
-                component={List}
-                apiPath={`/api/v1/users/search?q=${query || ""}&`}
-                noEntriesText={
-                  <Typography variant="caption">No results found</Typography>
-                }
-              >
-                {(data) => {
-                  return data.map((page) =>
-                    page.map((result, i) => {
-                      return <UserListItem key={i} user={result} />;
-                    })
-                  );
-                }}
-              </InfiniteScroll>
-            </SuspenseLoading>
-          </ErrorBoundary>
+          <UsersList
+            apiPath={`/api/v1/users/search?q=${query || ""}&`}
+            pageSize={10}
+          />
         </Grid>
       </Grid>
     </Container>

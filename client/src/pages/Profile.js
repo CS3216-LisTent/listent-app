@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import clsx from "clsx";
 import useSwr from "swr";
 import { makeStyles } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, Redirect } from "react-router-dom";
+import {
+  useParams,
+  Redirect,
+  Switch,
+  Route,
+  useRouteMatch,
+  Link,
+} from "react-router-dom";
 
 // Material UI components
 import Avatar from "@material-ui/core/Avatar";
@@ -35,6 +42,9 @@ import { logoutUser } from "../actions/auth-actions";
 // Utils
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 
+// Pages
+const Follow = lazy(() => import("./Follow"));
+
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(1),
@@ -56,37 +66,46 @@ const useStyles = makeStyles((theme) => ({
   postsContainer: {
     marginTop: theme.spacing(1),
   },
+  linkText: {
+    textDecoration: "none",
+    color: theme.palette.text.primary,
+  },
 }));
 
 export default function Profile() {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const { username } = useParams();
-  const user = useSelector((state) => state.user);
-
-  useEffect(() => {
-    if (user && user.username === username) {
-      dispatch(setBottomNavigationIndex(3));
-    }
-  }, [dispatch, user, username]);
-
+  let { path } = useRouteMatch();
   return (
-    <Container maxWidth="sm" className={classes.root}>
-      <ErrorBoundary fallback={<Redirect to="/" />}>
-        <SuspenseLoading>
-          <UserProfile username={username} />
-        </SuspenseLoading>
-      </ErrorBoundary>
-    </Container>
+    <ErrorBoundary fallback={<Redirect to="/" />}>
+      <SuspenseLoading>
+        <Switch>
+          <Route path={`${path}/:type`}>
+            <Follow />
+          </Route>
+          <Route exact path={path}>
+            <Container maxWidth="sm" className={classes.root}>
+              <UserProfile username={username} />
+            </Container>
+          </Route>
+        </Switch>
+      </SuspenseLoading>
+    </ErrorBoundary>
   );
 }
 
 function UserProfile({ username }) {
   const dispatch = useDispatch();
+
   const classes = useStyles();
   const { data, mutate } = useSwr(`/api/v1/users/${username}`);
 
   const user = useSelector((state) => state.user);
+  useEffect(() => {
+    if (user && user.username === username) {
+      dispatch(setBottomNavigationIndex(3));
+    }
+  }, [dispatch, user, username]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -103,6 +122,8 @@ function UserProfile({ username }) {
     setIsLoading(true);
     dispatch(logoutUser());
   };
+
+  let { url } = useRouteMatch();
 
   if (isEdit) {
     return (
@@ -133,7 +154,14 @@ function UserProfile({ username }) {
           <Typography variant="body1">{`@${username}`}</Typography>
         </SingleLineContainer>
         <Grid container item xs={12} className={classes.center}>
-          <Grid container item xs={4}>
+          <Grid
+            container
+            item
+            xs={4}
+            className={classes.linkText}
+            component={Link}
+            to={`${url}/following`}
+          >
             <Grid item xs={12}>
               <Typography className={classes.bold} variant="body1">
                 {number_of_following}
@@ -145,7 +173,13 @@ function UserProfile({ username }) {
               </Typography>
             </Grid>
           </Grid>
-          <Grid item xs={4}>
+          <Grid
+            item
+            xs={4}
+            className={classes.linkText}
+            component={Link}
+            to={`${url}/followers`}
+          >
             <Grid item xs={12}>
               <Typography className={classes.bold} variant="body1">
                 {number_of_followers}

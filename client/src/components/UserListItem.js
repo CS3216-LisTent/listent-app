@@ -11,7 +11,7 @@ import Avatar from "@material-ui/core/Avatar";
 // Custom components
 import FollowButton from "../components/FollowButton";
 
-export default function UserListItem({ user }) {
+export default function UserListItem({ user, actionCallback }) {
   return (
     <ListItemLink to={`/${user._id}`}>
       <ListItemAvatar>
@@ -19,7 +19,11 @@ export default function UserListItem({ user }) {
       </ListItemAvatar>
       <ListItemText primary={`@${user._id}`} />
       <ListItemSecondaryAction>
-        <FollowButton size="small" username={user._id} />
+        <FollowButton
+          size="small"
+          username={user._id}
+          callback={actionCallback}
+        />
       </ListItemSecondaryAction>
     </ListItemLink>
   );
