@@ -154,10 +154,10 @@ function UserProfile({ username }) {
           <Typography variant="body1">{`@${username}`}</Typography>
         </SingleLineContainer>
         <Grid item xs={12} className={classes.center}>
-            <Typography variant="body1" color="textPrimary">
-              <DetectLinks>{description}</DetectLinks>
-            </Typography>
-          </Grid>
+          <Typography variant="body1" color="textPrimary">
+            <DetectLinks>{description}</DetectLinks>
+          </Typography>
+        </Grid>
         <Grid container item xs={12} className={classes.center}>
           <Grid
             container
