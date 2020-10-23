@@ -12,6 +12,7 @@ import Typography from "@material-ui/core/Typography";
 // Custom components
 import ErrorBoundary from "../components/ErrorBoundary";
 import SuspenseLoading from "../components/SuspenseLoading";
+import Instructions from "../components/Instructions";
 
 // Other components
 import ReactSwipe from "react-swipe";
@@ -72,6 +73,8 @@ function Home() {
 
   const swipeRef = useRef(null);
   const [startSlide, setStartSlide] = useState(0);
+
+  const [runInstructions, setRunInstructions] = useState(false);
   const posts = data.reduce(
     (acc, page, i) => [
       ...acc,
@@ -93,6 +96,7 @@ function Home() {
                   }}
                   startSlide={startSlide}
                   index={index}
+                  setRunInstructions={setRunInstructions}
                 />
               </SuspenseLoading>
             </ErrorBoundary>
@@ -120,6 +124,7 @@ function Home() {
 
   return (
     <div className={classes.root}>
+      {posts && <Instructions run={runInstructions} />}
       {user && (
         <Tabs
           onChange={handleChange}

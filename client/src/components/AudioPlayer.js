@@ -186,7 +186,10 @@ export default function AudioPlayer({
             <Grid item xs={2} className={classes.center}>
               {!hidePrevious && (
                 <IconButton disabled={!previous} onClick={previous}>
-                  <SkipPreviousIcon fontSize={isLarge ? "large" : undefined} />
+                  <SkipPreviousIcon
+                    id="audio-previous"
+                    fontSize={isLarge ? "large" : undefined}
+                  />
                 </IconButton>
               )}
             </Grid>
@@ -202,7 +205,10 @@ export default function AudioPlayer({
             <Grid item xs={2} className={classes.center}>
               {!hideNext && (
                 <IconButton disabled={!next} onClick={next}>
-                  <SkipNextIcon fontSize={isLarge ? "large" : undefined} />
+                  <SkipNextIcon
+                    id="audio-next"
+                    fontSize={isLarge ? "large" : undefined}
+                  />
                 </IconButton>
               )}
             </Grid>

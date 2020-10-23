@@ -26,6 +26,11 @@ const theme = createMuiTheme({
         span: {
           overflowWrap: "break-word",
         },
+
+        // React joyride hide close button
+        "button[title='Close']": {
+          display: "none",
+        },
       },
     },
   },
