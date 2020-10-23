@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
 import { makeStyles } from "@material-ui/core";
@@ -23,7 +22,7 @@ import Can from "../components/Can";
 import DetectLinks from "../components/DetectLinks";
 import EditProfile from "../components/EditProfile";
 import ErrorBoundary from "../components/ErrorBoundary";
-import GreenButton from "../components/GreenButton";
+import FollowButton from "../components/FollowButton";
 import InfiniteScroll from "../components/InfiniteScroll";
 import PostCard from "../components/PostCard";
 import RedButton from "../components/RedButton";
@@ -31,7 +30,6 @@ import SingleLineContainer from "../components/SingleLineContainer";
 import SuspenseLoading from "../components/SuspenseLoading";
 
 // Actions
-import { openSnackbar } from "../actions/snackbar-actions";
 import { logoutUser } from "../actions/auth-actions";
 
 // Utils
@@ -89,10 +87,6 @@ function UserProfile({ username }) {
   const { data, mutate } = useSwr(`/api/v1/users/${username}`);
 
   const user = useSelector((state) => state.user);
-  const { data: followingData, mutate: mutateFollowing } = useSwr(
-    user ? `/api/v1/users/${username}/is-following` : null
-  );
-  const isFollowing = followingData && followingData.data;
 
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -104,32 +98,6 @@ function UserProfile({ username }) {
     description,
     picture,
   } = data.data;
-
-  const follow = async () => {
-    try {
-      setIsLoading(true);
-      await axios.post(`/api/v1/users/${username}/follow`);
-      mutate();
-      mutateFollowing();
-    } catch {
-      dispatch(openSnackbar("An error occurred. Please try again.", "error"));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const unfollow = async () => {
-    try {
-      setIsLoading(true);
-      await axios.post(`/api/v1/users/${username}/unfollow`);
-      mutate();
-      mutateFollowing();
-    } catch {
-      dispatch(openSnackbar("An error occurred. Please try again.", "error"));
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const logout = () => {
     setIsLoading(true);
@@ -207,28 +175,9 @@ function UserProfile({ username }) {
             <DetectLinks>{description}</DetectLinks>
           </Typography>
         </Grid>
-        <Can
-          data={{ username: user && user.username, profile: username }}
-          perform="user:view_follow_button"
-          yes={() => (
-            <Grid item xs={12}>
-              <Can
-                data={{ canFollow: !isFollowing }}
-                perform="user:follow"
-                yes={() => (
-                  <GreenButton onClick={follow} fullWidth disabled={isLoading}>
-                    {isLoading ? <CircularProgress /> : "Follow"}
-                  </GreenButton>
-                )}
-                no={() => (
-                  <RedButton onClick={unfollow} fullWidth disabled={isLoading}>
-                    {isLoading ? <CircularProgress /> : "Unfollow"}
-                  </RedButton>
-                )}
-              />
-            </Grid>
-          )}
-        />
+        <Grid item xs={12}>
+          <FollowButton username={username} />
+        </Grid>
         <Can
           data={{ username: user && user.username, owner: username }}
           perform="user:update"

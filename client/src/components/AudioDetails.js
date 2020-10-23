@@ -14,6 +14,7 @@ import Typography from "@material-ui/core/Typography";
 // Custom components
 import Can from "./Can";
 import DetectLinks from "./DetectLinks";
+import FollowButton from "./FollowButton";
 import GreenButton from "./GreenButton";
 import RedButton from "./RedButton";
 import SingleLineContainer from "./SingleLineContainer";
@@ -39,36 +40,7 @@ export default function AudioDetails({
   description,
 }) {
   const classes = useStyles();
-  const user = useSelector((state) => state.user);
-  const { data: followingData, mutate: mutateFollowing } = useSwr(
-    user ? `/api/v1/users/${username}/is-following` : null
-  );
-  const isFollowing = followingData && followingData.data;
-  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-
-  const follow = async () => {
-    try {
-      setIsLoading(true);
-      await axios.post(`/api/v1/users/${username}/follow`);
-      mutateFollowing();
-    } catch {
-      dispatch(openSnackbar("An error occurred. Please try again.", "error"));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const unfollow = async () => {
-    try {
-      setIsLoading(true);
-      await axios.post(`/api/v1/users/${username}/unfollow`);
-      mutateFollowing();
-    } catch {
-      dispatch(openSnackbar("An error occurred. Please try again.", "error"));
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Grid container>
@@ -87,36 +59,9 @@ export default function AudioDetails({
               {`@${username}`}
             </Typography>
           </SingleLineContainer>
-          <Can
-            data={{ username: user && user.username, profile: username }}
-            perform="user:view_follow_button"
-            yes={() => (
-              <Grid item xs={3} className={classes.followContainer}>
-                <Can
-                  data={{ canFollow: !isFollowing }}
-                  perform="user:follow"
-                  yes={() => (
-                    <GreenButton
-                      size="small"
-                      onClick={follow}
-                      disabled={isLoading}
-                    >
-                      Follow
-                    </GreenButton>
-                  )}
-                  no={() => (
-                    <RedButton
-                      size="small"
-                      onClick={unfollow}
-                      disabled={isLoading}
-                    >
-                      Unfollow
-                    </RedButton>
-                  )}
-                />
-              </Grid>
-            )}
-          />
+          <Grid item xs={3} className={classes.followContainer}>
+            <FollowButton size="small" username={username} />
+          </Grid>
           {/* placeholder <Grid item xs={12}>
             <Typography variant="caption">2h ago</Typography>
           </Grid> */}
