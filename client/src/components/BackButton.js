@@ -13,7 +13,7 @@ import HomeIcon from "@material-ui/icons/Home";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    position: "fixed",
+    position: "absolute",
     top: 0,
     zIndex: theme.zIndex.modal,
     width: "fit-content",
