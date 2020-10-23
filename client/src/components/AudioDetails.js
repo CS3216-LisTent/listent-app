@@ -1,9 +1,6 @@
-import React, { useState } from "react";
-import axios from "axios";
-import useSwr from "swr";
+import React from "react";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
 import Avatar from "@material-ui/core/Avatar";
@@ -12,15 +9,9 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 
 // Custom components
-import Can from "./Can";
 import DetectLinks from "./DetectLinks";
 import FollowButton from "./FollowButton";
-import GreenButton from "./GreenButton";
-import RedButton from "./RedButton";
 import SingleLineContainer from "./SingleLineContainer";
-
-// Redux
-import { openSnackbar } from "../actions/snackbar-actions";
 
 const useStyles = makeStyles((theme) => ({
   plainLink: {
@@ -40,7 +31,6 @@ export default function AudioDetails({
   description,
 }) {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   return (
     <Grid container>

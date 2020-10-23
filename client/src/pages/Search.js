@@ -14,6 +14,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import SearchIcon from "@material-ui/icons/Search";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
@@ -24,8 +25,9 @@ import ClearIcon from "@material-ui/icons/Clear";
 
 // Custom components
 import ErrorBoundary from "../components/ErrorBoundary";
-import SuspenseLoading from "../components/SuspenseLoading";
+import FollowButton from "../components/FollowButton";
 import InfiniteScroll from "../components/InfiniteScroll";
+import SuspenseLoading from "../components/SuspenseLoading";
 
 // Utils
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
@@ -214,6 +216,9 @@ function Search() {
                             <Avatar src={result.picture} />
                           </ListItemAvatar>
                           <ListItemText primary={`@${result._id}`} />
+                          <ListItemSecondaryAction>
+                            <FollowButton size="small" username={result._id} />
+                          </ListItemSecondaryAction>
                         </ListItemLink>
                       );
                     })
