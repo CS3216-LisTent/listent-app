@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
@@ -120,6 +120,7 @@ export default function Post({
   autopause,
   startSlide,
   index,
+  setRunInstructions,
 }) {
   const isRender =
     startSlide && index ? Math.abs(startSlide - index) <= 1 : true;
@@ -135,6 +136,14 @@ export default function Post({
   const [isLoading, setIsLoading] = useState(false);
   const commentsRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (data && setRunInstructions && !hideNext) {
+      setTimeout(() => {
+        setRunInstructions(true);
+      }, 1000);
+    }
+  }, [data, hideNext, setRunInstructions]);
 
   if (!isRender) {
     return (
