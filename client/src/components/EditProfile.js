@@ -31,6 +31,16 @@ const useStyles = makeStyles((theme) => ({
   center: {
     textAlign: "center",
   },
+  // Placeholder: Hack to hide back button
+  topBar: {
+    height: theme.spacing(6),
+    width: theme.spacing(6),
+    position: "absolute",
+    top: 0,
+    left: 0,
+    backgroundColor: theme.palette.background.default,
+    zIndex: theme.zIndex.snackbar,
+  },
 }));
 
 export default function EditProfile({
@@ -62,79 +72,83 @@ export default function EditProfile({
   };
 
   return (
-    <Grid className={classes.root} container direction="column" spacing={1}>
-      {isEditPassword ? (
-        <EditPassword endEdit={() => setIsEditPassword(false)} />
-      ) : (
-        <>
-          <Grid
-            container
-            item
-            xs={12}
-            justify="space-between"
-            wrap="nowrap"
-            alignContent="center"
-          >
+    <>
+      {/* Placeholder: Hack to hide back button */}
+      <div className={classes.topBar} />
+      <Grid className={classes.root} container direction="column" spacing={1}>
+        {isEditPassword ? (
+          <EditPassword endEdit={() => setIsEditPassword(false)} />
+        ) : (
+          <>
+            <Grid
+              container
+              item
+              xs={12}
+              justify="space-between"
+              wrap="nowrap"
+              alignContent="center"
+            >
+              <Grid item>
+                <Typography variant="h5">Edit profile</Typography>
+              </Grid>
+              <Grid item>
+                <Button
+                  onClick={() => setIsEditPassword(true)}
+                  color="primary"
+                  variant="contained"
+                >
+                  Edit password
+                </Button>
+              </Grid>
+            </Grid>
+            <Grid item className={classes.center}>
+              <ImageUpload
+                initialImage={profilePicture}
+                setImageBlob={setImageBlob}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                helperText={`${newDesc.length} / ${CHAR_LIMIT} characters`}
+                label="Description"
+                multiline
+                name="description"
+                rows={4}
+                variant="filled"
+                onChange={(e) => {
+                  if (e.target.value.length <= 200) {
+                    setNewDesc(e.target.value);
+                  }
+                }}
+                value={newDesc}
+              />
+            </Grid>
             <Grid item>
-              <Typography variant="h5">Edit profile</Typography>
+              <LoadingButton
+                onClick={submit}
+                fullWidth
+                color="primary"
+                variant="contained"
+                isLoading={isLoading}
+              >
+                Submit
+              </LoadingButton>
             </Grid>
             <Grid item>
               <Button
-                onClick={() => setIsEditPassword(true)}
-                color="primary"
+                onClick={endEdit}
+                fullWidth
+                color="secondary"
                 variant="contained"
               >
-                Edit password
+                Cancel
               </Button>
             </Grid>
-          </Grid>
-          <Grid item className={classes.center}>
-            <ImageUpload
-              initialImage={profilePicture}
-              setImageBlob={setImageBlob}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              helperText={`${newDesc.length} / ${CHAR_LIMIT} characters`}
-              label="Description"
-              multiline
-              name="description"
-              rows={4}
-              variant="filled"
-              onChange={(e) => {
-                if (e.target.value.length <= 200) {
-                  setNewDesc(e.target.value);
-                }
-              }}
-              value={newDesc}
-            />
-          </Grid>
-          <Grid item>
-            <LoadingButton
-              onClick={submit}
-              fullWidth
-              color="primary"
-              variant="contained"
-              isLoading={isLoading}
-            >
-              Submit
-            </LoadingButton>
-          </Grid>
-          <Grid item>
-            <Button
-              onClick={endEdit}
-              fullWidth
-              color="secondary"
-              variant="contained"
-            >
-              Cancel
-            </Button>
-          </Grid>
-        </>
-      )}
-    </Grid>
+          </>
+        )}
+      </Grid>
+    </>
   );
 }
 
