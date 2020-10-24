@@ -401,3 +401,30 @@ class PostService:
                     'message': f'DB Connection Error: {str(e)}',
                 }), 500
             )
+
+    @staticmethod
+    def search_hashtag(hashtag='', skip=0, limit=10):
+        try:
+            posts = PostModel.search_hashtag(hashtag, skip=skip, limit=limit)
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'Successfully retrieved posts.',
+                    'data': posts
+                }), 200
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'DB Operation Error: {str(e)}',
+                    'data': []
+                }), 200
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
