@@ -30,8 +30,7 @@ import DetectLinks from "../components/DetectLinks";
 import EditProfile from "../components/EditProfile";
 import ErrorBoundary from "../components/ErrorBoundary";
 import FollowButton from "../components/FollowButton";
-import InfiniteScroll from "../components/InfiniteScroll";
-import PostCard from "../components/PostCard";
+import PostsList from "../components/PostsList";
 import RedButton from "../components/RedButton";
 import SingleLineContainer from "../components/SingleLineContainer";
 import SuspenseLoading from "../components/SuspenseLoading";
@@ -62,9 +61,6 @@ const useStyles = makeStyles((theme) => ({
   },
   bold: {
     fontWeight: theme.typography.fontWeightBold,
-  },
-  postsContainer: {
-    marginTop: theme.spacing(1),
   },
   linkText: {
     textDecoration: "none",
@@ -243,37 +239,10 @@ function UserProfile({ username }) {
           )}
         />
       </Grid>
-      <InfiniteScroll
-        component={Grid}
-        container
-        item
-        xs={12}
-        spacing={1}
-        className={classes.postsContainer}
+      <PostsList
         apiPath={`/api/v1/users/${username}/posts?`}
-        noEntriesText={
-          <Typography variant="caption">
-            You haven't posted anything yet
-          </Typography>
-        }
-      >
-        {(data) => {
-          return data.map((page) =>
-            page.map((post, i) => {
-              return (
-                <Grid key={i} item xs={6} sm={4}>
-                  <PostCard
-                    title={post.title}
-                    description={post.description}
-                    imageLink={post.image_link}
-                    link={`/post/${post._id}`}
-                  />
-                </Grid>
-              );
-            })
-          );
-        }}
-      </InfiniteScroll>
+        noEntriesText="There are no posts here yet"
+      />
     </Grid>
   );
 }
