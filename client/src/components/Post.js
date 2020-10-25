@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: theme.spacing(7),
     backgroundImage: ({ imageUrl }) =>
-      `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${
+      `linear-gradient(0deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${
         imageUrl ? imageUrl : ""
       })`,
     backgroundRepeat: "no-repeat",
@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
     top: "10%",
     display: "flex",
     flexDirection: "column",
+    zIndex: theme.zIndex.speedDial,
   },
   likeButton: {
     display: "flex",
@@ -119,6 +120,7 @@ export default function Post({
   autopause,
   startSlide,
   index,
+  setRunInstructions,
 }) {
   const isRender =
     startSlide && index ? Math.abs(startSlide - index) <= 1 : true;
@@ -134,6 +136,14 @@ export default function Post({
   const [isLoading, setIsLoading] = useState(false);
   const commentsRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (data && setRunInstructions && !hideNext) {
+      setTimeout(() => {
+        setRunInstructions(true);
+      }, 1000);
+    }
+  }, [data, hideNext, setRunInstructions]);
 
   if (!isRender) {
     return (

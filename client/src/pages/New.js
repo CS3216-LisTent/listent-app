@@ -20,6 +20,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 
 // Custom components
 import AudioRecorder from "../components/AudioRecorder";
+import GreenButton from "../components/GreenButton";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
@@ -72,7 +73,7 @@ export default function New() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setBottomNavigationIndex(1));
+    dispatch(setBottomNavigationIndex(2));
   }, [dispatch]);
 
   const [recordedBlob, setRecordedBlob] = useState(null);
@@ -191,23 +192,15 @@ export default function New() {
               <Grid item>
                 <Typography variant="h6">Create a new post</Typography>
               </Grid>
-              <Grid item>
-                <Button
-                  disabled={!canPost}
-                  onClick={onPost}
-                  variant="text"
-                  color="secondary"
-                  size="large"
-                >
-                  Post
-                </Button>
-              </Grid>
             </Grid>
           </Grid>
           <Grid item xs={12}>
             {!uploadedFiles.audio.blob && (
               <>
-                <AudioRecorder setRecordedBlob={setRecordedBlob} />
+                <AudioRecorder
+                  setRecordedBlob={setRecordedBlob}
+                  hasRecorded={!!recordedBlob}
+                />
                 <input
                   name="audio"
                   accept="audio/*"
@@ -270,7 +263,7 @@ export default function New() {
             <TextField
               fullWidth
               helperText={`${fields.description.length} / ${CHAR_LIMIT} characters`}
-              label="Description"
+              label="Description (Optional)"
               multiline
               name="description"
               rows={4}
@@ -279,7 +272,7 @@ export default function New() {
               value={fields.description}
             />
           </Grid>
-          <Grid item>
+          <Grid item xs={12}>
             <input
               name="image"
               accept="image/*"
@@ -290,8 +283,13 @@ export default function New() {
             />
             {!uploadedFiles.image.blob ? (
               <label htmlFor="image-upload">
-                <Button variant="contained" color="primary" component="span">
-                  Upload image (Optional)
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component="span"
+                  fullWidth
+                >
+                  Add Background Image (Optional)
                 </Button>
               </label>
             ) : (
@@ -300,6 +298,7 @@ export default function New() {
                 color="secondary"
                 startIcon={<DeleteIcon />}
                 onClick={() => removeUpload("image")}
+                fullWidth
               >
                 Remove image
               </Button>
@@ -314,6 +313,18 @@ export default function New() {
                 ? errors.image
                 : "*Image uploaded cannot exceed 10 MB"}
             </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <GreenButton
+              disabled={!canPost}
+              onClick={onPost}
+              variant="contained"
+              color="secondary"
+              size="large"
+              fullWidth
+            >
+              Post
+            </GreenButton>
           </Grid>
         </Grid>
       </Container>

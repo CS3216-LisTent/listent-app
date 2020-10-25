@@ -41,7 +41,7 @@ const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
 let microphone = null;
 let recorder = null;
 
-export default function AudioRecorder({ setRecordedBlob }) {
+export default function AudioRecorder({ setRecordedBlob, hasRecorded }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [audioSrc, setAudioSrc] = useState(null);
@@ -113,13 +113,12 @@ export default function AudioRecorder({ setRecordedBlob }) {
   };
 
   const stopRecordingCallback = () => {
+    releaseMicrophone();
+
     if (isSafari || isEdge || isFirefox) {
       setAudioSrc(URL.createObjectURL(recorder.getBlob()));
       if (setRecordedBlob) {
         setRecordedBlob(recorder.getBlob());
-      }
-      if (isSafari) {
-        releaseMicrophone();
       }
     } else {
       injectMetadata(recorder.getBlob()).then((seekableBlob) => {
@@ -220,6 +219,7 @@ export default function AudioRecorder({ setRecordedBlob }) {
         startRecord={startRecording}
         endRecord={stopRecording}
         isRecordDisabled={isRecordDisabled}
+        hasRecorded={hasRecorded}
       />
       {errors && (
         <Typography
@@ -239,6 +239,7 @@ function RecordButtons({
   startRecord,
   endRecord,
   isRecordDisabled,
+  hasRecorded,
 }) {
   const classes = useStyles();
   const [seconds, setSeconds] = useState(0);
@@ -272,7 +273,7 @@ function RecordButtons({
         startIcon={<FiberManualRecordIcon className={classes.red} />}
         onClick={startRecord}
       >
-        Start Recording
+        {hasRecorded ? `Re-record` : `Start Recording`}
       </Button>
     );
   } else {

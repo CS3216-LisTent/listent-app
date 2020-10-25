@@ -1,3 +1,5 @@
+import re
+
 from pymongo.errors import WriteError
 from api.main.config import LOGGER
 from api.main.db import DB
@@ -141,3 +143,17 @@ class PostModel:
             DB.posts.find_one_and_update({'_id': post_id}, {'$push': {'comments': comment}})
             return PostModel.get_post(post_id)
         raise WriteError(f'Error in adding comment. User or post may not exist.')
+
+    @staticmethod
+    def search_hashtag(tag, skip=0, limit=5):
+        if len(tag) == 0:
+            return []
+        if tag[0] != '#':
+            tag = '#' + tag
+        posts = list(DB.posts.find({
+            "$or": [
+                {"title": re.compile(tag, re.IGNORECASE)},
+                {"description": re.compile(tag, re.IGNORECASE)},
+            ]
+        }).skip(skip).limit(limit))
+        return posts
