@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, Redirect } from "react-router-dom";
 
 // Material UI components
 import Container from "@material-ui/core/Container";
@@ -17,6 +17,7 @@ import Tabs from "@material-ui/core/Tabs";
 import ClearIcon from "@material-ui/icons/Clear";
 
 // Custom components
+import PostsList from "../components/PostsList";
 import UsersList from "../components/UsersList";
 
 // Utils
@@ -67,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
   resultsContainer: {
     overflowY: "scroll",
   },
+  tagsResults: {
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 export default function SearchWrapper() {
@@ -90,10 +94,14 @@ export default function SearchWrapper() {
 
     if (section === "users") {
       dispatch(setSearchTab(0));
-    } else {
+    } else if (section === "tags") {
       dispatch(setSearchTab(1));
     }
   }, [dispatch, query, searchTab, searchTerm, section, isFirstLoad]);
+
+  if (section !== "users" && section !== "tags") {
+    return <Redirect to="/" />;
+  }
 
   return <Search />;
 }
@@ -174,10 +182,19 @@ function Search() {
           </Tabs>
         </Grid>
         <Grid item className={classes.resultsContainer}>
-          <UsersList
-            apiPath={`/api/v1/users/search?q=${query || ""}&`}
-            pageSize={10}
-          />
+          {section === "users" ? (
+            <UsersList
+              apiPath={`/api/v1/users/search?q=${query || ""}&`}
+              pageSize={10}
+            />
+          ) : (
+            <PostsList
+              apiPath={`/api/v1/posts/search?hashtag=${query || ""}&`}
+              pageSize={10}
+              noEntriesText="No results found"
+              className={classes.tagsResults}
+            />
+          )}
         </Grid>
       </Grid>
     </Container>
