@@ -86,7 +86,6 @@ class UserVerifyEmail(Resource):
         except Exception as e:
             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
 
-
 # @API.route('/change-email', strict_slashes=False)
 # class UserChangePassword(Resource):
 #     @TOKEN_AUTH.login_required
@@ -107,5 +106,24 @@ class UserVerifyEmail(Resource):
 #         try:
 #             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
 #             return UserService.verify_user(username)
+#         except Exception as e:
+#             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
+
+# @API.route('/verify-email/<string:username>', strict_slashes=False)
+# class UserVerifyEmail(Resource):
+#     def post(self, username):
+#         try:
+#             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
+#             return UserService.verify_user(username)
+#         except Exception as e:
+#             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
+#
+#
+# @API.route('/send-email-verification/<string:username>', strict_slashes=False)
+# class UserVerifyEmail(Resource):
+#     def post(self, username):
+#         try:
+#             LOGGER.info(f'Endpoint called: {request.method} {request.path}')
+#             return UserService.send_email_verification(username)
 #         except Exception as e:
 #             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)

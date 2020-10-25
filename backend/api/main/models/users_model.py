@@ -27,7 +27,6 @@ class UserModel:
                 for i, un in enumerate(resp['followings']):
                     picture = UserModel.get_user(un)['picture']
                     resp['followings'][i] = {'username': un, 'picture': picture}
-
             LOGGER.info(f'Successfully retrieving user: {resp}')
             return resp
 
