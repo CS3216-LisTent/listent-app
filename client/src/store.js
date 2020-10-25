@@ -22,6 +22,7 @@ const initialState = {
     searchTerm: "",
     searchTab: 0,
   },
+  seed: 0,
 };
 
 const middleware = [thunk];

@@ -13,3 +13,5 @@ export const SET_REDIRECT_AFTER_AUTH = "SET_REDIRECT_AFTER_AUTH ";
 
 export const SET_SEARCH_TERM = "SET_SEARCH_TERM";
 export const SET_SEARCH_TAB = "SET_SEARCH_TAB";
+
+export const SET_SEED = "SET_SEED";
