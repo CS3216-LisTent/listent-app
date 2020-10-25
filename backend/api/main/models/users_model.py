@@ -1,3 +1,5 @@
+import re
+
 from pymongo.errors import WriteError
 from api.main.config import LOGGER
 from api.main.db import DB
@@ -101,7 +103,7 @@ class UserModel:
 
     @staticmethod
     def search_user(query='', skip=0, limit=10):
-        users = DB.users.find({'_id': {'$regex': query}}, {'_id': 1}).skip(skip).limit(limit)
+        users = DB.users.find({'_id': re.compile(query, re.IGNORECASE)}, {'_id': 1}).skip(skip).limit(limit)
         rtn = []
         for user in users:
             username = user['_id']
