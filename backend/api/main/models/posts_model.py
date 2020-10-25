@@ -1,3 +1,5 @@
+import re
+
 from pymongo.errors import WriteError
 from api.main.config import LOGGER
 from api.main.db import DB
@@ -150,8 +152,8 @@ class PostModel:
             tag = '#' + tag
         posts = list(DB.posts.find({
             "$or": [
-                {"title": {"$regex": tag}},
-                {"description": {"$regex": tag}},
+                {"title": re.compile(tag, re.IGNORECASE)},
+                {"description": re.compile(tag, re.IGNORECASE)},
             ]
         }).skip(skip).limit(limit))
         return posts
