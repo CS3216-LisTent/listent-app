@@ -62,12 +62,13 @@ function Home() {
   const tabIndex = useSelector((state) => state.homeTab.index);
   const classes = useStyles();
 
+  const seed = useSelector((state) => state.seed);
   const { data, size, setSize, isEmpty } = useInfinite(
     !user
-      ? `/api/v1/posts/discover/all?`
+      ? `/api/v1/posts/discover/all?seed=${seed}&`
       : tabIndex === 0
       ? `/api/v1/posts/feed?`
-      : `/api/v1/posts/discover?`,
+      : `/api/v1/posts/discover?seed=${seed}&`,
     3
   );
 
