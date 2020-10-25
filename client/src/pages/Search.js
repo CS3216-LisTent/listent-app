@@ -28,7 +28,7 @@ import isEmpty from "validator/lib/isEmpty";
 import { setSearchTab, setSearchTerm } from "../actions/search-actions";
 
 const useStyles = makeStyles((theme) => ({
-  root: { paddingTop: theme.spacing(6) },
+  root: { paddingTop: theme.spacing(6), marginBottom: theme.spacing(7) },
   pageContainer: {
     height: `calc(100vh - ${theme.spacing(13)}px)`,
   },

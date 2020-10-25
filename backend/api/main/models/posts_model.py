@@ -1,13 +1,12 @@
 import re
-
+import pymongo
 from pymongo.errors import WriteError
-from api.main.config import LOGGER
 from api.main.db import DB
 from api.main.models.users_model import UserModel
 import numpy.random as rng
 
-class PostModel:
 
+class PostModel:
     @staticmethod
     def get_post(post_id):
         resp = DB.posts.find_one({'_id': post_id})
@@ -155,5 +154,5 @@ class PostModel:
                 {"title": re.compile(tag, re.IGNORECASE)},
                 {"description": re.compile(tag, re.IGNORECASE)},
             ]
-        }).skip(skip).limit(limit))
+        }, {'comments': 0}).sort("timestamp", pymongo.DESCENDING).skip(skip).limit(limit))
         return posts
