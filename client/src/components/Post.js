@@ -160,16 +160,6 @@ export default function Post({
       {hideNext && (
         <Helmet>
           <title>{post.title}</title>
-          <meta name="title" content={post.title} />
-          <meta name="description" content={post.description} />
-
-          <meta property="og:title" content={post.title} />
-          <meta property="og:description" content={post.description} />
-          <meta property="og:image" content={post.image_url} />
-          <meta property="og:url" content="https://listent.app" />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta property="og:site_name" content="LisTent" />
-          <meta name="twitter:image:alt" content={post.title} />
         </Helmet>
       )}
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>

@@ -1,6 +1,5 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
 import axios from "axios";
-import { Helmet } from "react-helmet";
 import { Switch, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
 
@@ -95,9 +94,6 @@ function App() {
 
   return (
     <div className={classes.root}>
-      <Helmet>
-        <title>LisTent</title>
-      </Helmet>
       <CssBaseline />
       <BackButton />
       <TopSnackbar />
