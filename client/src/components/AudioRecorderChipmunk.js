@@ -14,9 +14,11 @@ import StopIcon from "@material-ui/icons/Stop";
 // Utils
 import injectMetadata from "../utils/inject-metadata";
 import { formatSeconds } from "../utils/general-utils";
+import convertToChipmunk from "../utils/convert-to-chipmunk";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
+import LoadingBackdrop from "../components/LoadingBackdrop";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -49,20 +51,17 @@ export default function AudioRecorder({ setRecordedBlob, hasRecorded }) {
   const [isRecordDisabled, setIsRecordDisabled] = useState(false);
   const [errors, setErrors] = useState(null);
 
-  useEffect(
-    () => () => {
-      if (setRecordedBlob) {
-        setRecordedBlob(null);
-      }
-      
-      releaseMicrophone();
-      if (recorder) {
-        recorder.destroy();
-        recorder = null;
-      }
-    },
-    [setRecordedBlob]
-  );
+  // useEffect(
+  //   () => () => {
+  //     setRecordedBlob(null);
+  //     releaseMicrophone();
+  //     if (recorder) {
+  //       recorder.destroy();
+  //       recorder = null;
+  //     }
+  //   },
+  //   [setRecordedBlob]
+  // );
 
   const captureMicrophone = (callback) => {
     if (microphone) {
@@ -118,11 +117,8 @@ export default function AudioRecorder({ setRecordedBlob, hasRecorded }) {
   const stopRecordingCallback = () => {
     releaseMicrophone();
 
-    if (isSafari || isEdge || isFirefox) {
-      setAudioSrc(URL.createObjectURL(recorder.getBlob()));
-      if (setRecordedBlob) {
-        setRecordedBlob(recorder.getBlob());
-      }
+    if (true) {
+      convertToChipmunk(recorder.getBlob(), setAudioSrc);
     } else {
       injectMetadata(recorder.getBlob()).then((seekableBlob) => {
         setAudioSrc(URL.createObjectURL(seekableBlob));
@@ -143,7 +139,7 @@ export default function AudioRecorder({ setRecordedBlob, hasRecorded }) {
         bufferSize: 16384,
       };
 
-      if (isSafari || isEdge || isFirefox) {
+      if (true) {
         options.recorderType = RecordRTC.StereoAudioRecorder;
       }
 
@@ -267,28 +263,48 @@ function RecordButtons({
     }
   }, [seconds, endRecord]);
 
+  const [progress, setProgress] = React.useState(10);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prevProgress) =>
+        prevProgress >= 100 ? 10 : prevProgress + 10
+      );
+    }, 800);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   if (!isRecording) {
     return (
-      <Button
-        size="large"
-        variant="contained"
-        disabled={isRecordDisabled}
-        startIcon={<FiberManualRecordIcon className={classes.red} />}
-        onClick={startRecord}
-      >
-        {hasRecorded ? `Re-record` : `Start Recording`}
-      </Button>
+      <>
+        {/* <LoadingBackdrop isLoading={true}/> */}
+        <div id="inner" />
+        <Button
+          size="large"
+          variant="contained"
+          disabled={isRecordDisabled}
+          startIcon={<FiberManualRecordIcon className={classes.red} />}
+          onClick={startRecord}
+        >
+          {hasRecorded ? `Re-record` : `Start Recording`}
+        </Button>
+      </>
     );
   } else {
     return (
-      <Button
-        size="large"
-        variant="contained"
-        startIcon={<StopIcon className={classes.red} />}
-        onClick={endRecord}
-      >
-        {`Stop Recording ${formatSeconds(seconds)}`}
-      </Button>
+      <>
+        <div id="inner" />
+        <Button
+          size="large"
+          variant="contained"
+          startIcon={<StopIcon className={classes.red} />}
+          onClick={endRecord}
+        >
+          {`Stop Recording ${formatSeconds(seconds)}`}
+        </Button>
+      </>
     );
   }
 }

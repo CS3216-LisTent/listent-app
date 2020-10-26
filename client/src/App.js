@@ -35,6 +35,9 @@ const Register = lazy(() => import("./pages/Register"));
 const Search = lazy(() => import("./pages/Search"));
 const SinglePost = lazy(() => import("./pages/SinglePost"));
 const Verify = lazy(() => import("./pages/Verify"));
+const AudioRecorderChipmunk = lazy(() =>
+  import("./components/AudioRecorderChipmunk")
+);
 
 // Check for token to keep user logged in
 const jwt = localStorage.getItem("jwt") || sessionStorage.getItem("jwt");
@@ -124,6 +127,9 @@ function App() {
           </Route>
           <Route exact path="/post/:id">
             <SinglePost />
+          </Route>
+          <Route path="/chipmunk">
+            <AudioRecorderChipmunk />
           </Route>
           <Route path="/:username">
             <Profile />
