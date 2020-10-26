@@ -9,8 +9,12 @@ import { useHistory } from "react-router-dom";
 // Material UI components
 import Backdrop from "@material-ui/core/Backdrop";
 import Button from "@material-ui/core/Button";
+import Checkbox from "@material-ui/core/Checkbox";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Collapse from "@material-ui/core/Collapse";
 import Container from "@material-ui/core/Container";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormGroup from "@material-ui/core/FormGroup";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -182,6 +186,7 @@ export default function New() {
   };
 
   const [conversionProgress, setConversionProgress] = useState(0);
+  const [isChipmunk, setIsChipmunk] = useState(false);
   return (
     <div className={classes.root}>
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
@@ -207,26 +212,40 @@ export default function New() {
                   setRecordedBlob={setRecordedBlob}
                   hasRecorded={!!recordedBlob}
                   setConversionProgress={setConversionProgress}
-                  isChipmunk
+                  isChipmunk={isChipmunk}
                 />
-                <input
-                  name="audio"
-                  accept="audio/*"
-                  className={classes.input}
-                  id="audio-upload"
-                  type="file"
-                  onChange={onUpload}
-                />
-                <label htmlFor="audio-upload">
-                  <Button
-                    component="span"
-                    variant="outlined"
-                    className={classes.uploadButton}
-                    onClick={onClickUpload}
-                  >
-                    Upload an audio file instead
-                  </Button>
-                </label>
+                <FormGroup row>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isChipmunk}
+                        onChange={() => setIsChipmunk(!isChipmunk)}
+                        color="primary"
+                      />
+                    }
+                    label="CHIPMUNK MODE"
+                  />
+                </FormGroup>
+                <Collapse in={!isChipmunk}>
+                  <input
+                    name="audio"
+                    accept="audio/*"
+                    className={classes.input}
+                    id="audio-upload"
+                    type="file"
+                    onChange={onUpload}
+                  />
+                  <label htmlFor="audio-upload">
+                    <Button
+                      component="span"
+                      variant="outlined"
+                      className={classes.uploadButton}
+                      onClick={onClickUpload}
+                    >
+                      Upload an audio file instead
+                    </Button>
+                  </label>
+                </Collapse>
               </>
             )}
             {uploadedFiles.audio.blob && (
@@ -253,6 +272,8 @@ export default function New() {
             >
               {errors.audio
                 ? errors.audio
+                : isChipmunk
+                ? "*Audio recorded in chipmunk mode cannot exceed 20 seconds"
                 : "*Audio recorded or uploaded cannot exceed 12 minutes and must be less than 25MB"}
             </Typography>
           </Grid>
