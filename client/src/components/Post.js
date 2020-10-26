@@ -224,6 +224,7 @@ export default function Post({
                   profilePicture={post.profile_picture}
                   description={post.description}
                   isMinimized={isCommentScrolled}
+                  timestamp={post.timestamp}
                 />
                 <AudioPlayer
                   autoplay={autoplay}

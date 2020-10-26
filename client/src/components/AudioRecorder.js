@@ -47,6 +47,7 @@ export default function AudioRecorder({
   hasRecorded,
   isChipmunk,
   setConversionProgress,
+  setRecording,
 }) {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -143,6 +144,9 @@ export default function AudioRecorder({
       });
     }
     setIsRecording(false);
+    if (setRecording) {
+      setRecording(false);
+    }
   };
 
   const initializeRecorder = () => {
@@ -181,6 +185,9 @@ export default function AudioRecorder({
       setIsRecordDisabled(false);
       setAudioSrc(null);
       setIsRecording(true);
+      if (setRecording) {
+        setRecording(true);
+      }
     }
   };
 
