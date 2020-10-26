@@ -187,6 +187,7 @@ export default function New() {
 
   const [conversionProgress, setConversionProgress] = useState(0);
   const [isChipmunk, setIsChipmunk] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   return (
     <div className={classes.root}>
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
@@ -213,19 +214,22 @@ export default function New() {
                   hasRecorded={!!recordedBlob}
                   setConversionProgress={setConversionProgress}
                   isChipmunk={isChipmunk}
+                  setRecording={setIsRecording}
                 />
-                <FormGroup row>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={isChipmunk}
-                        onChange={() => setIsChipmunk(!isChipmunk)}
-                        color="primary"
-                      />
-                    }
-                    label="CHIPMUNK MODE"
-                  />
-                </FormGroup>
+                <Collapse in={!isRecording}>
+                  <FormGroup row>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={isChipmunk}
+                          onChange={() => setIsChipmunk(!isChipmunk)}
+                          color="primary"
+                        />
+                      }
+                      label="CHIPMUNK MODE"
+                    />
+                  </FormGroup>
+                </Collapse>
                 <Collapse in={!isChipmunk}>
                   <input
                     name="audio"
