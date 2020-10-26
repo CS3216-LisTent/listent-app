@@ -281,11 +281,11 @@ function RecordButtons({
   }, [isRecording, seconds]);
 
   useEffect(() => {
-    if (seconds >= 700) {
+    if (seconds >= 720) {
       // Stop in 12 mins
       endRecord();
       setSeconds(0);
-    } else if (seconds >= 17 && isChipmunk) {
+    } else if (seconds >= 20 && isChipmunk) {
       // Stop in 20 seconds for chipmunk
       endRecord();
       setSeconds(0);

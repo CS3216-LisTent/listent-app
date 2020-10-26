@@ -127,7 +127,7 @@ export async function newPostErrors(title, audioBlob, imageBlob) {
     return errors;
   }
 
-  if ((await getBlobDuration(audioBlob)) > 720 || audioBlob.size > 25000000) {
+  if ((await getBlobDuration(audioBlob)) > 800 || audioBlob.size > 25000000) {
     errors.audio =
       "*Audio recorded or uploaded cannot exceed 12 minutes and must be less than 25MB";
   }
