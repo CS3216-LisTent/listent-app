@@ -49,7 +49,6 @@ class PostService:
         try:
             post_id = uuid.uuid4().hex
             timestamp = datetime.utcnow().isoformat()
-            print(timestamp)
             file_name, file_ext = os.path.splitext(audio_file.filename)
             # todo: multithread or multiprocess the audio conversion cos it's blocking and uses high cpu
             audio = AudioSegment.from_file(audio_file, format=file_ext.lstrip('.'))
