@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 function CircularProgressWithLabel(props) {
   return (
     <Box position="relative" display="inline-flex">
-      <CircularProgress variant="static" {...props} />
+      <CircularProgress />
       <Box
         top={0}
         left={0}

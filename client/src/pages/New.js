@@ -24,6 +24,7 @@ import GreenButton from "../components/GreenButton";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
+import LoadingBackdrop from "../components/LoadingBackdrop";
 
 // Actions
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
@@ -128,7 +129,6 @@ export default function New() {
 
     const imageBlob = uploadedFiles.image.blob;
     const { title, description } = fields;
-
     const err = await newPostErrors(title, audioBlob, imageBlob);
     if (err) {
       setErrors(err);
@@ -180,11 +180,17 @@ export default function New() {
       );
     }
   };
+
+  const [conversionProgress, setConversionProgress] = useState(0);
   return (
     <div className={classes.root}>
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
         <CircularProgress color="primary" />
       </Backdrop>
+      <LoadingBackdrop
+        isLoading={conversionProgress !== 0}
+        progress={conversionProgress}
+      />
       <Container maxWidth="sm">
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -200,6 +206,8 @@ export default function New() {
                 <AudioRecorder
                   setRecordedBlob={setRecordedBlob}
                   hasRecorded={!!recordedBlob}
+                  setConversionProgress={setConversionProgress}
+                  isChipmunk
                 />
                 <input
                   name="audio"

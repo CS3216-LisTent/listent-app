@@ -14,6 +14,7 @@ import StopIcon from "@material-ui/icons/Stop";
 // Utils
 import injectMetadata from "../utils/inject-metadata";
 import { formatSeconds } from "../utils/general-utils";
+import convertToChipmunk from "../utils/convert-to-chipmunk";
 
 // Custom components
 import AudioPlayer from "../components/AudioPlayer";
@@ -41,7 +42,12 @@ const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
 let microphone = null;
 let recorder = null;
 
-export default function AudioRecorder({ setRecordedBlob, hasRecorded }) {
+export default function AudioRecorder({
+  setRecordedBlob,
+  hasRecorded,
+  isChipmunk,
+  setConversionProgress,
+}) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [audioSrc, setAudioSrc] = useState(null);
@@ -54,7 +60,6 @@ export default function AudioRecorder({ setRecordedBlob, hasRecorded }) {
       if (setRecordedBlob) {
         setRecordedBlob(null);
       }
-      
       releaseMicrophone();
       if (recorder) {
         recorder.destroy();
@@ -117,8 +122,14 @@ export default function AudioRecorder({ setRecordedBlob, hasRecorded }) {
 
   const stopRecordingCallback = () => {
     releaseMicrophone();
-
-    if (isSafari || isEdge || isFirefox) {
+    if (isChipmunk) {
+      convertToChipmunk(
+        recorder.getBlob(),
+        setAudioSrc,
+        setRecordedBlob,
+        setConversionProgress
+      );
+    } else if (isSafari || isEdge || isFirefox) {
       setAudioSrc(URL.createObjectURL(recorder.getBlob()));
       if (setRecordedBlob) {
         setRecordedBlob(recorder.getBlob());
@@ -143,7 +154,7 @@ export default function AudioRecorder({ setRecordedBlob, hasRecorded }) {
         bufferSize: 16384,
       };
 
-      if (isSafari || isEdge || isFirefox) {
+      if (isSafari || isEdge || isFirefox || isChipmunk) {
         options.recorderType = RecordRTC.StereoAudioRecorder;
       }
 
@@ -223,6 +234,7 @@ export default function AudioRecorder({ setRecordedBlob, hasRecorded }) {
         endRecord={stopRecording}
         isRecordDisabled={isRecordDisabled}
         hasRecorded={hasRecorded}
+        isChipmunk={isChipmunk}
       />
       {errors && (
         <Typography
@@ -243,6 +255,7 @@ function RecordButtons({
   endRecord,
   isRecordDisabled,
   hasRecorded,
+  isChipmunk,
 }) {
   const classes = useStyles();
   const [seconds, setSeconds] = useState(0);
@@ -264,6 +277,11 @@ function RecordButtons({
     if (seconds >= 720) {
       // Stop in 12 mins
       endRecord();
+      setSeconds(0);
+    } else if (seconds >= 20 && isChipmunk) {
+      // Stop in 20 seconds for chipmunk
+      endRecord();
+      setSeconds(0);
     }
   }, [seconds, endRecord]);
 

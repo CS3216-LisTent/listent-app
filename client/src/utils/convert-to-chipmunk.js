@@ -22,7 +22,27 @@ function processInWebWorker() {
 
 let worker;
 
-export default function convertStreams(audioBlob, setAudioSrc) {
+export default function convertToChipmunk(
+  audioBlob,
+  setAudioSrc,
+  setRecordedBlob,
+  setConversionProgress
+) {
+  let timer = setInterval(() => {
+    if (setConversionProgress !== undefined) {
+      setConversionProgress((progress) => {
+        if (progress % 30 !== 9) {
+          return progress + 1;
+        }
+        return progress;
+      });
+    }
+  }, 1000);
+
+  if (setConversionProgress !== undefined) {
+    setConversionProgress(10);
+  }
+
   let aab;
   let buffersReady;
 
@@ -46,6 +66,10 @@ export default function convertStreams(audioBlob, setAudioSrc) {
           '" download="ffmpeg-asm.js">ffmpeg-asm.js</a> file has been loaded.'
       );
 
+      if (setConversionProgress !== undefined) {
+        setConversionProgress(50);
+      }
+
       if (buffersReady) postMessage();
     } else if (message.type === "stdout") {
       console.log(message.data);
@@ -55,12 +79,30 @@ export default function convertStreams(audioBlob, setAudioSrc) {
           workerPath +
           '" download="ffmpeg-asm.js">ffmpeg-asm.js</a> file received ffmpeg command.'
       );
+
+      if (setConversionProgress !== undefined) {
+        setConversionProgress(70);
+      }
     } else if (message.type === "done") {
+      if (setConversionProgress !== undefined) {
+        setConversionProgress(99);
+      }
+
       let result = message.data[0];
       let blob = new File([result.data], "test.wav", {
         type: "audio/wav",
       });
+
       setAudioSrc(URL.createObjectURL(blob));
+
+      if (setRecordedBlob) {
+        setRecordedBlob(blob);
+      }
+
+      if (setConversionProgress !== undefined) {
+        setConversionProgress(0);
+      }
+      clearInterval(timer);
     }
   };
   let postMessage = function () {
