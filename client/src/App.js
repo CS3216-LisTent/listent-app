@@ -1,6 +1,5 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
 import axios from "axios";
-import { Helmet } from "react-helmet";
 import { Switch, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
 
@@ -14,6 +13,7 @@ import jwt_decode from "jwt-decode";
 import store from "./store";
 import { setUser, logoutUser } from "./actions/auth-actions";
 import { setHomeTabIndex } from "./actions/home-tab-actions";
+import { setSeed } from "./actions/seed-actions";
 
 // Custom components
 import Alert from "./components/Alert";
@@ -69,6 +69,9 @@ if (user) {
   store.dispatch(setHomeTabIndex(1));
 }
 
+// Set discover seed
+store.dispatch(setSeed());
+
 const useStyles = makeStyles({
   root: { height: (windowHeight) => windowHeight - 56 },
 });
@@ -91,9 +94,6 @@ function App() {
 
   return (
     <div className={classes.root}>
-      <Helmet>
-        <title>LisTent</title>
-      </Helmet>
       <CssBaseline />
       <BackButton />
       <TopSnackbar />

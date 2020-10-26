@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
 
 // Material UI components
@@ -23,20 +23,31 @@ const useStyles = makeStyles((theme) => ({
 export default function BackButton() {
   const classes = useStyles();
   const user = useSelector((state) => state.user);
+  const backCallback = useSelector((state) => state.back);
   const history = useHistory();
+  const [isShowBack, setIsShowBack] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const unlisten = history.listen(() => {
+      setIsShowBack(true);
+    });
+
+    return () => {
+      unlisten();
+    };
+  }, [history]);
 
   return (
     <Grid container className={classes.root}>
-      <Grid item>
-        <IconButton
-          onClick={() => {
-            history.goBack();
-          }}
-        >
-          <ArrowBackIcon />
-        </IconButton>
-      </Grid>
-      {!user && (
+      {isShowBack && (
+        <Grid item>
+          <IconButton onClick={backCallback}>
+            <ArrowBackIcon />
+          </IconButton>
+        </Grid>
+      )}
+      {!user && location.pathname !== "/" && (
         <Grid item>
           <IconButton
             onClick={() => {

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
@@ -137,14 +137,6 @@ export default function Post({
   const commentsRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  useEffect(() => {
-    if (data && setRunInstructions && !hideNext) {
-      setTimeout(() => {
-        setRunInstructions(true);
-      }, 1000);
-    }
-  }, [data, hideNext, setRunInstructions]);
-
   if (!isRender) {
     return (
       <div className={classes.loadingTextContainer}>
@@ -168,16 +160,6 @@ export default function Post({
       {hideNext && (
         <Helmet>
           <title>{post.title}</title>
-          <meta name="title" content={post.title} />
-          <meta name="description" content={post.description} />
-
-          <meta property="og:title" content={post.title} />
-          <meta property="og:description" content={post.description} />
-          <meta property="og:image" content={post.image_url} />
-          <meta property="og:url" content="https://listent.app" />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta property="og:site_name" content="LisTent" />
-          <meta name="twitter:image:alt" content={post.title} />
         </Helmet>
       )}
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
@@ -252,6 +234,7 @@ export default function Post({
                   hidePrevious={hidePrevious}
                   src={post.audio_link}
                   isPaused={isPaused}
+                  setRunInstructions={setRunInstructions}
                 />
               </Grid>
             </Grid>

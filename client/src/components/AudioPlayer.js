@@ -49,6 +49,7 @@ export default function AudioPlayer({
   autoplay,
   autopause,
   isPaused,
+  setRunInstructions,
   ...rest
 }) {
   const audioRef = useRef(null);
@@ -100,6 +101,14 @@ export default function AudioPlayer({
       };
     }
   }, [audioRef, controlsRef, next, src]);
+
+  useEffect(() => {
+    if (setRunInstructions && !hideNext && controlsRef.current && isLoaded) {
+      setTimeout(() => {
+        setRunInstructions(true);
+      }, 100);
+    }
+  }, [setRunInstructions, hideNext, isLoaded]);
 
   useEffect(() => {
     if (isPaused) {

@@ -2,6 +2,7 @@ import { createStore, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
 
 import rootReducer from "./reducers";
+import history from "./utils/history";
 
 const initialState = {
   bottomNavigation: { index: 0 },
@@ -21,6 +22,10 @@ const initialState = {
   search: {
     searchTerm: "",
     searchTab: 0,
+  },
+  seed: 0,
+  back: () => {
+    history.goBack();
   },
 };
 
