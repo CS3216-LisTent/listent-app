@@ -74,7 +74,10 @@ export default function EditProfile({
     <>
       <Grid className={classes.root} container direction="column" spacing={1}>
         {isEditPassword ? (
-          <EditPassword endEdit={() => setIsEditPassword(false)} />
+          <EditPassword
+            endEdit={() => setIsEditPassword(false)}
+            endProfileEdit={endEdit}
+          />
         ) : (
           <>
             <Grid
@@ -149,7 +152,7 @@ export default function EditProfile({
   );
 }
 
-function EditPassword({ endEdit }) {
+function EditPassword({ endEdit, endProfileEdit }) {
   const dispatch = useDispatch();
   const [fields, setFields] = useState({
     current_password: "",
@@ -166,6 +169,14 @@ function EditPassword({ endEdit }) {
       [e.target.name]: e.target.value,
     });
   };
+
+  useEffect(() => {
+    dispatch(setBack(endEdit));
+
+    return () => {
+      dispatch(setBack(endProfileEdit));
+    };
+  }, [dispatch, endEdit, endProfileEdit]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
