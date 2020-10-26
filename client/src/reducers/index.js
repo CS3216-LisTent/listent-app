@@ -8,6 +8,7 @@ import redirectReducer from "./redirect-reducer";
 import alertReducer from "./alert-reducer";
 import searchReducer from "./search-reducer";
 import seedReducer from "./seed-reducer";
+import backReducer from "./back-reducer";
 
 export default combineReducers({
   bottomNavigation: bottomNavigationReducer,
@@ -18,4 +19,5 @@ export default combineReducers({
   alert: alertReducer,
   search: searchReducer,
   seed: seedReducer,
+  back: backReducer,
 });

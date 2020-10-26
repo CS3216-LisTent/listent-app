@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
 export default function BackButton() {
   const classes = useStyles();
   const user = useSelector((state) => state.user);
+  const backCallback = useSelector((state) => state.back);
   const history = useHistory();
   const [isShowBack, setIsShowBack] = useState(false);
   const location = useLocation();
@@ -41,11 +42,7 @@ export default function BackButton() {
     <Grid container className={classes.root}>
       {isShowBack && (
         <Grid item>
-          <IconButton
-            onClick={() => {
-              history.goBack();
-            }}
-          >
+          <IconButton onClick={backCallback}>
             <ArrowBackIcon />
           </IconButton>
         </Grid>
