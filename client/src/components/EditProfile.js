@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { makeStyles } from "@material-ui/core";
 import { useDispatch } from "react-redux";
@@ -18,6 +18,7 @@ import LoadingButton from "../components/LoadingButton";
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
 import { logoutUser } from "../actions/auth-actions";
+import { setBack } from "../actions/back-actions";
 
 // Utils
 import { editPasswordErrors } from "../utils/validators";
@@ -30,16 +31,6 @@ const useStyles = makeStyles((theme) => ({
   },
   center: {
     textAlign: "center",
-  },
-  // Placeholder: Hack to hide back button
-  topBar: {
-    height: theme.spacing(6),
-    width: theme.spacing(6),
-    position: "absolute",
-    top: 0,
-    left: 0,
-    backgroundColor: theme.palette.background.default,
-    zIndex: theme.zIndex.snackbar,
   },
 }));
 
@@ -71,10 +62,16 @@ export default function EditProfile({
     endEdit();
   };
 
+  useEffect(() => {
+    dispatch(setBack(endEdit));
+
+    return () => {
+      dispatch(setBack());
+    };
+  }, [dispatch, endEdit]);
+
   return (
     <>
-      {/* Placeholder: Hack to hide back button */}
-      <div className={classes.topBar} />
       <Grid className={classes.root} container direction="column" spacing={1}>
         {isEditPassword ? (
           <EditPassword endEdit={() => setIsEditPassword(false)} />
