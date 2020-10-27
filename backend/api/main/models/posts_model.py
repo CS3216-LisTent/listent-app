@@ -13,7 +13,7 @@ class PostModel:
     def get_post(post_id):
         resp = list(DB.posts.aggregate([
             {'$match': {'_id': post_id}},
-            {'$unwind': '$comments'},
+            {'$unwind': {'path': '$comments', "preserveNullAndEmptyArrays": True}},
             {'$sort': {'comments.timestamp': -1}},
             {'$group': {
                 '_id': '$_id',
