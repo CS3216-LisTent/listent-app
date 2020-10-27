@@ -79,7 +79,7 @@ class PostController(Resource):
 
 
 @API.route('/feed', strict_slashes=False)
-class DiscoveryController(Resource):
+class FeedController(Resource):
     @TOKEN_AUTH.login_required
     def get(self):
         try:

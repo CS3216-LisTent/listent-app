@@ -13,7 +13,7 @@ class PostModel:
     def get_post(post_id):
         resp = list(DB.posts.aggregate([
             {'$match': {'_id': post_id}},
-            {'$unwind': '$comments'},
+            {'$unwind': {'path': '$comments', "preserveNullAndEmptyArrays": True}},
             {'$sort': {'comments.timestamp': -1}},
             {'$group': {
                 '_id': '$_id',
@@ -29,6 +29,7 @@ class PostModel:
         if resp and resp[0]:
             post_info = resp[0]
             return post_info
+        print(post_id)
         raise WriteError('Error in getting post. Post may not exist.')
 
     # Return the k-th element based on the default ordering
