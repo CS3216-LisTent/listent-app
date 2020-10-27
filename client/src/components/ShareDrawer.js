@@ -162,7 +162,7 @@ function MessengerShareButton({ url, size, onShareWindowClose }) {
     }
   }, [openWindow, onShareWindowClose]);
 
-  const messengerOnClick = (event) => {
+  const messengerOnClick = (e) => {
     if (isMobile()) {
       setOpenWindow(
         window.open(
