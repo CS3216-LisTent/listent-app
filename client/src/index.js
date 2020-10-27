@@ -5,7 +5,11 @@ import axios from "axios";
 import { SWRConfig } from "swr";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import {
+  createMuiTheme,
+  ThemeProvider,
+  responsiveFontSizes,
+} from "@material-ui/core/styles";
 import { linkify } from "react-linkify";
 import App from "./App";
 import store from "./store";
@@ -41,7 +45,7 @@ linkify.add("#", {
   },
 });
 
-const theme = createMuiTheme({
+let theme = createMuiTheme({
   palette: {
     type: "dark",
     primary: {
@@ -63,6 +67,7 @@ const theme = createMuiTheme({
     },
   },
 });
+theme = responsiveFontSizes(theme);
 
 ReactDOM.render(
   <React.StrictMode>
