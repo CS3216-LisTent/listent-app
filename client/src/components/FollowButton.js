@@ -24,7 +24,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FollowButton({ username, callback, ...rest }) {
+export default function FollowButton({
+  username,
+  callback,
+  mutateUser,
+  ...rest
+}) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -38,6 +43,11 @@ export default function FollowButton({ username, callback, ...rest }) {
     try {
       setIsLoading(true);
       await axios.post(`/api/v1/users/${username}/follow`);
+
+      if (mutateUser) {
+        mutateUser();
+      }
+
       mutateFollowing();
     } catch {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
@@ -53,6 +63,11 @@ export default function FollowButton({ username, callback, ...rest }) {
     try {
       setIsLoading(true);
       await axios.post(`/api/v1/users/${username}/unfollow`);
+
+      if (mutateUser) {
+        mutateUser();
+      }
+
       mutateFollowing();
     } catch {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
