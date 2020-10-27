@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 
@@ -13,6 +13,7 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 // Other utils
 import copy from "copy-to-clipboard";
+import { isMobile } from "../utils/general-utils";
 
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
@@ -20,6 +21,7 @@ import { openSnackbar } from "../actions/snackbar-actions";
 // Share buttons
 import {
   FacebookIcon,
+  FacebookMessengerIcon,
   FacebookShareButton,
   LineIcon,
   LineShareButton,
@@ -29,8 +31,6 @@ import {
   RedditShareButton,
   TelegramIcon,
   TelegramShareButton,
-  TumblrIcon,
-  TumblrShareButton,
   TwitterIcon,
   TwitterShareButton,
   WhatsappIcon,
@@ -90,36 +90,26 @@ export default function ShareDrawer({ isOpen, setIsOpen, postId }) {
           className={classes.iconRow}
         >
           <Grid item xs={3} className={classes.center}>
-            <FacebookShareButton
-              url={link}
-              onShareWindowClose={closeDrawer}
-            >
+            <FacebookShareButton url={link} onShareWindowClose={closeDrawer}>
               <FacebookIcon size={56} round />
             </FacebookShareButton>
           </Grid>
           <Grid item xs={3} className={classes.center}>
-            <TwitterShareButton
+            <MessengerShareButton
               url={link}
               onShareWindowClose={closeDrawer}
-            >
+              size={56}
+            />
+          </Grid>
+          <Grid item xs={3} className={classes.center}>
+            <TwitterShareButton url={link} onShareWindowClose={closeDrawer}>
               <TwitterIcon size={56} round />
             </TwitterShareButton>
           </Grid>
           <Grid item xs={3} className={classes.center}>
-            <WhatsappShareButton
-              url={link}
-              onShareWindowClose={closeDrawer}
-            >
-              <WhatsappIcon size={56} round />
-            </WhatsappShareButton>
-          </Grid>
-          <Grid item xs={3} className={classes.center}>
-            <TelegramShareButton
-              url={link}
-              onShareWindowClose={closeDrawer}
-            >
-              <TelegramIcon size={56} round />
-            </TelegramShareButton>
+            <LinkedinShareButton url={link} onShareWindowClose={closeDrawer}>
+              <LinkedinIcon size={56} round />
+            </LinkedinShareButton>
           </Grid>
         </Grid>
         <Grid
@@ -129,39 +119,84 @@ export default function ShareDrawer({ isOpen, setIsOpen, postId }) {
           className={classes.iconRow}
         >
           <Grid item xs={3} className={classes.center}>
-            <RedditShareButton
-              url={link}
-              onShareWindowClose={closeDrawer}
-            >
+            <WhatsappShareButton url={link} onShareWindowClose={closeDrawer}>
+              <WhatsappIcon size={56} round />
+            </WhatsappShareButton>
+          </Grid>
+          <Grid item xs={3} className={classes.center}>
+            <TelegramShareButton url={link} onShareWindowClose={closeDrawer}>
+              <TelegramIcon size={56} round />
+            </TelegramShareButton>
+          </Grid>
+          <Grid item xs={3} className={classes.center}>
+            <RedditShareButton url={link} onShareWindowClose={closeDrawer}>
               <RedditIcon size={56} round />
             </RedditShareButton>
           </Grid>
           <Grid item xs={3} className={classes.center}>
-            <TumblrShareButton
-              url={link}
-              onShareWindowClose={closeDrawer}
-            >
-              <TumblrIcon size={56} round />
-            </TumblrShareButton>
-          </Grid>
-          <Grid item xs={3} className={classes.center}>
-            <LineShareButton
-              url={link}
-              onShareWindowClose={closeDrawer}
-            >
+            <LineShareButton url={link} onShareWindowClose={closeDrawer}>
               <LineIcon size={56} round />
             </LineShareButton>
-          </Grid>
-          <Grid item xs={3} className={classes.center}>
-            <LinkedinShareButton
-              url={link}
-              onShareWindowClose={closeDrawer}
-            >
-              <LinkedinIcon size={56} round />
-            </LinkedinShareButton>
           </Grid>
         </Grid>
       </div>
     </Drawer>
+  );
+}
+
+function MessengerShareButton({ url, size, onShareWindowClose }) {
+  const APP_ID = "521270401588372";
+  const [openWindow, setOpenWindow] = useState(null);
+  useEffect(() => {
+    if (openWindow) {
+      const timer = setInterval(() => {
+        if (openWindow && openWindow.closed) {
+          clearInterval(timer);
+          onShareWindowClose();
+        }
+      }, 500);
+
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [openWindow, onShareWindowClose]);
+
+  const messengerOnClick = (event) => {
+    if (isMobile()) {
+      setOpenWindow(
+        window.open(
+          "fb-messenger://share?link=" +
+            encodeURIComponent(url) +
+            "&app_id=" +
+            encodeURIComponent(APP_ID)
+        )
+      );
+    } else {
+      setOpenWindow(
+        window.open(
+          `https://www.facebook.com/dialog/send?app_id=${encodeURIComponent(
+            APP_ID
+          )}&redirect_uri=${encodeURIComponent(url)}&link=${encodeURIComponent(
+            url
+          )}`
+        )
+      );
+    }
+  };
+
+  return (
+    <button
+      onClick={messengerOnClick}
+      style={{
+        backgroundColor: "transparent",
+        border: "none",
+        font: "inherit",
+        color: "inherit",
+        cursor: "pointer",
+      }}
+    >
+      <FacebookMessengerIcon size={size} round />
+    </button>
   );
 }
