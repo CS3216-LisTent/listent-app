@@ -191,6 +191,7 @@ export default function New() {
   const isHalfFilled =
     uploadedFiles.audio.blob ||
     recordedBlob ||
+    uploadedFiles.image.blob ||
     !isEmpty(fields.title, { ignore_whitespace: true }) ||
     !isEmpty(fields.description, { ignore_whitespace: true });
   return (
