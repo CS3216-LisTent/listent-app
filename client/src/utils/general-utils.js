@@ -19,3 +19,12 @@ export function calculateSince(timestamp) {
     ) + " ago"
   );
 }
+
+export function isMobile() {
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+  return (
+    /android/i.test(userAgent) ||
+    (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream)
+  );
+}

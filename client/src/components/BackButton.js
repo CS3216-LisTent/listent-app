@@ -40,7 +40,7 @@ export default function BackButton() {
 
   return (
     <Grid container className={classes.root}>
-      {isShowBack && (
+      {isShowBack && location.pathname !== "/" && (
         <Grid item>
           <IconButton onClick={backCallback}>
             <ArrowBackIcon />

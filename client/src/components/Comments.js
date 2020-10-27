@@ -17,6 +17,7 @@ import Typography from "@material-ui/core/Typography";
 
 // Custom components
 import Can from "./Can";
+import DetectLinks from "./DetectLinks";
 
 // Icons
 import SendIcon from "@material-ui/icons/Send";
@@ -162,7 +163,9 @@ function Comment({ username, text }) {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="caption">{text}</Typography>
+            <Typography variant="caption">
+              <DetectLinks>{text}</DetectLinks>
+            </Typography>
           </Grid>
         </Grid>
       </CardContent>
