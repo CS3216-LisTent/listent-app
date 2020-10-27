@@ -189,6 +189,7 @@ export default function New() {
   const [isChipmunk, setIsChipmunk] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const isHalfFilled =
+    isRecording ||
     uploadedFiles.audio.blob ||
     recordedBlob ||
     uploadedFiles.image.blob ||
