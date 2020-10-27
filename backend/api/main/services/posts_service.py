@@ -428,3 +428,30 @@ class PostService:
                     'message': f'DB Connection Error: {str(e)}',
                 }), 500
             )
+
+    @staticmethod
+    def increase_view_count(post_id, number):
+        try:
+            posts = PostModel.inc_view_count_by_n(post_id, n=number)
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'Successfully retrieved posts.',
+                    'data': posts
+                }), 200
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'DB Operation Error: {str(e)}',
+                    'data': []
+                }), 200
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
