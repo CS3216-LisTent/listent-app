@@ -29,7 +29,6 @@ class PostModel:
         if resp and resp[0]:
             post_info = resp[0]
             return post_info
-        print(post_id)
         raise WriteError('Error in getting post. Post may not exist.')
 
     # Return the k-th element based on the default ordering
