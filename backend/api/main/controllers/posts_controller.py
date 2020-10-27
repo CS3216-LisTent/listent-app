@@ -191,7 +191,6 @@ class IncreasePostViewController(Resource):
     def post(self, post_id):
         try:
             increase_by = 1
-            print(request.json)
             if ('number' in request.json) and (request.json['number'] is not None) \
                     and (type(request.json['number']) == int):
                 increase_by = int(request.json['number'])
