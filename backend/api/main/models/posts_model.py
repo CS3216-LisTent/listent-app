@@ -21,6 +21,7 @@ class PostModel:
                 'title': {'$first': '$title'},
                 'description': {'$first': '$description'},
                 'audio_link': {'$first': '$audio_link'},
+                'image_link': {'$first': '$image_link'},
                 'view_count': {'$first': '$view_count'},
                 'timestamp': {'$first': '$timestamp'},
                 'liked_by': {'$first': '$liked_by'},
