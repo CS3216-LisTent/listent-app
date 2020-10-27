@@ -135,6 +135,7 @@ class PostFeedController(Resource):
         except Exception as e:
             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
 
+
 @API.route('/<string:post_id>/comment', strict_slashes=False)
 class PostCommentController(Resource):
     @TOKEN_AUTH.login_required
@@ -183,3 +184,16 @@ class HashtagSearchController(Resource):
             return PostService.search_hashtag(**search_info)
         except Exception as e:
             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
+
+
+@API.route('/<string:post_id>/inc-view-count', strict_slashes=False)
+class HashtagSearchController(Resource):
+    def post(self, post_id):
+        try:
+            increase_by = 1
+            if ('number' in request.json) and (request.json['number'] is not None):
+                increase_by = request.json['number']
+            return PostService.increase_view_count(post_id=post_id, number=increase_by)
+        except Exception as e:
+            return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
+
