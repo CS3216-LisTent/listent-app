@@ -24,6 +24,9 @@ export function isMobile() {
 }
 
 export function abbreviateNumber(value) {
+  if (!value) {
+    return 0;
+  }
   let newValue = value;
   if (value >= 1000) {
     let suffixes = ["", "K", "M", "B", "T"];
