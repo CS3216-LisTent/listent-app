@@ -93,6 +93,8 @@ export default function AudioRecorder({
           ? true
           : {
               echoCancellation: false,
+              autoGainControl: false,
+              noiseSuppression: true,
             },
       })
       .then((mic) => {
@@ -181,6 +183,9 @@ export default function AudioRecorder({
       }
 
       recorder = RecordRTC(microphone, options);
+      recorder
+        .setRecordingDuration(isChipmunk ? 20 * 1000 : 12 * 60 * 1000)
+        .onRecordingStopped(stopRecordingCallback);
       recorder.startRecording();
       setIsRecordDisabled(false);
       setAudioSrc(null);
@@ -262,7 +267,6 @@ function RecordButtons({
   endRecord,
   isRecordDisabled,
   hasRecorded,
-  isChipmunk,
 }) {
   const classes = useStyles();
   const [seconds, setSeconds] = useState(0);
@@ -279,18 +283,6 @@ function RecordButtons({
     }
     return () => clearInterval(interval);
   }, [isRecording, seconds]);
-
-  useEffect(() => {
-    if (seconds >= 720) {
-      // Stop in 12 mins
-      endRecord();
-      setSeconds(0);
-    } else if (seconds >= 20 && isChipmunk) {
-      // Stop in 20 seconds for chipmunk
-      endRecord();
-      setSeconds(0);
-    }
-  }, [seconds, endRecord, isChipmunk]);
 
   if (!isRecording) {
     return (

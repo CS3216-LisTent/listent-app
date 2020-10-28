@@ -108,7 +108,7 @@ export default function convertToChipmunk(
   let postMessage = function () {
     worker.postMessage({
       type: "command",
-      arguments: "-i audio.wav -acodec pcm_u8 -ar 22050 -af asetrate=44100*(1/0.65),aresample=44100,atempo=0.65 -strict experimental output.wav".split(
+      arguments: "-i audio.wav -af asetrate=44100*(1/0.65),aresample=44100,atempo=0.65 -strict experimental output.wav".split(
         " "
       ),
       files: [

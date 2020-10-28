@@ -16,8 +16,6 @@ class UserModel:
 
             # TODO: Optimise this in the future when no. followers grow
             if show_follower_pics:
-                print(resp)
-                print('HERE')
                 for i, un in enumerate(resp['followers']):
                     picture = UserModel.get_user(un)['picture']
                     resp['followers'][i] = {'username': un, 'picture': picture}

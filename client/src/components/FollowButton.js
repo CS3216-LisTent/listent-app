@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import clsx from "clsx";
 import axios from "axios";
 import useSwr from "swr";
+import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 
 // Material UI components
@@ -14,7 +16,21 @@ import RedButton from "../components/RedButton";
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
 
-export default function FollowButton({ username, callback, ...rest }) {
+const useStyles = makeStyles((theme) => ({
+  button: {
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "0.7rem",
+    },
+  },
+}));
+
+export default function FollowButton({
+  username,
+  callback,
+  mutateUser,
+  ...rest
+}) {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const { data: followingData, mutate: mutateFollowing } = useSwr(
@@ -27,6 +43,11 @@ export default function FollowButton({ username, callback, ...rest }) {
     try {
       setIsLoading(true);
       await axios.post(`/api/v1/users/${username}/follow`);
+
+      if (mutateUser) {
+        mutateUser();
+      }
+
       mutateFollowing();
     } catch {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
@@ -42,6 +63,11 @@ export default function FollowButton({ username, callback, ...rest }) {
     try {
       setIsLoading(true);
       await axios.post(`/api/v1/users/${username}/unfollow`);
+
+      if (mutateUser) {
+        mutateUser();
+      }
+
       mutateFollowing();
     } catch {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
@@ -65,6 +91,7 @@ export default function FollowButton({ username, callback, ...rest }) {
             yes={() => (
               <GreenButton
                 {...rest}
+                className={clsx(rest.className, classes.button)}
                 onClick={follow}
                 fullWidth
                 disabled={isLoading}
@@ -75,6 +102,7 @@ export default function FollowButton({ username, callback, ...rest }) {
             no={() => (
               <RedButton
                 {...rest}
+                className={clsx(rest.className, classes.button)}
                 onClick={unfollow}
                 fullWidth
                 disabled={isLoading}

@@ -5,14 +5,31 @@ from api.main.db import DB
 from api.main.models.users_model import UserModel
 import numpy.random as rng
 
+from api.main.utils.score_util import get_post_score
+
 
 class PostModel:
     @staticmethod
     def get_post(post_id):
-        resp = DB.posts.find_one({'_id': post_id})
-        if resp:
-            resp['comments'].sort(key=lambda comment: comment['timestamp'], reverse=True)
-            return resp
+        resp = list(DB.posts.aggregate([
+            {'$match': {'_id': post_id}},
+            {'$unwind': {'path': '$comments', "preserveNullAndEmptyArrays": True}},
+            {'$sort': {'comments.timestamp': -1}},
+            {'$group': {
+                '_id': '$_id',
+                'username': {'$first': '$username'},
+                'title': {'$first': '$title'},
+                'description': {'$first': '$description'},
+                'audio_link': {'$first': '$audio_link'},
+                'image_link': {'$first': '$image_link'},
+                'view_count': {'$first': '$view_count'},
+                'timestamp': {'$first': '$timestamp'},
+                'liked_by': {'$first': '$liked_by'},
+                'comments': {'$push': '$comments'}}},
+        ]))
+        if resp and resp[0]:
+            post_info = resp[0]
+            return post_info
         raise WriteError('Error in getting post. Post may not exist.')
 
     # Return the k-th element based on the default ordering
@@ -24,13 +41,15 @@ class PostModel:
     # TODO: Change this to be adaptive with the number of likes or the current trends.
     @staticmethod
     def get_discover_posts(skip=0, limit=10, seed=0):
-        total_post = DB.posts.find().count()
-        random_permute = rng.RandomState(seed).permutation(total_post)
-        selected_posts = random_permute[skip:skip+limit]
-        discovered_posts = []
-        for post_order in selected_posts:
-            discovered_posts.append(PostModel.get_post_based_on_order(post_order))
-        return discovered_posts
+        # total_post = DB.posts.find().count()
+        # random_permute = rng.RandomState(seed).permutation(total_post)
+        # selected_posts = random_permute[skip:skip + limit]
+        # discovered_posts = []
+        # for post_order in selected_posts:
+        #     discovered_posts.append(PostModel.get_post_based_on_order(post_order))
+        all_posts = list(DB.posts.find())
+        all_posts.sort(key=lambda post: get_post_score(post), reverse=True)
+        return all_posts[skip:skip+limit]
 
     @staticmethod
     def add_user_post(username, post_id, title, audio_link, timestamp, description=None, image_link=None):
@@ -45,7 +64,8 @@ class PostModel:
                 'image_link': image_link,
                 'timestamp': timestamp,
                 'comments': [],
-                'liked_by': []
+                'liked_by': [],
+                'view_count': 0
             })
             DB.users.find_one_and_update({'_id': username}, {'$addToSet': {'posts': post_id}})
             return PostModel.get_post(post_id)
@@ -97,7 +117,7 @@ class PostModel:
             for username in followings:
                 posts.extend(PostModel.get_user_posts(username))
             posts.sort(key=lambda post: post['timestamp'], reverse=True)
-            return posts[skip:skip+limit]
+            return posts[skip:skip + limit]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     # Get random discovery contents as logged in users
@@ -106,13 +126,14 @@ class PostModel:
     def get_user_discover_posts(username, skip=0, limit=10, seed=0):
         user = UserModel.get_user(username)
         if user:
-            total_post = DB.posts.find({'username': {'$ne': username}}).count()
-            random_permute = rng.RandomState(seed).permutation(total_post)
-            selected_posts = random_permute[skip:skip+limit]
-            discovered_posts = []
-            for post_order in selected_posts:
-                discovered_posts += DB.posts.find({'username': {'$ne': username}}).skip(int(post_order)).limit(1)
-            return discovered_posts
+            all_posts = list(DB.posts.find({'username': {'$ne': username}}))
+            all_posts.sort(key=lambda post: get_post_score(post), reverse=True)
+            # random_permute = rng.RandomState(seed).permutation(total_post)
+            # selected_posts = random_permute[skip:skip + limit]
+            # discovered_posts = []
+            # for post_order in selected_posts:
+            #     discovered_posts += DB.posts.find({'username': {'$ne': username}}).skip(int(post_order)).limit(1)
+            return all_posts[skip:skip+limit]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
@@ -156,3 +177,12 @@ class PostModel:
             ]
         }, {'comments': 0}).sort("timestamp", pymongo.DESCENDING).skip(skip).limit(limit))
         return posts
+
+    @staticmethod
+    def inc_view_count_by_n(post_id, n=1):
+        post = PostModel.get_post(post_id)
+        if post:
+            resp = DB.posts.find_one_and_update({'_id': post_id}, {'$inc': {'view_count': n}})
+            if resp:
+                return PostModel.get_post(post_id)
+        raise WriteError('Error in incrementing the view count. Post may not exist.')
