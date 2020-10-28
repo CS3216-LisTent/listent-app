@@ -241,7 +241,6 @@ export default function Post({
                   isPaused={isPaused}
                   setRunInstructions={setRunInstructions}
                   postId={postId}
-                  mutatePost={mutate}
                 />
               </Grid>
             </Grid>

@@ -52,7 +52,6 @@ export default function AudioPlayer({
   isPaused,
   setRunInstructions,
   postId,
-  mutatePost,
   ...rest
 }) {
   const audioRef = useRef(null);
@@ -160,16 +159,10 @@ export default function AudioPlayer({
   const increaseViewCount = () => {
     if (postId) {
       // Increase view count
-      axios
-        .post(
-          `/api/v1/posts/${postId}/inc-view-count`,
-          JSON.stringify({ number: 1 })
-        )
-        .then(() => {
-          if (mutatePost) {
-            mutatePost();
-          }
-        });
+      axios.post(
+        `/api/v1/posts/${postId}/inc-view-count`,
+        JSON.stringify({ number: 1 })
+      );
     }
   };
 
