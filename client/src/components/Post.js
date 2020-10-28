@@ -31,6 +31,9 @@ import Comments from "./Comments";
 import ShareDrawer from "./ShareDrawer";
 import SingleLineContainer from "./SingleLineContainer";
 
+// Utils
+import { abbreviateNumber } from "../utils/general-utils";
+
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
 import { openAlert } from "../actions/alert-actions";
@@ -225,6 +228,7 @@ export default function Post({
                   description={post.description}
                   isMinimized={isCommentScrolled}
                   timestamp={post.timestamp}
+                  viewCount={post.view_count}
                 />
                 <AudioPlayer
                   autoplay={autoplay}
@@ -287,7 +291,9 @@ function LikeButton({ post, mutate, setIsLoading }) {
     <>
       <IconButton onClick={onClick} classes={{ label: classes.likeButton }}>
         {hasLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-        <Typography variant="caption">{likedBy.length}</Typography>
+        <Typography variant="caption">
+          {abbreviateNumber(likedBy.length)}
+        </Typography>
       </IconButton>
     </>
   );
