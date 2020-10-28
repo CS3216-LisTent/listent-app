@@ -1,4 +1,3 @@
-import addMinutes from "date-fns/addMinutes";
 import formatDistance from "date-fns/formatDistance";
 
 export function formatSeconds(seconds) {
@@ -12,12 +11,7 @@ export function capitalizeFirstLetter(string) {
 }
 
 export function calculateSince(timestamp) {
-  return (
-    formatDistance(
-      new Date(),
-      addMinutes(new Date(timestamp), -new Date().getTimezoneOffset())
-    ) + " ago"
-  );
+  return formatDistance(new Date(), new Date(timestamp + "Z")) + " ago";
 }
 
 export function isMobile() {
