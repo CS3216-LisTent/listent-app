@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
@@ -50,6 +51,8 @@ export default function AudioPlayer({
   autopause,
   isPaused,
   setRunInstructions,
+  postId,
+  mutatePost,
   ...rest
 }) {
   const audioRef = useRef(null);
@@ -154,7 +157,27 @@ export default function AudioPlayer({
     skip("-");
   };
 
+  const increaseViewCount = () => {
+    if (postId) {
+      // Increase view count
+      axios
+        .post(
+          `/api/v1/posts/${postId}/inc-view-count`,
+          JSON.stringify({ number: 1 })
+        )
+        .then(() => {
+          if (mutatePost) {
+            mutatePost();
+          }
+        });
+    }
+  };
+
   const onChange = (isVisible) => {
+    if (isVisible) {
+      increaseViewCount();
+    }
+
     if (isVisible && autoplay) {
       audioRef.current.play();
     } else if (!isVisible && autopause) {

@@ -240,6 +240,8 @@ export default function Post({
                   src={post.audio_link}
                   isPaused={isPaused}
                   setRunInstructions={setRunInstructions}
+                  postId={postId}
+                  mutatePost={mutate}
                 />
               </Grid>
             </Grid>
