@@ -4,7 +4,7 @@ import clsx from "clsx";
 import isEmpty from "validator/lib/isEmpty";
 import { makeStyles } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, Prompt } from "react-router-dom";
 
 // Material UI components
 import Backdrop from "@material-ui/core/Backdrop";
@@ -190,6 +190,13 @@ export default function New() {
   const [conversionProgress, setConversionProgress] = useState(0);
   const [isChipmunk, setIsChipmunk] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const isHalfFilled =
+    isRecording ||
+    uploadedFiles.audio.blob ||
+    recordedBlob ||
+    uploadedFiles.image.blob ||
+    !isEmpty(fields.title, { ignore_whitespace: true }) ||
+    !isEmpty(fields.description, { ignore_whitespace: true });
   return (
     <div className={classes.root}>
       {renderRedirect && (

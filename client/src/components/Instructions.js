@@ -24,6 +24,13 @@ export default function Instructions({ run }) {
       target: "body",
       content: "That is all! Hope you enjoy the app :)",
       placement: "center",
+      locale: {
+        back: "Back",
+        close: "Close",
+        last: "Finish",
+        next: "Next",
+        open: "Open the dialog",
+      },
     },
   ];
 
