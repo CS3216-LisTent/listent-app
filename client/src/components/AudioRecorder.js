@@ -93,6 +93,8 @@ export default function AudioRecorder({
           ? true
           : {
               echoCancellation: false,
+              autoGainControl: false,
+              noiseSuppression: true,
             },
       })
       .then((mic) => {
