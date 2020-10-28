@@ -123,6 +123,7 @@ export default function New() {
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [renderRedirect, setRenderRedirect] = useState(true);
   const onPost = async () => {
     setIsLoading(true);
     let audioBlob = recordedBlob;
@@ -151,6 +152,7 @@ export default function New() {
       await axios.post("/api/v1/posts", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      setRenderRedirect(false);
       dispatch(openSnackbar("Audio posted!", "success"));
       history.push(`/${username}`);
     } catch (e) {
@@ -190,6 +192,16 @@ export default function New() {
   const [isRecording, setIsRecording] = useState(false);
   return (
     <div className={classes.root}>
+      {renderRedirect && (
+        <Prompt
+          when={isHalfFilled}
+          message={(location) =>
+            location.pathname.startsWith("/new")
+              ? true
+              : "Are you sure you want to leave? Unsaved changes will be lost!"
+          }
+        />
+      )}
       <Backdrop className={classes.loadingBackdrop} open={isLoading}>
         <CircularProgress color="primary" />
       </Backdrop>
