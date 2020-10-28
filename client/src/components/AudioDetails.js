@@ -15,6 +15,7 @@ import SingleLineContainer from "./SingleLineContainer";
 
 // Utils
 import { calculateSince } from "../utils/general-utils";
+import { abbreviateNumber } from "../utils/general-utils";
 
 const useStyles = makeStyles((theme) => ({
   plainLink: {
@@ -33,6 +34,7 @@ export default function AudioDetails({
   profilePicture,
   description,
   timestamp,
+  viewCount,
 }) {
   const classes = useStyles();
 
@@ -58,7 +60,9 @@ export default function AudioDetails({
           </Grid>
           <Grid item xs={12}>
             <Typography variant="caption">
-              {calculateSince(timestamp)}
+              {`${calculateSince(timestamp)} | ${abbreviateNumber(
+                viewCount
+              )} listens`}
             </Typography>
           </Grid>
         </Grid>
