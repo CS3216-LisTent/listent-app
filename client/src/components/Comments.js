@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
   commentInput: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 40,
+    height: theme.spacing(7),
   },
   commentInputContainer: {
     marginBottom: theme.spacing(1),
