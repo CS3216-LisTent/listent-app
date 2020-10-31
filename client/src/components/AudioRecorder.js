@@ -184,7 +184,7 @@ export default function AudioRecorder({
 
       recorder = RecordRTC(microphone, options);
       recorder
-        .setRecordingDuration(isChipmunk ? 20 * 1000 : 12 * 60 * 1000)
+        .setRecordingDuration(isChipmunk ? 1 * 60 * 1000 : 12 * 60 * 1000)
         .onRecordingStopped(stopRecordingCallback);
       recorder.startRecording();
       setIsRecordDisabled(false);

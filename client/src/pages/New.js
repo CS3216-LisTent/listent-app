@@ -296,7 +296,7 @@ export default function New() {
               {errors.audio
                 ? errors.audio
                 : isChipmunk
-                ? "*Audio recorded in chipmunk mode cannot exceed 20 seconds"
+                ? "*Audio recorded in chipmunk mode cannot exceed 1 minute"
                 : "*Audio recorded or uploaded cannot exceed 12 minutes and must be less than 25MB"}
             </Typography>
           </Grid>

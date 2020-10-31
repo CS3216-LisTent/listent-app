@@ -16,6 +16,7 @@
     "get-blob-duration": "^1.1.2",
     "jwt-decode": "^3.0.0",
     "lodash": "^4.17.20",
+    "matroska": "github:nelsontky/node-matroska",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-helmet": "^6.1.0",
