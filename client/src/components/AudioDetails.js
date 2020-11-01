@@ -41,7 +41,7 @@ export default function AudioDetails({
   return (
     <Grid container>
       <Grid container item xs={12} spacing={1} wrap="nowrap">
-        <Grid item xs={2}>
+        <Grid item xs={2} component={Link} to={`/${username}`}>
           <Avatar alt={username} src={profilePicture} />
         </Grid>
         <Grid container item xs={10} alignItems="center">
