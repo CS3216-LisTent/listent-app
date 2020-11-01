@@ -10,12 +10,15 @@ import VisibilitySensor from "react-visibility-sensor";
 // Utils
 import useInfinite from "../utils/use-infinite";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   bottomContainer: {
     textAlign: "center",
     width: "100%",
   },
-});
+  loading: {
+    marginTop: theme.spacing(1),
+  },
+}));
 
 export default function InfiniteScroll({
   component,
@@ -58,7 +61,7 @@ export default function InfiniteScroll({
       >
         <div className={classes.bottomContainer}>
           {isLoadingMore && !isReachingEnd ? (
-            <CircularProgress color="secondary" />
+            <CircularProgress className={classes.loading} color="secondary" />
           ) : !isReachingEnd ? (
             <Button color="primary" onClick={() => requestNextPage(true)}>
               Load More
