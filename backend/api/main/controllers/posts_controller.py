@@ -198,3 +198,35 @@ class IncreasePostViewController(Resource):
         except Exception as e:
             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
 
+
+@API.route('/anonymous', strict_slashes=False)
+class PostAnonymousController(Resource):
+    def post(self):
+        try:
+            username = 'anonymous'
+            title = request.form.get('title')
+            description = request.form.get('description')
+            audio_file = request.files.get('audio')
+            image_file = request.files.get('image')
+            return PostService.create_user_post(
+                username=username,
+                title=title,
+                description=description,
+                audio_file=audio_file,
+                image_file=image_file,
+            )
+        except Exception as e:
+            return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
+
+
+@API.route('/tags/popular', strict_slashes=False)
+class HashtagPopularController(Resource):
+    def get(self):
+        try:
+            skip = request.args.get('skip')
+            skip = int(skip) if (skip and skip.isdigit()) else 0
+            limit = request.args.get('limit')
+            limit = int(limit) if (limit and limit.isdigit()) else 10
+            return PostService.get_popular_hashtags(skip=skip, limit=limit)
+        except Exception as e:
+            return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
