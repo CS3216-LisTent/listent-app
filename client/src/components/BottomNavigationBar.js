@@ -6,6 +6,7 @@ import { useHistory } from "react-router-dom";
 // Material UI components
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 // Icons
 import HomeIcon from "@material-ui/icons/Home";
@@ -58,7 +59,11 @@ export default function BottomNavigationBar() {
       <BottomNavigationAction label="Home" icon={<HomeIcon />} />
       <BottomNavigationAction label="Search" icon={<SearchIcon />} />
       <BottomNavigationAction label="Record" icon={<MicIcon />} />
-      <BottomNavigationAction label="Profile" icon={<PersonIcon />} />
+      {user ? (
+        <BottomNavigationAction label="Profile" icon={<PersonIcon />} />
+      ) : (
+        <BottomNavigationAction label="Login" icon={<ExitToAppIcon />} />
+      )}
     </BottomNavigation>
   );
 }
