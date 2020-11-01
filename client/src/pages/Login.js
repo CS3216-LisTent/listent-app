@@ -21,6 +21,7 @@ import LoadingButton from "../components/LoadingButton";
 
 // Actions
 import { setUser } from "../actions/auth-actions";
+import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 
 // Utils
 import { loginErrors } from "../utils/validators";
@@ -52,6 +53,11 @@ export default function Login() {
   const user = useSelector((state) => state.user);
   const redirect = useSelector((state) => state.redirect);
   const [isShowResend, setIsShowResend] = useState(false);
+
+  useEffect(() => {
+    dispatch(setBottomNavigationIndex(3));
+  }, [dispatch]);
+
   useEffect(() => {
     if (redirect && user) {
       history.push(redirect);

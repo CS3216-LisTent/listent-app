@@ -46,7 +46,7 @@ export default function BottomNavigationBar() {
             history.push("/new");
             break;
           case 3:
-            history.push(`/${user.username}`);
+            history.push(user ? `/${user.username}` : `/login`);
             break;
           default:
           // placeholder

@@ -9,7 +9,6 @@ import IconButton from "@material-ui/core/IconButton";
 
 // Icons
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import HomeIcon from "@material-ui/icons/Home";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function BackButton() {
   const classes = useStyles();
-  const user = useSelector((state) => state.user);
   const backCallback = useSelector((state) => state.back);
   const history = useHistory();
   const [isShowBack, setIsShowBack] = useState(false);
@@ -44,17 +42,6 @@ export default function BackButton() {
         <Grid item>
           <IconButton onClick={backCallback}>
             <ArrowBackIcon />
-          </IconButton>
-        </Grid>
-      )}
-      {!user && location.pathname !== "/" && (
-        <Grid item>
-          <IconButton
-            onClick={() => {
-              history.push("/");
-            }}
-          >
-            <HomeIcon />
           </IconButton>
         </Grid>
       )}

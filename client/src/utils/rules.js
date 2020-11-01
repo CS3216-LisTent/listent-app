@@ -11,7 +11,6 @@ const rules = {
   },
   user: {
     static: [
-      "bottom-navigation:read",
       "posts:read",
       "posts:like",
       "posts:create",
