@@ -455,3 +455,39 @@ class PostService:
                     'message': f'DB Connection Error: {str(e)}',
                 }), 500
             )
+
+    @staticmethod
+    def get_popular_hashtags(skip=0, limit=10):
+        try:
+            # TODO: Currently hardcoded popular hashtags
+            hashtags = [
+                dict(tag='podcast', image='https://listent.s3.amazonaws.com/2f69356f5afb4f3789c93a7c32e0a71e.png'),
+                dict(tag='whisper', image='https://listent.s3.amazonaws.com/96615390852245f181f6bbe0eb5e797c.png'),
+                dict(tag='CS3216', image='https://listent.s3.amazonaws.com/f9cd9e97044547dd8bff66420d3ca9fa.png'),
+                dict(tag='chipmunk', image='https://listent.s3.amazonaws.com/363374f9638945149e882da73de91110.jpg'),
+                dict(tag='trash', image='https://listent.s3.amazonaws.com/44ce4fc2d4ad4708b4625ee59a71070d.png'),
+                dict(tag='music', image='https://listent.s3.amazonaws.com/c87a7f523c50495f8f07c3d35d3c71f3.jpg'),
+                dict(tag='NUSWhisper', image='https://listent.s3.amazonaws.com/a38f5a8fb3c846b29782949d6f49eea4.png')
+            ]
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'Successfully retrieved popular posts.',
+                    'data': hashtags
+                }), 200
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'DB Operation Error: {str(e)}',
+                    'data': []
+                }), 200
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
