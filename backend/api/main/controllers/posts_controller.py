@@ -219,7 +219,7 @@ class PostAnonymousController(Resource):
             return make_response(jsonify({'status': 'fail', 'error': str(e)}), 500)
 
 
-@API.route('/popular', strict_slashes=False)
+@API.route('/tags/popular', strict_slashes=False)
 class HashtagPopularController(Resource):
     def get(self):
         try:
