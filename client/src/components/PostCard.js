@@ -15,7 +15,7 @@ import SingleLineContainer from "./SingleLineContainer";
 const useStyles = makeStyles({
   root: {
     backgroundImage: ({ imageLink }) =>
-      `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${
+      `linear-gradient(0deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${
         imageLink ? imageLink : ""
       })`,
     backgroundRepeat: "no-repeat",
@@ -54,11 +54,12 @@ export default function PostCard({
   link,
   titleCenter,
   titleVariant,
+  onClick,
 }) {
   const classes = useStyles({ imageLink, titleCenter });
 
   return (
-    <Card className={classes.root}>
+    <Card className={classes.root} onClick={onClick}>
       <CardActionArea className={classes.cardButton} component={Link} to={link}>
         <CardContent className={classes.content}>
           <div className={classes.titleContainer}>

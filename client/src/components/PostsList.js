@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core";
+import { useDispatch } from "react-redux";
 
 // Material UI components
 import Grid from "@material-ui/core/Grid";
@@ -11,6 +12,9 @@ import Typography from "@material-ui/core/Typography";
 import ErrorBoundary from "./ErrorBoundary";
 import InfiniteScroll from "./InfiniteScroll";
 import PostCard from "./PostCard";
+
+// Redux
+import { setSearchTerm } from "../actions/search-actions";
 
 const useStyles = makeStyles((theme) => ({
   errorContainer: {
@@ -37,6 +41,8 @@ export default function PostsList({
   isShowSuggested,
 }) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
   return (
     <>
       {isShowSuggested && (
@@ -80,6 +86,9 @@ export default function PostsList({
                           description=""
                           imageLink={item.image}
                           link={`/search/tags/${item.tag}`}
+                          onClick={() => {
+                            dispatch(setSearchTerm(item.tag));
+                          }}
                         />
                       </Grid>
                     );

@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     backgroundImage: ({ uploadedFiles }) => {
       return uploadedFiles.image.url
-        ? `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${uploadedFiles.image.url})`
+        ? `linear-gradient(0deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${uploadedFiles.image.url})`
         : "";
     },
     backgroundRepeat: "no-repeat",
