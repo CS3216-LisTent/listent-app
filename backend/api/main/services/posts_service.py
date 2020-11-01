@@ -455,3 +455,31 @@ class PostService:
                     'message': f'DB Connection Error: {str(e)}',
                 }), 500
             )
+
+    @staticmethod
+    def get_popular_hashtags(skip=0, limit=10):
+        try:
+            # TODO: Currently hardcoded popular hashtags
+            hashtags = ['podcast', 'whisper', 'CS3216', 'chipmunk', 'trash', 'music', 'NUSWhisper']
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'Successfully retrieved popular posts.',
+                    'data': hashtags
+                }), 200
+            )
+        except OperationFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'success',
+                    'message': f'DB Operation Error: {str(e)}',
+                    'data': []
+                }), 200
+            )
+        except ConnectionFailure as e:
+            return make_response(
+                jsonify({
+                    'status': 'fail',
+                    'message': f'DB Connection Error: {str(e)}',
+                }), 500
+            )
