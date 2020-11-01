@@ -36,18 +36,41 @@ const useStyles = makeStyles({
     top: 0,
     width: "100%",
   },
+  titleContainer: {
+    textAlign: ({ titleCenter }) => (titleCenter ? "center" : undefined),
+  },
+  title: ({ titleCenter }) =>
+    titleCenter
+      ? {
+          paddingTop: "calc(50% - 16px)",
+        }
+      : {},
 });
 
-export default function PostCard({ title, description, imageLink, link }) {
-  const classes = useStyles({ imageLink });
+export default function PostCard({
+  title,
+  description,
+  imageLink,
+  link,
+  titleCenter,
+  titleVariant,
+}) {
+  const classes = useStyles({ imageLink, titleCenter });
 
   return (
     <Card className={classes.root}>
       <CardActionArea className={classes.cardButton} component={Link} to={link}>
         <CardContent className={classes.content}>
-          <SingleLineContainer component={Typography} variant="h6" gutterBottom>
-            {title}
-          </SingleLineContainer>
+          <div className={classes.titleContainer}>
+            <SingleLineContainer
+              className={classes.title}
+              component={Typography}
+              variant={titleVariant || "h6"}
+              gutterBottom
+            >
+              {title}
+            </SingleLineContainer>
+          </div>
           <LinesEllipsis
             text={description}
             maxLine="3"

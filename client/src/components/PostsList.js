@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginTop: theme.spacing(2),
   },
+  center: {
+    textAlign: "center",
+  },
 }));
 
 export default function PostsList({
@@ -31,50 +34,73 @@ export default function PostsList({
   pageSize,
   noEntriesText,
   className,
+  isShowSuggested,
 }) {
   const classes = useStyles();
   return (
-    <ErrorBoundary
-      fallback={
-        <div className={classes.errorContainer}>
-          <Typography variant="caption">
-            An error occurred. Please refresh and try again.
-          </Typography>
+    <>
+      {isShowSuggested && (
+        <div className={classes.center}>
+          <Typography variant="h6">Popular hashtags</Typography>
         </div>
-      }
-    >
-      <Suspense fallback={<LinearProgress className={classes.progress} />}>
-        <InfiniteScroll
-          component={Grid}
-          container
-          item
-          xs={12}
-          spacing={1}
-          className={clsx(classes.postsContainer, className)}
-          apiPath={apiPath}
-          pageSize={pageSize}
-          noEntriesText={
-            <Typography variant="caption">{noEntriesText}</Typography>
-          }
-        >
-          {(data) => {
-            return data.map((page) =>
-              page.map((post, i) => {
-                return (
-                  <Grid key={i} item xs={6} sm={4}>
-                    <PostCard
-                      title={post.title}
-                      description={post.description}
-                      imageLink={post.image_link}
-                      link={`/post/${post._id}`}
-                    />
-                  </Grid>
-                );
-              })
-            );
-          }}
-        </InfiniteScroll>
-      </Suspense>
-    </ErrorBoundary>
+      )}
+      <ErrorBoundary
+        fallback={
+          <div className={classes.errorContainer}>
+            <Typography variant="caption">
+              An error occurred. Please refresh and try again.
+            </Typography>
+          </div>
+        }
+      >
+        <Suspense fallback={<LinearProgress className={classes.progress} />}>
+          <InfiniteScroll
+            component={Grid}
+            container
+            item
+            xs={12}
+            spacing={1}
+            className={clsx(classes.postsContainer, className)}
+            apiPath={apiPath}
+            pageSize={pageSize}
+            noEntriesText={
+              <Typography variant="caption">{noEntriesText}</Typography>
+            }
+          >
+            {(data) => {
+              return data.map((page) =>
+                page.map((item, i) => {
+                  if (isShowSuggested) {
+                    return (
+                      <Grid key={i} item xs={6} sm={4}>
+                        <PostCard
+                          title={"#" + item.tag}
+                          titleCenter
+                          titleVariant="h5"
+                          description=""
+                          imageLink={item.image}
+                          link={`/search/tags/${item.tag}`}
+                        />
+                      </Grid>
+                    );
+                  } else {
+                    return (
+                      <Grid key={i} item xs={6} sm={4}>
+                        <PostCard
+                          title={item.title}
+                          description={item.description}
+                          imageLink={item.image_link}
+                          link={`/post/${item._id}`}
+                        />
+                      </Grid>
+                    );
+                  }
+                })
+              );
+            }}
+          </InfiniteScroll>
+        </Suspense>
+      </ErrorBoundary>
+    </>
   );
 }
