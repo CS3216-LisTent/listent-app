@@ -24,6 +24,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 
 // Custom components
 import AudioRecorder from "../components/AudioRecorder";
+import Can from "../components/Can";
 import GreenButton from "../components/GreenButton";
 
 // Custom components
@@ -119,7 +120,7 @@ export default function New() {
     (uploadedFiles.audio.blob || recordedBlob) &&
     !isEmpty(fields.title, { ignore_whitespace: true });
 
-  const username = useSelector((state) => state.user.username);
+  const user = useSelector((state) => state.user);
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -149,12 +150,16 @@ export default function New() {
       if (imageBlob) {
         form.append("image", imageBlob);
       }
-      await axios.post("/api/v1/posts", form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axios.post(
+        user ? "/api/v1/posts" : "/api/v1/posts/anonymous",
+        form,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       setRenderRedirect(false);
       dispatch(openSnackbar("Audio posted!", "success"));
-      history.push(`/${username}`);
+      history.push(`/post/${res.data.data._id}`);
     } catch (e) {
       dispatch(
         openSnackbar("An unspecified error occurred, please try again", "error")
@@ -188,7 +193,7 @@ export default function New() {
   };
 
   const [conversionProgress, setConversionProgress] = useState(0);
-  const [isChipmunk, setIsChipmunk] = useState(false);
+  const [isChipmunk, setIsChipmunk] = useState(!user); // set chipmunk mode by default for anon
   const [isRecording, setIsRecording] = useState(false);
   const isHalfFilled =
     isRecording ||
@@ -221,7 +226,15 @@ export default function New() {
           <Grid item xs={12}>
             <Grid container justify="space-between" alignItems="center">
               <Grid item>
-                <Typography variant="h6">Create a new post</Typography>
+                <Can
+                  perform="anon:create"
+                  yes={() => (
+                    <Typography variant="h6">Post anonymously</Typography>
+                  )}
+                  no={() => (
+                    <Typography variant="h6">Create a new post</Typography>
+                  )}
+                />
               </Grid>
             </Grid>
           </Grid>
@@ -375,7 +388,7 @@ export default function New() {
               size="large"
               fullWidth
             >
-              Post
+              {!user ? `Post Anonymously` : `Post`}
             </GreenButton>
           </Grid>
         </Grid>

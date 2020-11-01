@@ -20,7 +20,6 @@ import Alert from "./components/Alert";
 import BackButton from "./components/BackButton";
 import BottomNavigationBar from "./components/BottomNavigationBar";
 import LoadingCenter from "./components/LoadingCenter";
-import PrivateRoute from "./components/PrivateRoute";
 import TopSnackbar from "./components/TopSnackbar";
 
 // Pages
@@ -104,9 +103,9 @@ function App() {
           <Route exact path="/search/:section/:query?">
             <Search />
           </Route>
-          <PrivateRoute exact path="/new">
+          <Route exact path="/new">
             <New />
-          </PrivateRoute>
+          </Route>
           <Route exact path="/login">
             <Login />
           </Route>
