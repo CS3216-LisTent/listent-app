@@ -2,7 +2,7 @@ import { SET_SEARCH_TAB, SET_SEARCH_TERM } from "../actions/types";
 
 const initialState = {
   searchTerm: "",
-  searchTab: 0,
+  searchTab: 1,
 };
 
 export default function snackbarReducer(state = initialState, action) {

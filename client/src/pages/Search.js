@@ -127,6 +127,7 @@ function Search() {
     history.push(`/search/${section}/${searchTerm}`);
   };
 
+  const isShowSuggested = !query || isEmpty(query, { ignore_whitespace: true });
   return (
     <Container maxWidth="sm" className={classes.root}>
       <Grid
@@ -189,10 +190,15 @@ function Search() {
             />
           ) : (
             <PostsList
-              apiPath={`/api/v1/posts/search?hashtag=${query || ""}&`}
+              apiPath={
+                isShowSuggested
+                  ? `/api/v1/posts/tags/popular?`
+                  : `/api/v1/posts/search?hashtag=${query || ""}&`
+              }
               pageSize={10}
               noEntriesText="No results found"
               className={classes.tagsResults}
+              isShowSuggested={isShowSuggested}
             />
           )}
         </Grid>

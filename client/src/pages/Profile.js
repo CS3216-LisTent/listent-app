@@ -33,7 +33,6 @@ import FollowButton from "../components/FollowButton";
 import PostsList from "../components/PostsList";
 import RedButton from "../components/RedButton";
 import SingleLineContainer from "../components/SingleLineContainer";
-import SuspenseLoading from "../components/SuspenseLoading";
 
 // Actions
 import { logoutUser } from "../actions/auth-actions";
@@ -74,18 +73,16 @@ export default function Profile() {
   let { path } = useRouteMatch();
   return (
     <ErrorBoundary fallback={<Redirect to="/" />}>
-      <SuspenseLoading>
-        <Switch>
-          <Route path={`${path}/:type`}>
-            <Follow />
-          </Route>
-          <Route exact path={path}>
-            <Container maxWidth="sm" className={classes.root}>
-              <UserProfile username={username} />
-            </Container>
-          </Route>
-        </Switch>
-      </SuspenseLoading>
+      <Switch>
+        <Route path={`${path}/:type`}>
+          <Follow />
+        </Route>
+        <Route exact path={path}>
+          <Container maxWidth="sm" className={classes.root}>
+            <UserProfile username={username} />
+          </Container>
+        </Route>
+      </Switch>
     </ErrorBoundary>
   );
 }

@@ -4,7 +4,6 @@ import { useParams, Redirect } from "react-router-dom";
 
 // Custom components
 import ErrorBoundary from "../components/ErrorBoundary";
-import SuspenseLoading from "../components/SuspenseLoading";
 
 // Pages
 import Post from "../components/Post";
@@ -22,9 +21,7 @@ export default function SinglePost() {
   return (
     <div className={classes.root}>
       <ErrorBoundary fallback={<Redirect to="/" />}>
-        <SuspenseLoading>
-          <Post postId={id} hideNext hidePrevious />
-        </SuspenseLoading>
+        <Post postId={id} hideNext hidePrevious />
       </ErrorBoundary>
     </div>
   );

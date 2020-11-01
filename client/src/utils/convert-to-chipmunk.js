@@ -1,3 +1,7 @@
+// Redux
+import store from "../store";
+import { openSnackbar } from "../actions/snackbar-actions";
+
 // Placeholder
 let workerPath = `https://archive.org/download/ffmpeg_asm/ffmpeg_asm.js`;
 
@@ -56,6 +60,21 @@ export default function convertToChipmunk(
   if (!worker) {
     worker = processInWebWorker();
   }
+
+  worker.onerror = () => {
+    store.dispatch(
+      openSnackbar(
+        "An unspecified error occurred. Chipmunk mode does not work on your device.",
+        "error"
+      )
+    );
+    worker.terminate();
+    worker = null;
+    if (setConversionProgress !== undefined) {
+      setConversionProgress(0);
+    }
+    clearInterval(timer);
+  };
 
   worker.onmessage = function (event) {
     let message = event.data;

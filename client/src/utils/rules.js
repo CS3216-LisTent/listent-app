@@ -7,11 +7,16 @@ function usernameCheck({ username, owner }) {
 
 const rules = {
   visitor: {
-    static: ["posts:read", "discover:read", "profile:read", "comments:read"],
+    static: [
+      "posts:read",
+      "discover:read",
+      "profile:read",
+      "comments:read",
+      "anon:create",
+    ],
   },
   user: {
     static: [
-      "bottom-navigation:read",
       "posts:read",
       "posts:like",
       "posts:create",
