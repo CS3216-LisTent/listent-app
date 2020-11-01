@@ -21,7 +21,7 @@ const initialState = {
   },
   search: {
     searchTerm: "",
-    searchTab: 0,
+    searchTab: 1,
   },
   seed: 0,
   back: () => {

@@ -83,24 +83,22 @@ function Home() {
         const index = 3 * i + j;
         return (
           <div style={{ height: "100%" }} key={index}>
-            <ErrorBoundary fallback={<Redirect to="/" />}>
-              <SuspenseLoading>
-                <Post
-                  autoplay={index !== 0}
-                  autopause
-                  postId={post._id}
-                  next={() => {
-                    swipeRef.current.next();
-                  }}
-                  previous={() => {
-                    swipeRef.current.prev();
-                  }}
-                  startSlide={startSlide}
-                  index={index}
-                  setRunInstructions={setRunInstructions}
-                />
-              </SuspenseLoading>
-            </ErrorBoundary>
+            <SuspenseLoading>
+              <Post
+                autoplay={index !== 0}
+                autopause
+                postId={post._id}
+                next={() => {
+                  swipeRef.current.next();
+                }}
+                previous={() => {
+                  swipeRef.current.prev();
+                }}
+                startSlide={startSlide}
+                index={index}
+                setRunInstructions={setRunInstructions}
+              />
+            </SuspenseLoading>
           </div>
         );
       }),

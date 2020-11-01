@@ -19,10 +19,7 @@ import { setSeed } from "./actions/seed-actions";
 import Alert from "./components/Alert";
 import BackButton from "./components/BackButton";
 import BottomNavigationBar from "./components/BottomNavigationBar";
-import Can from "./components/Can";
 import LoadingCenter from "./components/LoadingCenter";
-import LoginBar from "./components/LoginBar";
-import PrivateRoute from "./components/PrivateRoute";
 import TopSnackbar from "./components/TopSnackbar";
 
 // Pages
@@ -106,9 +103,9 @@ function App() {
           <Route exact path="/search/:section/:query?">
             <Search />
           </Route>
-          <PrivateRoute exact path="/new">
+          <Route exact path="/new">
             <New />
-          </PrivateRoute>
+          </Route>
           <Route exact path="/login">
             <Login />
           </Route>
@@ -126,11 +123,7 @@ function App() {
           </Route>
         </Switch>
       </Suspense>
-      <Can
-        perform="bottom-navigation:read"
-        yes={() => <BottomNavigationBar />}
-        no={() => <LoginBar />}
-      />
+      <BottomNavigationBar />
     </div>
   );
 }

@@ -22,6 +22,7 @@ import { openSnackbar } from "../actions/snackbar-actions";
 
 // Utils
 import { registerErrors } from "../utils/validators";
+import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,6 +49,11 @@ export default function Register() {
   const dispatch = useDispatch();
   const history = useHistory();
   const user = useSelector((state) => state.user);
+
+  useEffect(() => {
+    dispatch(setBottomNavigationIndex(3));
+  }, [dispatch]);
+
   useEffect(() => {
     if (user) {
       history.push("/");
