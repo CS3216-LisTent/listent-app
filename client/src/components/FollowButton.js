@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import axios from "axios";
-import useSwr from "swr";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -14,6 +13,7 @@ import GreenButton from "../components/GreenButton";
 import RedButton from "../components/RedButton";
 
 // Actions
+import { addFollowings, removeFollowings } from "../actions/auth-actions";
 import { openSnackbar } from "../actions/snackbar-actions";
 
 const useStyles = makeStyles((theme) => ({
@@ -33,22 +33,18 @@ export default function FollowButton({
   const classes = useStyles();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const { data: followingData, mutate: mutateFollowing } = useSwr(
-    user ? `/api/v1/users/${username}/is-following` : null
-  );
-  const isFollowing = followingData && followingData.data;
+  const isFollowing = user && user.followings && user.followings[username];
   const [isLoading, setIsLoading] = useState(false);
 
   const follow = async () => {
     try {
       setIsLoading(true);
       await axios.post(`/api/v1/users/${username}/follow`);
+      dispatch(addFollowings(username));
 
       if (mutateUser) {
         mutateUser();
       }
-
-      mutateFollowing();
     } catch {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
     } finally {
@@ -63,12 +59,11 @@ export default function FollowButton({
     try {
       setIsLoading(true);
       await axios.post(`/api/v1/users/${username}/unfollow`);
+      dispatch(removeFollowings(username));
 
       if (mutateUser) {
         mutateUser();
       }
-
-      mutateFollowing();
     } catch {
       dispatch(openSnackbar("An error occurred. Please try again.", "error"));
     } finally {
