@@ -6,7 +6,7 @@ import history from "./utils/history";
 
 const initialState = {
   bottomNavigation: { index: 0 },
-  homeTab: { index: 0 },
+  homeTab: { index: 1 },
   snackbar: { isOpen: false, message: "", type: "success" },
   user: false,
   redirect: false,

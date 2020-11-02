@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
-import axios from "axios";
 import { Switch, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
+import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -12,7 +12,7 @@ import jwt_decode from "jwt-decode";
 // Redux
 import store from "./store";
 import { setUser, logoutUser } from "./actions/auth-actions";
-import { setHomeTabIndex } from "./actions/home-tab-actions";
+import { setAdditionalPayloads } from "./actions/auth-actions";
 import { setSeed } from "./actions/seed-actions";
 
 // Custom components
@@ -46,26 +46,6 @@ if (jwt) {
   }
 }
 
-// Set home tab
-const user = store.getState().user;
-if (user) {
-  axios
-    .get(`/api/v1/users/${user.username}`)
-    .then((res) => {
-      if (res.data.data.number_of_following > 0) {
-        // Default tab is feed
-        store.dispatch(setHomeTabIndex(0));
-      } else {
-        store.dispatch(setHomeTabIndex(1));
-      }
-    })
-    .catch(() => {
-      store.dispatch(setHomeTabIndex(1));
-    });
-} else {
-  store.dispatch(setHomeTabIndex(1));
-}
-
 // Set discover seed
 store.dispatch(setSeed());
 
@@ -76,6 +56,17 @@ const useStyles = makeStyles({
 function App() {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const classes = useStyles(windowHeight);
+
+  const [hasSetPayloads, setHasSetPayloads] = useState(false);
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    // Set other login data
+    if (user && !hasSetPayloads) {
+      dispatch(setAdditionalPayloads(user.username));
+      setHasSetPayloads(true);
+    }
+  }, [dispatch, user, hasSetPayloads]);
 
   useEffect(() => {
     const handleResize = () => {
