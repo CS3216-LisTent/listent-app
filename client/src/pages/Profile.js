@@ -203,7 +203,7 @@ function UserProfile({ username }) {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          <FollowButton username={username} mutateUser={mutate} />
+          <FollowButton username={username} />
         </Grid>
         <Can
           data={{ username: user && user.username, owner: username }}

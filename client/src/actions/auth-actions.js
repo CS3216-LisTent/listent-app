@@ -57,6 +57,25 @@ export const setAdditionalPayloads = (username) => (dispatch) => {
     });
 };
 
+export const addFollowings = (newFollow) => (dispatch, getState) => {
+  const followings = getState().user.followings;
+
+  dispatch({
+    type: SET_FOLLOW,
+    payload: { followings: { ...followings, [newFollow]: true } },
+  });
+};
+
+export const removeFollowings = (unfollowed) => (dispatch, getState) => {
+  let followings = getState().user.followings;
+  delete followings[unfollowed];
+
+  dispatch({
+    type: SET_FOLLOW,
+    payload: { followings },
+  });
+};
+
 export const logoutUser = () => (dispatch) => {
   // Remove token from local storage
   localStorage.removeItem("jwt");
