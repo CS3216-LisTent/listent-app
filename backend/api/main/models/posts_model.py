@@ -37,15 +37,15 @@ class PostModel:
 
     # Permute all the posts that we have based on a discovery algorithm
     @staticmethod
-    def permute_with_discovery_algorithm(posts, seed = 0):
-        sorted_posts = list(posts).sort(key=lambda post: get_post_score(post), reverse=True)
-        num_of_top_posts = len(sorted_posts) * PostModel.TOP_RATIO
+    def permute_with_discovery_algorithm(posts, seed=0):
+        posts.sort(key=lambda post: get_post_score(post), reverse=True)
+        num_of_top_posts = int(len(posts) * PostModel.TOP_RATIO)
 
         # Get the first num_of_top_posts
-        top_posts = sorted_posts[:num_of_top_posts]
+        top_posts = posts[:num_of_top_posts]
 
         # Get the remaining
-        other_posts = sorted_posts[num_of_top_posts:]
+        other_posts = posts[num_of_top_posts:]
 
         rng.RandomState(seed).shuffle(top_posts)
         rng.RandomState(seed).shuffle(other_posts)
@@ -66,7 +66,7 @@ class PostModel:
     def get_discover_posts(skip=0, limit=10, seed=0):
         all_posts = list(DB.posts.find())
         permuted_posts = PostModel.permute_with_discovery_algorithm(all_posts, seed)
-        return permuted_posts[skip:skip+limit]
+        return permuted_posts[skip:skip + limit]
 
     @staticmethod
     def add_user_post(username, post_id, title, audio_link, timestamp, description=None, image_link=None):
@@ -144,7 +144,7 @@ class PostModel:
         if user:
             all_posts = list(DB.posts.find({'username': {'$ne': username}}))
             permuted_posts = PostModel.permute_with_discovery_algorithm(all_posts, seed)
-            return permuted_posts[skip:skip+limit]
+            return permuted_posts[skip:skip + limit]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
