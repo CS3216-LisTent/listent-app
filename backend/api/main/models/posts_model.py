@@ -32,11 +32,6 @@ class PostModel:
             return post_info
         raise WriteError('Error in getting post. Post may not exist.')
 
-    # Return the k-th element based on the default ordering
-    # @staticmethod
-    # def get_post_based_on_order(k):
-    #     return DB.posts.find().skip(int(k)).limit(1)[0]
-
     # The ratio to separate the top contents from the rest
     TOP_RATIO = 0.2
 
@@ -67,15 +62,8 @@ class PostModel:
         return final_posts
 
     # Get random discovery contents as logged out users
-    # TODO: Change this to be adaptive with the number of likes or the current trends.
     @staticmethod
     def get_discover_posts(skip=0, limit=10, seed=0):
-        # total_post = DB.posts.find().count()
-        # random_permute = rng.RandomState(seed).permutation(total_post)
-        # selected_posts = random_permute[skip:skip + limit]
-        # discovered_posts = []
-        # for post_order in selected_posts:
-        #     discovered_posts.append(PostModel.get_post_based_on_order(post_order))
         all_posts = list(DB.posts.find())
         permuted_posts = PostModel.permute_with_discovery_algorithm(all_posts, seed)
         return permuted_posts[skip:skip+limit]
@@ -150,7 +138,6 @@ class PostModel:
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     # Get random discovery contents as logged in users
-    # TODO: Change this to be adaptive with the number of likes or the current trends.
     @staticmethod
     def get_user_discover_posts(username, skip=0, limit=10, seed=0):
         user = UserModel.get_user(username)
@@ -158,11 +145,6 @@ class PostModel:
             all_posts = list(DB.posts.find({'username': {'$ne': username}}))
             permuted_posts = PostModel.permute_with_discovery_algorithm(all_posts, seed)
             return permuted_posts[skip:skip+limit]
-            # random_permute = rng.RandomState(seed).permutation(total_post)
-            # selected_posts = random_permute[skip:skip + limit]
-            # discovered_posts = []
-            # for post_order in selected_posts:
-            #     discovered_posts += DB.posts.find({'username': {'$ne': username}}).skip(int(post_order)).limit(1)
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
