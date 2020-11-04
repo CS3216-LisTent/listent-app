@@ -32,24 +32,41 @@ class PostModel:
             return post_info
         raise WriteError('Error in getting post. Post may not exist.')
 
-    # Return the k-th element based on the default ordering
+    # The ratio to separate the top contents from the rest
+    TOP_RATIO = 0.2
+
+    # Permute all the posts that we have based on a discovery algorithm
     @staticmethod
-    def get_post_based_on_order(k):
-        return DB.posts.find().skip(int(k)).limit(1)[0]
+    def permute_with_discovery_algorithm(posts, seed=0):
+        posts.sort(key=lambda post: get_post_score(post), reverse=True)
+        num_of_top_posts = int(len(posts) * PostModel.TOP_RATIO)
+
+        # Get the first num_of_top_posts
+        top_posts = posts[:num_of_top_posts]
+
+        # Get the remaining
+        other_posts = posts[num_of_top_posts:]
+
+        rng.RandomState(seed).shuffle(top_posts)
+        rng.RandomState(seed).shuffle(other_posts)
+
+        # Merged the two alternatingly
+        final_posts = []
+        for i in range(num_of_top_posts):
+            final_posts.append(top_posts[i])
+            final_posts.append(other_posts[i])
+
+        # Append the remaining of other_posts
+        final_posts += other_posts[num_of_top_posts:]
+
+        return final_posts
 
     # Get random discovery contents as logged out users
-    # TODO: Change this to be adaptive with the number of likes or the current trends.
     @staticmethod
     def get_discover_posts(skip=0, limit=10, seed=0):
-        # total_post = DB.posts.find().count()
-        # random_permute = rng.RandomState(seed).permutation(total_post)
-        # selected_posts = random_permute[skip:skip + limit]
-        # discovered_posts = []
-        # for post_order in selected_posts:
-        #     discovered_posts.append(PostModel.get_post_based_on_order(post_order))
         all_posts = list(DB.posts.find())
-        all_posts.sort(key=lambda post: get_post_score(post), reverse=True)
-        return all_posts[skip:skip+limit]
+        permuted_posts = PostModel.permute_with_discovery_algorithm(all_posts, seed)
+        return permuted_posts[skip:skip+limit]
 
     @staticmethod
     def add_user_post(username, post_id, title, audio_link, timestamp, description=None, image_link=None):
@@ -121,19 +138,13 @@ class PostModel:
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     # Get random discovery contents as logged in users
-    # TODO: Change this to be adaptive with the number of likes or the current trends.
     @staticmethod
     def get_user_discover_posts(username, skip=0, limit=10, seed=0):
         user = UserModel.get_user(username)
         if user:
             all_posts = list(DB.posts.find({'username': {'$ne': username}}))
-            all_posts.sort(key=lambda post: get_post_score(post), reverse=True)
-            # random_permute = rng.RandomState(seed).permutation(total_post)
-            # selected_posts = random_permute[skip:skip + limit]
-            # discovered_posts = []
-            # for post_order in selected_posts:
-            #     discovered_posts += DB.posts.find({'username': {'$ne': username}}).skip(int(post_order)).limit(1)
-            return all_posts[skip:skip+limit]
+            permuted_posts = PostModel.permute_with_discovery_algorithm(all_posts, seed)
+            return permuted_posts[skip:skip+limit]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
