@@ -37,15 +37,15 @@ class PostModel:
 
     # Permute all the posts that we have based on a discovery algorithm
     @staticmethod
-    def permute_with_discovery_algorithm(posts, seed = 0):
-        sorted_posts = list(posts).sort(key=lambda post: get_post_score(post), reverse=True)
-        num_of_top_posts = len(sorted_posts) * PostModel.TOP_RATIO
+    def permute_with_discovery_algorithm(posts, seed=0):
+        posts.sort(key=lambda post: get_post_score(post), reverse=True)
+        num_of_top_posts = int(len(posts) * PostModel.TOP_RATIO)
 
         # Get the first num_of_top_posts
-        top_posts = sorted_posts[:num_of_top_posts]
+        top_posts = posts[:num_of_top_posts]
 
         # Get the remaining
-        other_posts = sorted_posts[num_of_top_posts:]
+        other_posts = posts[num_of_top_posts:]
 
         rng.RandomState(seed).shuffle(top_posts)
         rng.RandomState(seed).shuffle(other_posts)
