@@ -66,7 +66,7 @@ class PostModel:
     def get_discover_posts(skip=0, limit=10, seed=0):
         all_posts = list(DB.posts.find())
         permuted_posts = PostModel.permute_with_discovery_algorithm(all_posts, seed)
-        return permuted_posts[skip:skip + limit]
+        return permuted_posts[skip:skip+limit]
 
     @staticmethod
     def add_user_post(username, post_id, title, audio_link, timestamp, description=None, image_link=None):
@@ -144,7 +144,7 @@ class PostModel:
         if user:
             all_posts = list(DB.posts.find({'username': {'$ne': username}}))
             permuted_posts = PostModel.permute_with_discovery_algorithm(all_posts, seed)
-            return permuted_posts[skip:skip + limit]
+            return permuted_posts[skip:skip+limit]
         raise WriteError(f'Error in querying posts. User may not exist.')
 
     @staticmethod
