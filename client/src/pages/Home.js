@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import ErrorBoundary from "../components/ErrorBoundary";
 import SuspenseLoading from "../components/SuspenseLoading";
 import Instructions from "../components/Instructions";
+import Posts from "../components/Posts";
 
 // Other components
 import ReactSwipe from "react-swipe";
@@ -72,96 +73,5 @@ function Home() {
     3
   );
 
-  const swipeRef = useRef(null);
-  const [startSlide, setStartSlide] = useState(0);
-
-  const [runInstructions, setRunInstructions] = useState(false);
-  const posts = data.reduce(
-    (acc, page, i) => [
-      ...acc,
-      ...page.map((post, j) => {
-        const index = 3 * i + j;
-        return (
-          <div style={{ height: "100%" }} key={index}>
-            <SuspenseLoading>
-              <Post
-                autoplay={index !== 0}
-                autopause
-                postId={post._id}
-                next={() => {
-                  swipeRef.current.next();
-                }}
-                previous={() => {
-                  swipeRef.current.prev();
-                }}
-                startSlide={startSlide}
-                index={index}
-                setRunInstructions={setRunInstructions}
-              />
-            </SuspenseLoading>
-          </div>
-        );
-      }),
-    ],
-    []
-  );
-
-  useEffect(() => {
-    // On change tab, set size to 1 page
-    setSize(1);
-    // Reset start index of slide
-    setStartSlide(0);
-  }, [tabIndex, setSize]);
-
-  useEffect(() => {
-    dispatch(setBottomNavigationIndex(0));
-  }, [dispatch]);
-
-  const handleChange = (_, newValue) => {
-    dispatch(setHomeTabIndex(newValue));
-  };
-
-  return (
-    <div className={classes.root}>
-      {posts && <Instructions run={runInstructions} />}
-      {user && (
-        <Tabs
-          onChange={handleChange}
-          className={classes.tabs}
-          value={tabIndex}
-          indicatorColor="primary"
-          textColor="primary"
-          centered
-        >
-          <Tab label="Feed" />
-          <Tab label="Discover" />
-        </Tabs>
-      )}
-      {isEmpty ? (
-        <Container maxWidth="sm" className={classes.emptyContainer}>
-          <Typography variant="h5">
-            It seems a little lonely here... Start following other accounts now!
-          </Typography>
-        </Container>
-      ) : (
-        <ReactSwipe
-          swipeOptions={{
-            startSlide: startSlide,
-            continuous: false,
-            callback: (index) => {
-              setStartSlide(index);
-              if (index + 1 === posts.length) {
-                // Load more if next is last
-                setSize(size + 1);
-              }
-            },
-          }}
-          ref={swipeRef}
-          className={classes.swipeContainer}
-        >
-          {posts}
-        </ReactSwipe>
-      )}
-    </div>
-  );
+  return <Posts apiPath={`/api/v1/posts/discover/all?seed=${seed}&`} />;
 }

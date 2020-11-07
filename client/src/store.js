@@ -27,6 +27,7 @@ const initialState = {
   back: () => {
     history.goBack();
   },
+  audio: { posts: [], index: 0 },
 };
 
 const middleware = [thunk];

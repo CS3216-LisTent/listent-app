@@ -18,3 +18,6 @@ export const SET_SEARCH_TAB = "SET_SEARCH_TAB";
 export const SET_SEED = "SET_SEED";
 
 export const SET_BACK_ACTION = "SET_BACK_ACTION ";
+
+export const SET_POSTS = "SET_POSTS";
+export const SET_POST_INDEX = "SET_POST_INDEX";
