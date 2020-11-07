@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
@@ -37,6 +37,7 @@ import { abbreviateNumber } from "../utils/general-utils";
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
 import { openAlert } from "../actions/alert-actions";
+import { setPosts } from "../actions/audio-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -113,12 +114,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Post({ postId, index, setRunInstructions, isSinglePost }) {
+export default function Post({
+  postId,
+  index,
+  setRunInstructions,
+  isSinglePost,
+}) {
+  const dispatch = useDispatch();
   const { index: postIndex } = useSelector((state) => state.audio);
-
-  const isRender = Math.abs(postIndex - index) <= 1;
+  const isRender = isSinglePost || Math.abs(postIndex - index) <= 1;
 
   const { data, mutate } = useSwr(isRender ? `/api/v1/posts/${postId}` : null);
+
+  useEffect(() => {
+    if (isSinglePost) {
+      dispatch(setPosts([data.data]));
+    }
+  }, [isSinglePost, data, dispatch]);
 
   const post = data && data.data;
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);

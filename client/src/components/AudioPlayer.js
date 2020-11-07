@@ -70,12 +70,11 @@ export default function AudioPlayer({
 
   const theme = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
-
+  const audioRefCheck = audioRef.current === null;
   useEffect(() => {
     if (src) {
       dispatch(setAudioSrc(src));
     }
-
     if (audioRef.current && controlsRef.current) {
       const audio = audioRef.current;
       const audioControls = controlsRef.current;
@@ -91,23 +90,22 @@ export default function AudioPlayer({
         setCurrentTime(audio.currentTime);
         setProgress(Math.floor((audio.currentTime / audio.duration) * 100));
       };
-
       if (audio.duration) {
         loadedMetadataEvent();
       } else {
         audio.addEventListener("loadedmetadata", loadedMetadataEvent);
       }
-      audio.addEventListener('durationchange', loadedMetadataEvent);
+      audio.addEventListener("durationchange", loadedMetadataEvent);
       audio.addEventListener("timeupdate", timeUpdateEvent);
 
       return () => {
         audio.removeEventListener("loadedmetadata", loadedMetadataEvent);
-        audio.removeEventListener('durationchange', loadedMetadataEvent);
+        audio.removeEventListener("durationchange", loadedMetadataEvent);
         audio.removeEventListener("timeupdate", timeUpdateEvent);
         dispatch(setAudioSrc(undefined));
       };
     }
-  }, [audioRef, dispatch, src]);
+  }, [audioRef, dispatch, src, audioRefCheck]);
 
   useEffect(() => {
     if (setRunInstructions && !hideNext && controlsRef.current && isLoaded) {

@@ -31,13 +31,15 @@ export default function RootPlayer() {
     };
 
     const increaseViewCount = () => {
-      const postId = posts[index]._id;
-      if (postId) {
-        // Increase view count
-        axios.post(
-          `/api/v1/posts/${postId}/inc-view-count`,
-          JSON.stringify({ number: 1 })
-        );
+      if (!src) {
+        const postId = posts[index]._id;
+        if (postId) {
+          // Increase view count
+          axios.post(
+            `/api/v1/posts/${postId}/inc-view-count`,
+            JSON.stringify({ number: 1 })
+          );
+        }
       }
     };
 
@@ -60,7 +62,7 @@ export default function RootPlayer() {
       audioRef.current.play();
     }
 
-    if (isRender && "mediaSession" in navigator) {
+    if (!src && isRender && "mediaSession" in navigator) {
       const { title, image_link, username } = posts[index];
       navigator.mediaSession.metadata = new window.MediaMetadata({
         title: title,
@@ -139,7 +141,7 @@ export default function RootPlayer() {
       preload="metadata"
       ref={audioRef}
       src={src || posts[index].audio_link}
-      controls
+      // controls
     >
       Your browser does not support the
       <code>audio</code> element.

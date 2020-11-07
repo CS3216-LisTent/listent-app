@@ -21,7 +21,7 @@ export default function SinglePost() {
   return (
     <div className={classes.root}>
       <ErrorBoundary fallback={<Redirect to="/" />}>
-        <Post postId={id} hideNext hidePrevious />
+        <Post isSinglePost postId={id} hideNext hidePrevious />
       </ErrorBoundary>
     </div>
   );
