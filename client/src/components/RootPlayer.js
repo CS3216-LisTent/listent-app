@@ -10,10 +10,11 @@ import {
 
 export default function RootPlayer() {
   const dispatch = useDispatch();
-  const { posts, index, swipeRef } = useSelector((state) => state.audio);
+  const { posts, index, swipeRef, src } = useSelector((state) => state.audio);
   const audioRef = useRef(null);
   const isRender =
-    posts[index] !== undefined && posts[index].audio_link !== undefined;
+    src ||
+    (posts[index] !== undefined && posts[index].audio_link !== undefined);
 
   useEffect(() => {
     dispatch(setAudioRef(audioRef));
@@ -111,16 +112,11 @@ export default function RootPlayer() {
             dispatch(incPostIndex());
           },
         ],
-        // ['seekbackward',  (details) => { /* ... */ }],
-        // ['seekforward',   (details) => { /* ... */ }],
-        // Placeholder, implement prgres bar!
-        [
-          "seekto",
-          (details) => {
-            audioRef.current.currentTime = details.seekTime;
-          },
-        ],
       ];
+
+      if (window.navigator.mediaSession?.setPositionState) {
+        window.navigator.mediaSession.setPositionState(null);
+      }
 
       for (const [action, handler] of actionHandlers) {
         try {
@@ -142,7 +138,7 @@ export default function RootPlayer() {
     <audio
       preload="metadata"
       ref={audioRef}
-      src={posts[index].audio_link}
+      src={src || posts[index].audio_link}
       controls
     >
       Your browser does not support the

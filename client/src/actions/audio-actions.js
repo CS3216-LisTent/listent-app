@@ -3,6 +3,7 @@ import {
   SET_POST_INDEX,
   SET_AUDIO_REF,
   SET_SWIPE_REF,
+  SET_AUDIO_SRC,
 } from "./types";
 
 export const setPosts = (posts) => {
@@ -47,5 +48,12 @@ export const setSwipeRef = (ref) => {
   return {
     type: SET_SWIPE_REF,
     payload: ref,
+  };
+};
+
+export const setAudioSrc = (src) => {
+  return {
+    type: SET_AUDIO_SRC,
+    payload: src,
   };
 };

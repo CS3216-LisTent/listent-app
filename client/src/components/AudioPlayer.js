@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
 import Grid from "@material-ui/core/Grid";
@@ -21,6 +21,7 @@ import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
 
 // Utils
 import { formatSeconds } from "../utils/general-utils";
+import { setAudioSrc } from "../actions/audio-actions";
 
 // const VOLUME_STEP = 0.1;
 const SKIP_STEP = 10;
@@ -44,8 +45,10 @@ export default function AudioPlayer({
   setRunInstructions,
   postId,
   isPaused,
+  src,
   ...rest
 }) {
+  const dispatch = useDispatch();
   const { audioRef, swipeRef } = useSelector((state) => state.audio);
   const controlsRef = useRef(null);
   const [audio, setAudio] = useState(null);
@@ -69,6 +72,10 @@ export default function AudioPlayer({
   const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
 
   useEffect(() => {
+    if (src) {
+      dispatch(setAudioSrc(src));
+    }
+
     if (audioRef.current && controlsRef.current) {
       const audio = audioRef.current;
       const audioControls = controlsRef.current;
@@ -90,14 +97,17 @@ export default function AudioPlayer({
       } else {
         audio.addEventListener("loadedmetadata", loadedMetadataEvent);
       }
+      audio.addEventListener('durationchange', loadedMetadataEvent);
       audio.addEventListener("timeupdate", timeUpdateEvent);
 
       return () => {
         audio.removeEventListener("loadedmetadata", loadedMetadataEvent);
+        audio.removeEventListener('durationchange', loadedMetadataEvent);
         audio.removeEventListener("timeupdate", timeUpdateEvent);
+        dispatch(setAudioSrc(undefined));
       };
     }
-  }, [audioRef]);
+  }, [audioRef, dispatch, src]);
 
   useEffect(() => {
     if (setRunInstructions && !hideNext && controlsRef.current && isLoaded) {
@@ -158,8 +168,6 @@ export default function AudioPlayer({
   const previous = () => {
     swipeRef.current.prev();
   };
-
-
 
   return (
     <div className={rest.className}>
