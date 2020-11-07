@@ -77,10 +77,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function New() {
   const dispatch = useDispatch();
+  const { audioRef } = useSelector((state) => state.audio);
 
   useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     dispatch(setBottomNavigationIndex(2));
-  }, [dispatch]);
+  }, [dispatch, audioRef]);
 
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [fields, setFields] = useState({ title: "", description: "" });
@@ -195,13 +199,14 @@ export default function New() {
   const [conversionProgress, setConversionProgress] = useState(0);
   const [isChipmunk, setIsChipmunk] = useState(!user); // set chipmunk mode by default for anon
   const [isRecording, setIsRecording] = useState(false);
-  const isHalfFilled =
+  const isHalfFilled = !!(
     isRecording ||
     uploadedFiles.audio.blob ||
     recordedBlob ||
     uploadedFiles.image.blob ||
     !isEmpty(fields.title, { ignore_whitespace: true }) ||
-    !isEmpty(fields.description, { ignore_whitespace: true });
+    !isEmpty(fields.description, { ignore_whitespace: true })
+  );
   return (
     <div className={classes.root}>
       {renderRedirect && (

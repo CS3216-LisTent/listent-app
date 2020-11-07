@@ -1,29 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
 
-// Material UI components
-import Container from "@material-ui/core/Container";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
-import Typography from "@material-ui/core/Typography";
 
-// Custom components
 import ErrorBoundary from "../components/ErrorBoundary";
 import SuspenseLoading from "../components/SuspenseLoading";
-import Instructions from "../components/Instructions";
-
-// Other components
-import ReactSwipe from "react-swipe";
-
-// Pages
-import Post from "../components/Post";
+import Posts from "../components/Posts";
 
 // Utils
-import useInfinite from "../utils/use-infinite";
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 import { setHomeTabIndex } from "../actions/home-tab-actions";
+import { setPostIndex } from "../actions/audio-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,68 +52,24 @@ function Home() {
   const tabIndex = useSelector((state) => state.homeTab.index);
   const classes = useStyles();
 
-  const seed = useSelector((state) => state.seed);
-  const { data, size, setSize, isEmpty } = useInfinite(
-    !user
-      ? `/api/v1/posts/discover/all?seed=${seed}&`
-      : tabIndex === 0
-      ? `/api/v1/posts/feed?`
-      : `/api/v1/posts/discover?seed=${seed}&`,
-    3
-  );
-
-  const swipeRef = useRef(null);
-  const [startSlide, setStartSlide] = useState(0);
-
-  const [runInstructions, setRunInstructions] = useState(false);
-  const posts = data.reduce(
-    (acc, page, i) => [
-      ...acc,
-      ...page.map((post, j) => {
-        const index = 3 * i + j;
-        return (
-          <div style={{ height: "100%" }} key={index}>
-            <SuspenseLoading>
-              <Post
-                autoplay={index !== 0}
-                autopause
-                postId={post._id}
-                next={() => {
-                  swipeRef.current.next();
-                }}
-                previous={() => {
-                  swipeRef.current.prev();
-                }}
-                startSlide={startSlide}
-                index={index}
-                setRunInstructions={setRunInstructions}
-              />
-            </SuspenseLoading>
-          </div>
-        );
-      }),
-    ],
-    []
-  );
-
-  useEffect(() => {
-    // On change tab, set size to 1 page
-    setSize(1);
-    // Reset start index of slide
-    setStartSlide(0);
-  }, [tabIndex, setSize]);
-
   useEffect(() => {
     dispatch(setBottomNavigationIndex(0));
   }, [dispatch]);
 
+  const apiPath = !user
+    ? `/api/v1/posts/discover/all?`
+    : tabIndex === 0
+    ? `/api/v1/posts/feed?`
+    : `/api/v1/posts/discover?`;
+
   const handleChange = (_, newValue) => {
     dispatch(setHomeTabIndex(newValue));
+    // Reset position after change section
+    dispatch(setPostIndex(0));
   };
 
   return (
     <div className={classes.root}>
-      {posts && <Instructions run={runInstructions} />}
       {user && (
         <Tabs
           onChange={handleChange}
@@ -137,31 +83,7 @@ function Home() {
           <Tab label="Discover" />
         </Tabs>
       )}
-      {isEmpty ? (
-        <Container maxWidth="sm" className={classes.emptyContainer}>
-          <Typography variant="h5">
-            It seems a little lonely here... Start following other accounts now!
-          </Typography>
-        </Container>
-      ) : (
-        <ReactSwipe
-          swipeOptions={{
-            startSlide: startSlide,
-            continuous: false,
-            callback: (index) => {
-              setStartSlide(index);
-              if (index + 1 === posts.length) {
-                // Load more if next is last
-                setSize(size + 1);
-              }
-            },
-          }}
-          ref={swipeRef}
-          className={classes.swipeContainer}
-        >
-          {posts}
-        </ReactSwipe>
-      )}
+      <Posts apiPath={apiPath} />
     </div>
   );
 }

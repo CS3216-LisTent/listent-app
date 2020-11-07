@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
+import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
 import Grid from "@material-ui/core/Grid";
@@ -10,9 +10,6 @@ import IconButton from "@material-ui/core/IconButton";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Slider from "@material-ui/core/Slider";
 import Typography from "@material-ui/core/Typography";
-
-// Other components
-import VisibilitySensor from "react-visibility-sensor";
 
 // Icons
 import Forward10Icon from "@material-ui/icons/Forward10";
@@ -24,6 +21,7 @@ import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
 
 // Utils
 import { formatSeconds } from "../utils/general-utils";
+import { setAudioSrc } from "../actions/audio-actions";
 
 // const VOLUME_STEP = 0.1;
 const SKIP_STEP = 10;
@@ -42,39 +40,44 @@ const useStyles = makeStyles({
 });
 
 export default function AudioPlayer({
-  next,
-  previous,
   hideNext,
   hidePrevious,
-  src,
-  autoplay,
-  autopause,
-  isPaused,
   setRunInstructions,
   postId,
+  isPaused,
+  src,
   ...rest
 }) {
-  const audioRef = useRef(null);
+  const dispatch = useDispatch();
+  const { audioRef, swipeRef } = useSelector((state) => state.audio);
   const controlsRef = useRef(null);
   const [audio, setAudio] = useState(null);
-  const [duration, setDuration] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(
+    audioRef.current ? audioRef.current.duration : 0
+  );
+  const [progress, setProgress] = useState(
+    audioRef.current
+      ? Math.floor(
+          (audioRef.current.currentTime / audioRef.current.duration) * 100
+        )
+      : 0
+  );
+  const [currentTime, setCurrentTime] = useState(
+    audioRef.current ? audioRef.current.currentTime : 0
+  );
   const [isLoaded, setIsLoaded] = useState(false);
   const classes = useStyles(isLoaded);
 
   const theme = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
-
+  const audioRefCheck = audioRef.current === null;
   useEffect(() => {
-    const isSupportAudio = !!document.createElement("audio").canPlayType;
-    if (isSupportAudio && audioRef.current && controlsRef.current) {
-      setCurrentTime(0);
-      setProgress(0);
+    if (src) {
+      dispatch(setAudioSrc(src));
+    }
+    if (audioRef.current && controlsRef.current) {
       const audio = audioRef.current;
       const audioControls = controlsRef.current;
-
-      audio.controls = false;
 
       setAudio(audio);
 
@@ -87,22 +90,22 @@ export default function AudioPlayer({
         setCurrentTime(audio.currentTime);
         setProgress(Math.floor((audio.currentTime / audio.duration) * 100));
       };
-      const endedEvent = () => {
-        if (next) {
-          next();
-        }
-      };
-      audio.addEventListener("loadedmetadata", loadedMetadataEvent);
+      if (audio.duration) {
+        loadedMetadataEvent();
+      } else {
+        audio.addEventListener("loadedmetadata", loadedMetadataEvent);
+      }
+      audio.addEventListener("durationchange", loadedMetadataEvent);
       audio.addEventListener("timeupdate", timeUpdateEvent);
-      audio.addEventListener("ended", endedEvent);
 
       return () => {
         audio.removeEventListener("loadedmetadata", loadedMetadataEvent);
+        audio.removeEventListener("durationchange", loadedMetadataEvent);
         audio.removeEventListener("timeupdate", timeUpdateEvent);
-        audio.removeEventListener("ended", endedEvent);
+        dispatch(setAudioSrc(undefined));
       };
     }
-  }, [audioRef, controlsRef, next, src]);
+  }, [audioRef, dispatch, src, audioRefCheck]);
 
   useEffect(() => {
     if (setRunInstructions && !hideNext && controlsRef.current && isLoaded) {
@@ -156,95 +159,73 @@ export default function AudioPlayer({
     skip("-");
   };
 
-  const increaseViewCount = () => {
-    if (postId) {
-      // Increase view count
-      axios.post(
-        `/api/v1/posts/${postId}/inc-view-count`,
-        JSON.stringify({ number: 1 })
-      );
-    }
+  const next = () => {
+    swipeRef.current.next();
   };
 
-  const onChange = (isVisible) => {
-    if (isVisible) {
-      increaseViewCount();
-    }
-
-    if (isVisible && autoplay) {
-      audioRef.current.play();
-    } else if (!isVisible && autopause) {
-      audioRef.current.pause();
-    }
+  const previous = () => {
+    swipeRef.current.prev();
   };
 
   return (
-    <VisibilitySensor onChange={onChange}>
-      <div className={rest.className}>
-        {!isLoaded && <LinearProgress />}
-        <audio preload="metadata" ref={audioRef} controls src={src}>
-          Your browser does not support the
-          <code>audio</code> element.
-        </audio>
-        <Grid container className={classes.controls} ref={controlsRef}>
-          <Grid item container xs={12} justify="center" alignItems="center">
-            <Grid item xs={2} className={classes.center}>
-              <Typography variant="caption">
-                {formatSeconds(currentTime)}
-              </Typography>
-            </Grid>
-            <Grid item xs={8}>
-              <Slider value={progress} onChange={changeProgress} />
-            </Grid>
-            <Grid item xs={2} className={classes.center}>
-              <Typography variant="caption">
-                {formatSeconds(duration)}
-              </Typography>
-            </Grid>
+    <div className={rest.className}>
+      {!isLoaded && <LinearProgress />}
+      <Grid container className={classes.controls} ref={controlsRef}>
+        <Grid item container xs={12} justify="center" alignItems="center">
+          <Grid item xs={2} className={classes.center}>
+            <Typography variant="caption">
+              {formatSeconds(currentTime)}
+            </Typography>
           </Grid>
-          <Grid item container xs={12} justify="center" wrap="nowrap">
-            <Grid item xs={2} className={classes.center}>
-              <IconButton onClick={skipBackwards}>
-                <Replay10Icon fontSize={isLarge ? "large" : undefined} />
-              </IconButton>
-            </Grid>
-            <Grid item xs={2} className={classes.center}>
-              {!hidePrevious && (
-                <IconButton disabled={!previous} onClick={previous}>
-                  <SkipPreviousIcon
-                    id="audio-previous"
-                    fontSize={isLarge ? "large" : undefined}
-                  />
-                </IconButton>
-              )}
-            </Grid>
-            <Grid item xs={2} className={classes.center}>
-              <IconButton onClick={playPause}>
-                {!audio || audio.paused ? (
-                  <PlayArrowIcon fontSize={isLarge ? "large" : undefined} />
-                ) : (
-                  <PauseIcon fontSize={isLarge ? "large" : undefined} />
-                )}
-              </IconButton>
-            </Grid>
-            <Grid item xs={2} className={classes.center}>
-              {!hideNext && (
-                <IconButton disabled={!next} onClick={next}>
-                  <SkipNextIcon
-                    id="audio-next"
-                    fontSize={isLarge ? "large" : undefined}
-                  />
-                </IconButton>
-              )}
-            </Grid>
-            <Grid item xs={2} className={classes.center}>
-              <IconButton onClick={skipForward}>
-                <Forward10Icon fontSize={isLarge ? "large" : undefined} />
-              </IconButton>
-            </Grid>
+          <Grid item xs={8}>
+            <Slider value={progress} onChange={changeProgress} />
+          </Grid>
+          <Grid item xs={2} className={classes.center}>
+            <Typography variant="caption">{formatSeconds(duration)}</Typography>
           </Grid>
         </Grid>
-      </div>
-    </VisibilitySensor>
+        <Grid item container xs={12} justify="center" wrap="nowrap">
+          <Grid item xs={2} className={classes.center}>
+            <IconButton onClick={skipBackwards}>
+              <Replay10Icon fontSize={isLarge ? "large" : undefined} />
+            </IconButton>
+          </Grid>
+          <Grid item xs={2} className={classes.center}>
+            {!hidePrevious && (
+              <IconButton disabled={!previous} onClick={previous}>
+                <SkipPreviousIcon
+                  id="audio-previous"
+                  fontSize={isLarge ? "large" : undefined}
+                />
+              </IconButton>
+            )}
+          </Grid>
+          <Grid item xs={2} className={classes.center}>
+            <IconButton onClick={playPause}>
+              {!audio || audio.paused ? (
+                <PlayArrowIcon fontSize={isLarge ? "large" : undefined} />
+              ) : (
+                <PauseIcon fontSize={isLarge ? "large" : undefined} />
+              )}
+            </IconButton>
+          </Grid>
+          <Grid item xs={2} className={classes.center}>
+            {!hideNext && (
+              <IconButton disabled={!next} onClick={next}>
+                <SkipNextIcon
+                  id="audio-next"
+                  fontSize={isLarge ? "large" : undefined}
+                />
+              </IconButton>
+            )}
+          </Grid>
+          <Grid item xs={2} className={classes.center}>
+            <IconButton onClick={skipForward}>
+              <Forward10Icon fontSize={isLarge ? "large" : undefined} />
+            </IconButton>
+          </Grid>
+        </Grid>
+      </Grid>
+    </div>
   );
 }
