@@ -22,7 +22,7 @@ export default function RootPlayer() {
     const audio = audioRef.current;
 
     const endedEvent = () => {
-      if (swipeRef.current) {
+      if (swipeRef && swipeRef.current) {
         // Let swipe.js handle next event
         swipeRef.current.next();
       } else {
@@ -54,11 +54,11 @@ export default function RootPlayer() {
         audio.removeEventListener("play", increaseViewCount);
       }
     };
-  }, [isRender, dispatch, index, posts, swipeRef]);
+  }, [isRender, dispatch, index, posts, swipeRef, src]);
 
   useEffect(() => {
     // Autoplay if is not first song
-    if (index !== 0) {
+    if (index !== 0 && audioRef.current) {
       audioRef.current.play();
     }
 
@@ -130,7 +130,7 @@ export default function RootPlayer() {
         }
       }
     }
-  }, [index, dispatch, isRender, posts]);
+  }, [index, dispatch, isRender, posts, src]);
 
   if (!isRender) {
     return null;

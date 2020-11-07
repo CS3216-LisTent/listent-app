@@ -13,7 +13,6 @@ import jwt_decode from "jwt-decode";
 import store from "./store";
 import { setUser, logoutUser } from "./actions/auth-actions";
 import { setAdditionalPayloads } from "./actions/auth-actions";
-import { setSeed } from "./actions/seed-actions";
 
 // Custom components
 import Alert from "./components/Alert";
@@ -46,9 +45,6 @@ if (jwt) {
     window.location.href = "./login";
   }
 }
-
-// Set discover seed
-store.dispatch(setSeed());
 
 const useStyles = makeStyles({
   root: { height: (windowHeight) => windowHeight - 56 },

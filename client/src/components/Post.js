@@ -37,7 +37,7 @@ import { abbreviateNumber } from "../utils/general-utils";
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
 import { openAlert } from "../actions/alert-actions";
-import { setPosts } from "../actions/audio-actions";
+import { setPosts, setPostIndex } from "../actions/audio-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -127,10 +127,18 @@ export default function Post({
   const { data, mutate } = useSwr(isRender ? `/api/v1/posts/${postId}` : null);
 
   useEffect(() => {
+    const prevIndex = postIndex;
     if (isSinglePost) {
       dispatch(setPosts([data.data]));
+      dispatch(setPostIndex(0));
     }
-  }, [isSinglePost, data, dispatch]);
+
+    return () => {
+      if (isSinglePost) {
+        dispatch(setPostIndex(prevIndex));
+      }
+    };
+  }, [isSinglePost, data, dispatch, postIndex]);
 
   const post = data && data.data;
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);

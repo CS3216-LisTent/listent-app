@@ -77,10 +77,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function New() {
   const dispatch = useDispatch();
+  const { audioRef } = useSelector((state) => state.audio);
 
   useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     dispatch(setBottomNavigationIndex(2));
-  }, [dispatch]);
+  }, [dispatch, audioRef]);
 
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [fields, setFields] = useState({ title: "", description: "" });
