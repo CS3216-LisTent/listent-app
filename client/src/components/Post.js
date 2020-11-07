@@ -113,17 +113,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Post({
-  postId,
-  next,
-  previous,
-  hideNext,
-  hidePrevious,
-  autoplay,
-  autopause,
-  index,
-  setRunInstructions,
-}) {
+export default function Post({ postId, index, setRunInstructions, isSinglePost }) {
   const { index: postIndex } = useSelector((state) => state.audio);
 
   const isRender = Math.abs(postIndex - index) <= 1;
@@ -160,7 +150,7 @@ export default function Post({
 
   return (
     <>
-      {hideNext && (
+      {isSinglePost && (
         <Helmet>
           <title>{post.title}</title>
         </Helmet>
@@ -231,17 +221,9 @@ export default function Post({
                   viewCount={post.view_count}
                 />
                 <AudioPlayer
-                  index={index}
-                  autoplay={autoplay}
-                  autopause={autopause}
-                  next={next}
-                  previous={previous}
-                  hideNext={hideNext}
-                  hidePrevious={hidePrevious}
-                  src={post.audio_link}
-                  isPaused={isPaused}
                   setRunInstructions={setRunInstructions}
                   postId={postId}
+                  isPaused={isPaused}
                 />
               </Grid>
             </Grid>

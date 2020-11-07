@@ -21,6 +21,7 @@ import BackButton from "./components/BackButton";
 import BottomNavigationBar from "./components/BottomNavigationBar";
 import LoadingCenter from "./components/LoadingCenter";
 import TopSnackbar from "./components/TopSnackbar";
+import RootPlayer from "./components/RootPlayer";
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));
@@ -86,6 +87,7 @@ function App() {
       <BackButton />
       <TopSnackbar />
       <Alert />
+      <RootPlayer />
       <Suspense fallback={<LoadingCenter />}>
         <Switch>
           <Route exact path="/">

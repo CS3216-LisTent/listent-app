@@ -20,7 +20,7 @@ import Post from "../components/Post";
 
 // Utils
 import useInfinite from "../utils/use-infinite";
-import { setPosts, setPostIndex } from "../actions/audio-actions";
+import { setPosts, setPostIndex, setSwipeRef } from "../actions/audio-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,9 +64,13 @@ function Posts({ apiPath }) {
 
   useEffect(() => {
     dispatch(setPosts(data.flat()));
-  }, [data]);
+  }, [data, dispatch]);
 
   const swipeRef = useRef(null);
+
+  useEffect(() => {
+    dispatch(setSwipeRef(swipeRef));
+  }, [dispatch]);
 
   const [runInstructions, setRunInstructions] = useState(false);
 
@@ -99,15 +103,7 @@ function Posts({ apiPath }) {
             <div style={{ height: "100%" }} key={i}>
               <SuspenseLoading>
                 <Post
-                  autoplay={i !== 0}
-                  autopause
                   postId={post._id}
-                  next={() => {
-                    swipeRef.current.next();
-                  }}
-                  previous={() => {
-                    swipeRef.current.prev();
-                  }}
                   index={i}
                   setRunInstructions={setRunInstructions}
                 />

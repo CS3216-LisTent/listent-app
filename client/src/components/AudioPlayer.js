@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 // Material UI components
 import Grid from "@material-ui/core/Grid";
@@ -11,9 +10,6 @@ import IconButton from "@material-ui/core/IconButton";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Slider from "@material-ui/core/Slider";
 import Typography from "@material-ui/core/Typography";
-
-// Other components
-import VisibilitySensor from "react-visibility-sensor";
 
 // Icons
 import Forward10Icon from "@material-ui/icons/Forward10";
@@ -43,41 +39,39 @@ const useStyles = makeStyles({
 });
 
 export default function AudioPlayer({
-  next,
-  previous,
   hideNext,
   hidePrevious,
-  src,
-  autoplay,
-  autopause,
-  isPaused,
   setRunInstructions,
   postId,
-  index,
+  isPaused,
   ...rest
 }) {
-  const audioRef = useRef(null);
+  const { audioRef, swipeRef } = useSelector((state) => state.audio);
   const controlsRef = useRef(null);
   const [audio, setAudio] = useState(null);
-  const [duration, setDuration] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(
+    audioRef.current ? audioRef.current.duration : 0
+  );
+  const [progress, setProgress] = useState(
+    audioRef.current
+      ? Math.floor(
+          (audioRef.current.currentTime / audioRef.current.duration) * 100
+        )
+      : 0
+  );
+  const [currentTime, setCurrentTime] = useState(
+    audioRef.current ? audioRef.current.currentTime : 0
+  );
   const [isLoaded, setIsLoaded] = useState(false);
   const classes = useStyles(isLoaded);
-  const { index: postIndex } = useSelector((state) => state.audio);
 
   const theme = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
 
   useEffect(() => {
-    const isSupportAudio = !!document.createElement("audio").canPlayType;
-    if (isSupportAudio && audioRef.current && controlsRef.current) {
-      setCurrentTime(0);
-      setProgress(0);
+    if (audioRef.current && controlsRef.current) {
       const audio = audioRef.current;
       const audioControls = controlsRef.current;
-
-      audio.controls = false;
 
       setAudio(audio);
 
@@ -90,22 +84,20 @@ export default function AudioPlayer({
         setCurrentTime(audio.currentTime);
         setProgress(Math.floor((audio.currentTime / audio.duration) * 100));
       };
-      const endedEvent = () => {
-        if (next) {
-          next();
-        }
-      };
-      audio.addEventListener("loadedmetadata", loadedMetadataEvent);
+
+      if (audio.duration) {
+        loadedMetadataEvent();
+      } else {
+        audio.addEventListener("loadedmetadata", loadedMetadataEvent);
+      }
       audio.addEventListener("timeupdate", timeUpdateEvent);
-      audio.addEventListener("ended", endedEvent);
 
       return () => {
         audio.removeEventListener("loadedmetadata", loadedMetadataEvent);
         audio.removeEventListener("timeupdate", timeUpdateEvent);
-        audio.removeEventListener("ended", endedEvent);
       };
     }
-  }, [audioRef, controlsRef, next, src]);
+  }, [audioRef]);
 
   useEffect(() => {
     if (setRunInstructions && !hideNext && controlsRef.current && isLoaded) {
@@ -159,31 +151,19 @@ export default function AudioPlayer({
     skip("-");
   };
 
-  const increaseViewCount = () => {
-    if (postId) {
-      // Increase view count
-      axios.post(
-        `/api/v1/posts/${postId}/inc-view-count`,
-        JSON.stringify({ number: 1 })
-      );
-    }
+  const next = () => {
+    swipeRef.current.next();
   };
 
-  useEffect(() => {
-    if (index === postIndex) {
-      audioRef.current.play();
-    } else {
-      audioRef.current.pause();
-    }
-  }, [postIndex]);
+  const previous = () => {
+    swipeRef.current.prev();
+  };
+
+
 
   return (
     <div className={rest.className}>
       {!isLoaded && <LinearProgress />}
-      <audio preload="metadata" ref={audioRef} controls src={src}>
-        Your browser does not support the
-        <code>audio</code> element.
-      </audio>
       <Grid container className={classes.controls} ref={controlsRef}>
         <Grid item container xs={12} justify="center" alignItems="center">
           <Grid item xs={2} className={classes.center}>

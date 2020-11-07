@@ -21,3 +21,5 @@ export const SET_BACK_ACTION = "SET_BACK_ACTION ";
 
 export const SET_POSTS = "SET_POSTS";
 export const SET_POST_INDEX = "SET_POST_INDEX";
+export const SET_AUDIO_REF = "SET_AUDIO_REF";
+export const SET_SWIPE_REF = "SET_SWIPE_REF";
