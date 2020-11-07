@@ -121,12 +121,12 @@ export default function Post({
   hidePrevious,
   autoplay,
   autopause,
-  startSlide,
   index,
   setRunInstructions,
 }) {
-  const isRender =
-    startSlide && index ? Math.abs(startSlide - index) <= 1 : true;
+  const { index: postIndex } = useSelector((state) => state.audio);
+
+  const isRender = Math.abs(postIndex - index) <= 1;
 
   const { data, mutate } = useSwr(isRender ? `/api/v1/posts/${postId}` : null);
 
@@ -231,6 +231,7 @@ export default function Post({
                   viewCount={post.view_count}
                 />
                 <AudioPlayer
+                  index={index}
                   autoplay={autoplay}
                   autopause={autopause}
                   next={next}

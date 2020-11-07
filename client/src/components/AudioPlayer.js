@@ -3,6 +3,7 @@ import axios from "axios";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
+import { useSelector, useDispatch } from "react-redux";
 
 // Material UI components
 import Grid from "@material-ui/core/Grid";
@@ -52,6 +53,7 @@ export default function AudioPlayer({
   isPaused,
   setRunInstructions,
   postId,
+  index,
   ...rest
 }) {
   const audioRef = useRef(null);
@@ -62,6 +64,7 @@ export default function AudioPlayer({
   const [currentTime, setCurrentTime] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const classes = useStyles(isLoaded);
+  const { index: postIndex } = useSelector((state) => state.audio);
 
   const theme = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
@@ -166,85 +169,77 @@ export default function AudioPlayer({
     }
   };
 
-  const onChange = (isVisible) => {
-    if (isVisible) {
-      increaseViewCount();
-    }
-
-    if (isVisible && autoplay) {
+  useEffect(() => {
+    if (index === postIndex) {
       audioRef.current.play();
-    } else if (!isVisible && autopause) {
+    } else {
       audioRef.current.pause();
     }
-  };
+  }, [postIndex]);
 
   return (
-    <VisibilitySensor onChange={onChange}>
-      <div className={rest.className}>
-        {!isLoaded && <LinearProgress />}
-        <audio preload="metadata" ref={audioRef} controls src={src}>
-          Your browser does not support the
-          <code>audio</code> element.
-        </audio>
-        <Grid container className={classes.controls} ref={controlsRef}>
-          <Grid item container xs={12} justify="center" alignItems="center">
-            <Grid item xs={2} className={classes.center}>
-              <Typography variant="caption">
-                {formatSeconds(currentTime)}
-              </Typography>
-            </Grid>
-            <Grid item xs={8}>
-              <Slider value={progress} onChange={changeProgress} />
-            </Grid>
-            <Grid item xs={2} className={classes.center}>
-              <Typography variant="caption">
-                {formatSeconds(duration)}
-              </Typography>
-            </Grid>
+    <div className={rest.className}>
+      {!isLoaded && <LinearProgress />}
+      <audio preload="metadata" ref={audioRef} controls src={src}>
+        Your browser does not support the
+        <code>audio</code> element.
+      </audio>
+      <Grid container className={classes.controls} ref={controlsRef}>
+        <Grid item container xs={12} justify="center" alignItems="center">
+          <Grid item xs={2} className={classes.center}>
+            <Typography variant="caption">
+              {formatSeconds(currentTime)}
+            </Typography>
           </Grid>
-          <Grid item container xs={12} justify="center" wrap="nowrap">
-            <Grid item xs={2} className={classes.center}>
-              <IconButton onClick={skipBackwards}>
-                <Replay10Icon fontSize={isLarge ? "large" : undefined} />
-              </IconButton>
-            </Grid>
-            <Grid item xs={2} className={classes.center}>
-              {!hidePrevious && (
-                <IconButton disabled={!previous} onClick={previous}>
-                  <SkipPreviousIcon
-                    id="audio-previous"
-                    fontSize={isLarge ? "large" : undefined}
-                  />
-                </IconButton>
-              )}
-            </Grid>
-            <Grid item xs={2} className={classes.center}>
-              <IconButton onClick={playPause}>
-                {!audio || audio.paused ? (
-                  <PlayArrowIcon fontSize={isLarge ? "large" : undefined} />
-                ) : (
-                  <PauseIcon fontSize={isLarge ? "large" : undefined} />
-                )}
-              </IconButton>
-            </Grid>
-            <Grid item xs={2} className={classes.center}>
-              {!hideNext && (
-                <IconButton disabled={!next} onClick={next}>
-                  <SkipNextIcon
-                    id="audio-next"
-                    fontSize={isLarge ? "large" : undefined}
-                  />
-                </IconButton>
-              )}
-            </Grid>
-            <Grid item xs={2} className={classes.center}>
-              <IconButton onClick={skipForward}>
-                <Forward10Icon fontSize={isLarge ? "large" : undefined} />
-              </IconButton>
-            </Grid>
+          <Grid item xs={8}>
+            <Slider value={progress} onChange={changeProgress} />
+          </Grid>
+          <Grid item xs={2} className={classes.center}>
+            <Typography variant="caption">{formatSeconds(duration)}</Typography>
           </Grid>
         </Grid>
-      </div>
-    </VisibilitySensor>
+        <Grid item container xs={12} justify="center" wrap="nowrap">
+          <Grid item xs={2} className={classes.center}>
+            <IconButton onClick={skipBackwards}>
+              <Replay10Icon fontSize={isLarge ? "large" : undefined} />
+            </IconButton>
+          </Grid>
+          <Grid item xs={2} className={classes.center}>
+            {!hidePrevious && (
+              <IconButton disabled={!previous} onClick={previous}>
+                <SkipPreviousIcon
+                  id="audio-previous"
+                  fontSize={isLarge ? "large" : undefined}
+                />
+              </IconButton>
+            )}
+          </Grid>
+          <Grid item xs={2} className={classes.center}>
+            <IconButton onClick={playPause}>
+              {!audio || audio.paused ? (
+                <PlayArrowIcon fontSize={isLarge ? "large" : undefined} />
+              ) : (
+                <PauseIcon fontSize={isLarge ? "large" : undefined} />
+              )}
+            </IconButton>
+          </Grid>
+          <Grid item xs={2} className={classes.center}>
+            {!hideNext && (
+              <IconButton disabled={!next} onClick={next}>
+                <SkipNextIcon
+                  id="audio-next"
+                  fontSize={isLarge ? "large" : undefined}
+                />
+              </IconButton>
+            )}
+          </Grid>
+          <Grid item xs={2} className={classes.center}>
+            <IconButton onClick={skipForward}>
+              <Forward10Icon fontSize={isLarge ? "large" : undefined} />
+            </IconButton>
+          </Grid>
+        </Grid>
+      </Grid>
+    </div>
   );
 }

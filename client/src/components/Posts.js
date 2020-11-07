@@ -108,7 +108,6 @@ function Posts({ apiPath }) {
                   previous={() => {
                     swipeRef.current.prev();
                   }}
-                  startSlide={index}
                   index={i}
                   setRunInstructions={setRunInstructions}
                 />
