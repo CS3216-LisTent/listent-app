@@ -1,8 +1,12 @@
+// Placeholder TODO: This is a replicate of the audioRecorder, just that it isn't global!
+// Have to refactor one day...
+
 import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTheme } from "@material-ui/core/styles";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 // Material UI components
 import Grid from "@material-ui/core/Grid";
@@ -16,8 +20,6 @@ import Forward10Icon from "@material-ui/icons/Forward10";
 import PauseIcon from "@material-ui/icons/Pause";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import Replay10Icon from "@material-ui/icons/Replay10";
-import SkipNextIcon from "@material-ui/icons/SkipNext";
-import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
 
 // Utils
 import { formatSeconds } from "../utils/general-utils";
@@ -38,42 +40,73 @@ const useStyles = makeStyles({
   },
 });
 
-export default function AudioPlayer({
-  hideNext,
-  hidePrevious,
-  setRunInstructions,
-  postId,
-  isPaused,
-  src,
-  ...rest
-}) {
-  const dispatch = useDispatch();
-  const { audioRef, swipeRef } = useSelector((state) => state.audio);
+export default function StandAloneAudioPlayer({ src, post, ...rest }) {
+  const rootAudioRef = useSelector((state) => state.audio.audioRef);
+  const audioRef = useRef(null);
   const controlsRef = useRef(null);
   const [audio, setAudio] = useState(null);
-  const [duration, setDuration] = useState(
-    audioRef.current ? audioRef.current.duration : 0
-  );
-  const [progress, setProgress] = useState(
-    audioRef.current
-      ? Math.floor(
-          (audioRef.current.currentTime / audioRef.current.duration) * 100
-        )
-      : 0
-  );
-  const [currentTime, setCurrentTime] = useState(
-    audioRef.current ? audioRef.current.currentTime : 0
-  );
+  const [duration, setDuration] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const classes = useStyles(isLoaded);
 
   const theme = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
-  const audioRefCheck = audioRef.current === null;
+
   useEffect(() => {
-    if (audioRef.current && controlsRef.current) {
+    if (rootAudioRef.current) {
+      rootAudioRef.current.pause();
+    }
+
+    if (post) {
+      const { title, username, image_link } = post;
+      navigator.mediaSession.metadata = new window.MediaMetadata({
+        title: title,
+        artist: username,
+        artwork: [
+          {
+            src: image_link,
+            sizes: "96x96",
+            type: "image/png",
+          },
+          {
+            src: image_link,
+            sizes: "128x128",
+            type: "image/png",
+          },
+          {
+            src: image_link,
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: image_link,
+            sizes: "256x256",
+            type: "image/png",
+          },
+          {
+            src: image_link,
+            sizes: "384x384",
+            type: "image/png",
+          },
+          {
+            src: image_link,
+            sizes: "512x512",
+            type: "image/png",
+          },
+        ],
+      });
+    }
+
+    const isSupportAudio = !!document.createElement("audio").canPlayType;
+    if (isSupportAudio && audioRef.current && controlsRef.current) {
+      setCurrentTime(0);
+      setProgress(0);
       const audio = audioRef.current;
       const audioControls = controlsRef.current;
+
+      audio.controls = false;
 
       setAudio(audio);
 
@@ -86,39 +119,20 @@ export default function AudioPlayer({
         setCurrentTime(audio.currentTime);
         setProgress(Math.floor((audio.currentTime / audio.duration) * 100));
       };
-      if (audio.duration) {
-        loadedMetadataEvent();
-      } else {
-        audio.addEventListener("loadedmetadata", loadedMetadataEvent);
-      }
-      audio.addEventListener("durationchange", loadedMetadataEvent);
+      audio.addEventListener("loadedmetadata", loadedMetadataEvent);
       audio.addEventListener("timeupdate", timeUpdateEvent);
 
       return () => {
         audio.removeEventListener("loadedmetadata", loadedMetadataEvent);
-        audio.removeEventListener("durationchange", loadedMetadataEvent);
         audio.removeEventListener("timeupdate", timeUpdateEvent);
       };
     }
-  }, [audioRef, dispatch, audioRefCheck]);
-
-  useEffect(() => {
-    if (setRunInstructions && !hideNext && controlsRef.current && isLoaded) {
-      setTimeout(() => {
-        setRunInstructions(true);
-      }, 100);
-    }
-  }, [setRunInstructions, hideNext, isLoaded]);
-
-  useEffect(() => {
-    if (isPaused) {
-      audio.pause();
-    }
-  }, [isPaused, audio]);
+  }, [audioRef, controlsRef, src, post, rootAudioRef]);
 
   const playPause = () => {
     if (audio.paused || audio.ended) {
       audio.play();
+      increaseViewCount();
     } else {
       audio.pause();
     }
@@ -154,17 +168,23 @@ export default function AudioPlayer({
     skip("-");
   };
 
-  const next = () => {
-    swipeRef.current.next();
-  };
-
-  const previous = () => {
-    swipeRef.current.prev();
+  const increaseViewCount = () => {
+    if (post) {
+      // Increase view count
+      axios.post(
+        `/api/v1/posts/${post._id}/inc-view-count`,
+        JSON.stringify({ number: 1 })
+      );
+    }
   };
 
   return (
     <div className={rest.className}>
       {!isLoaded && <LinearProgress />}
+      <audio preload="metadata" ref={audioRef} controls src={src}>
+        Your browser does not support the
+        <code>audio</code> element.
+      </audio>
       <Grid container className={classes.controls} ref={controlsRef}>
         <Grid item container xs={12} justify="center" alignItems="center">
           <Grid item xs={2} className={classes.center}>
@@ -185,16 +205,7 @@ export default function AudioPlayer({
               <Replay10Icon fontSize={isLarge ? "large" : undefined} />
             </IconButton>
           </Grid>
-          <Grid item xs={2} className={classes.center}>
-            {!hidePrevious && (
-              <IconButton disabled={!previous} onClick={previous}>
-                <SkipPreviousIcon
-                  id="audio-previous"
-                  fontSize={isLarge ? "large" : undefined}
-                />
-              </IconButton>
-            )}
-          </Grid>
+          <Grid item xs={2} className={classes.center}></Grid>
           <Grid item xs={2} className={classes.center}>
             <IconButton onClick={playPause}>
               {!audio || audio.paused ? (
@@ -204,16 +215,7 @@ export default function AudioPlayer({
               )}
             </IconButton>
           </Grid>
-          <Grid item xs={2} className={classes.center}>
-            {!hideNext && (
-              <IconButton disabled={!next} onClick={next}>
-                <SkipNextIcon
-                  id="audio-next"
-                  fontSize={isLarge ? "large" : undefined}
-                />
-              </IconButton>
-            )}
-          </Grid>
+          <Grid item xs={2} className={classes.center}></Grid>
           <Grid item xs={2} className={classes.center}>
             <IconButton onClick={skipForward}>
               <Forward10Icon fontSize={isLarge ? "large" : undefined} />

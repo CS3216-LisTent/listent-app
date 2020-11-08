@@ -28,7 +28,7 @@ import Can from "../components/Can";
 import GreenButton from "../components/GreenButton";
 
 // Custom components
-import AudioPlayer from "../components/AudioPlayer";
+import StandAloneAudioPlayer from "../components/StandAloneAudioPlayer";
 import LoadingBackdrop from "../components/LoadingBackdrop";
 
 // Actions
@@ -82,7 +82,6 @@ export default function New() {
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.currentTime = 0;
     }
     dispatch(setBottomNavigationIndex(2));
   }, [dispatch, audioRef]);
@@ -292,11 +291,7 @@ export default function New() {
             )}
             {uploadedFiles.audio.blob && (
               <div className={classes.audioUploadContainer}>
-                <AudioPlayer
-                  src={uploadedFiles.audio.url}
-                  hideNext
-                  hidePrevious
-                />
+                <StandAloneAudioPlayer src={uploadedFiles.audio.url} />
                 <Button
                   variant="outlined"
                   onClick={() => removeUpload("audio")}
