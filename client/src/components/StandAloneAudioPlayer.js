@@ -61,42 +61,44 @@ export default function StandAloneAudioPlayer({ src, post, ...rest }) {
 
     if (post) {
       const { title, username, image_link } = post;
-      navigator.mediaSession.metadata = new window.MediaMetadata({
-        title: title,
-        artist: username,
-        artwork: [
-          {
-            src: image_link,
-            sizes: "96x96",
-            type: "image/png",
-          },
-          {
-            src: image_link,
-            sizes: "128x128",
-            type: "image/png",
-          },
-          {
-            src: image_link,
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: image_link,
-            sizes: "256x256",
-            type: "image/png",
-          },
-          {
-            src: image_link,
-            sizes: "384x384",
-            type: "image/png",
-          },
-          {
-            src: image_link,
-            sizes: "512x512",
-            type: "image/png",
-          },
-        ],
-      });
+      if ("mediaSession" in navigator) {
+        navigator.mediaSession.metadata = new window.MediaMetadata({
+          title: title,
+          artist: username,
+          artwork: [
+            {
+              src: image_link,
+              sizes: "96x96",
+              type: "image/png",
+            },
+            {
+              src: image_link,
+              sizes: "128x128",
+              type: "image/png",
+            },
+            {
+              src: image_link,
+              sizes: "192x192",
+              type: "image/png",
+            },
+            {
+              src: image_link,
+              sizes: "256x256",
+              type: "image/png",
+            },
+            {
+              src: image_link,
+              sizes: "384x384",
+              type: "image/png",
+            },
+            {
+              src: image_link,
+              sizes: "512x512",
+              type: "image/png",
+            },
+          ],
+        });
+      }
     }
 
     const isSupportAudio = !!document.createElement("audio").canPlayType;
