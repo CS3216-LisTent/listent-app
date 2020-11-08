@@ -58,6 +58,13 @@ export default function RootPlayer() {
     }
   }, [dispatch, swipeRef]);
 
+  useEffect(() => {
+    // When index change from swipe
+    if (index + 1 === posts.length) {
+      setSize((size) => size + 1);
+    }
+  }, [index, posts.length, setSize]);
+
   const audioRef = useRef(null);
   const isRender =
     src ||

@@ -82,6 +82,7 @@ export default function New() {
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
     dispatch(setBottomNavigationIndex(2));
   }, [dispatch, audioRef]);

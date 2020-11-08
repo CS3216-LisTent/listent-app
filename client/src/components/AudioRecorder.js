@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import RecordRTC from "recordrtc";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import { useSelector } from "react-redux";
 
 // Material UI components
 import Button from "@material-ui/core/Button";
@@ -55,6 +56,7 @@ export default function AudioRecorder({
   const [isRecording, setIsRecording] = useState(false);
   const [isRecordDisabled, setIsRecordDisabled] = useState(false);
   const [errors, setErrors] = useState(null);
+  const { audioRef } = useSelector((state) => state.audio);
 
   useEffect(
     () => () => {
@@ -198,6 +200,11 @@ export default function AudioRecorder({
 
   const startRecording = () => {
     setIsRecordDisabled(true);
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    
     if (!microphone) {
       captureMicrophone((mic) => {
         microphone = mic;
