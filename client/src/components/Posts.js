@@ -20,7 +20,6 @@ import Post from "../components/Post";
 
 // Utils
 import {
-  setPosts,
   setPostIndex,
   setSwipeRef,
   setApiPath,
@@ -56,8 +55,6 @@ export default function PostsWrapper({ apiPath }) {
     </ErrorBoundary>
   );
 }
-
-const PAGE_SIZE = 3;
 
 function Posts({ apiPath }) {
   const dispatch = useDispatch();
