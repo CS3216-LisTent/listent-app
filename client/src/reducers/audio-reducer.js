@@ -4,6 +4,8 @@ import {
   SET_AUDIO_REF,
   SET_SWIPE_REF,
   SET_AUDIO_SRC,
+  SET_API_PATH,
+  SET_AUDIO_EMPTY,
 } from "../actions/types";
 
 const initialState = {
@@ -12,6 +14,8 @@ const initialState = {
   audioRef: undefined,
   swipeRef: undefined,
   src: undefined,
+  apiPath: undefined,
+  isEmpty: false,
 };
 
 export default function alertReducer(state = initialState, action) {
@@ -26,6 +30,10 @@ export default function alertReducer(state = initialState, action) {
       return { ...state, swipeRef: action.payload };
     case SET_AUDIO_SRC:
       return { ...state, src: action.payload };
+    case SET_API_PATH:
+      return { ...state, apiPath: action.payload };
+    case SET_AUDIO_EMPTY:
+      return { ...state, isEmpty: action.payload };
     default:
       return state;
   }

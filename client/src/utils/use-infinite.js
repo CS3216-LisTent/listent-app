@@ -6,9 +6,13 @@ export const PAGE_SIZE = 6;
 export default function useInfinite(apiPath, pageSize) {
   const { data, size, setSize, mutate } = useSWRInfinite(
     (pageIndex, previousPageData) => {
+      if (!apiPath) {
+        return null;
+      }
       if (previousPageData && !previousPageData.length) {
         return null;
       }
+
       return `${apiPath}skip=${
         pageIndex * (pageSize ? pageSize : PAGE_SIZE)
       }&limit=${pageSize ? pageSize : PAGE_SIZE}`;
@@ -18,9 +22,18 @@ export default function useInfinite(apiPath, pageSize) {
 
   const isLoadingMore =
     size > 0 && data && typeof data[size - 1] === "undefined";
-  const isEmpty = data[0].length === 0;
+  const isEmpty = !data ? true : data?.[0]?.length === 0;
   const isReachingEnd =
-    isEmpty || data[data.length - 1].length < (pageSize ? pageSize : PAGE_SIZE);
+    isEmpty ||
+    data?.[data.length - 1]?.length < (pageSize ? pageSize : PAGE_SIZE);
 
-  return { data, size, setSize, isLoadingMore, isEmpty, isReachingEnd, mutate };
+  return {
+    data: data || [],
+    size,
+    setSize,
+    isLoadingMore,
+    isEmpty,
+    isReachingEnd,
+    mutate,
+  };
 }

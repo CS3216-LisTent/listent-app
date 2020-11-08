@@ -19,8 +19,12 @@ import ReactSwipe from "react-swipe";
 import Post from "../components/Post";
 
 // Utils
-import useInfinite from "../utils/use-infinite";
-import { setPosts, setPostIndex, setSwipeRef } from "../actions/audio-actions";
+import {
+  setPosts,
+  setPostIndex,
+  setSwipeRef,
+  setApiPath,
+} from "../actions/audio-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,12 +63,11 @@ function Posts({ apiPath }) {
   const dispatch = useDispatch();
   const classes = useStyles();
 
-  const { posts, index } = useSelector((state) => state.audio);
-  const { data, size, setSize, isEmpty } = useInfinite(apiPath, PAGE_SIZE);
+  const { posts, index, isEmpty } = useSelector((state) => state.audio);
 
   useEffect(() => {
-    dispatch(setPosts(data.flat()));
-  }, [data, dispatch]);
+    dispatch(setApiPath(apiPath));
+  }, [apiPath, dispatch]);
 
   const swipeRef = useRef(null);
 
@@ -90,10 +93,6 @@ function Posts({ apiPath }) {
             continuous: false,
             callback: (index) => {
               dispatch(setPostIndex(index));
-              if (index + 1 === posts.length) {
-                // Load more if next is last
-                setSize(size + 1);
-              }
             },
           }}
           ref={swipeRef}
