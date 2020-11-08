@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import useSwr from "swr";
@@ -26,6 +26,7 @@ import ShareIcon from "@material-ui/icons/Share";
 // Custom components
 import AudioDetails from "./AudioDetails";
 import AudioPlayer from "./AudioPlayer";
+import StandAloneAudioPlayer from "./StandAloneAudioPlayer";
 import Can from "./Can";
 import Comments from "./Comments";
 import ShareDrawer from "./ShareDrawer";
@@ -37,7 +38,6 @@ import { abbreviateNumber } from "../utils/general-utils";
 // Actions
 import { openSnackbar } from "../actions/snackbar-actions";
 import { openAlert } from "../actions/alert-actions";
-import { setPosts, setPostIndex } from "../actions/audio-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -120,25 +120,10 @@ export default function Post({
   setRunInstructions,
   isSinglePost,
 }) {
-  const dispatch = useDispatch();
   const { index: postIndex } = useSelector((state) => state.audio);
   const isRender = isSinglePost || Math.abs(postIndex - index) <= 1;
 
   const { data, mutate } = useSwr(isRender ? `/api/v1/posts/${postId}` : null);
-
-  useEffect(() => {
-    const prevIndex = postIndex;
-    if (isSinglePost) {
-      dispatch(setPosts([data.data]));
-      dispatch(setPostIndex(0));
-    }
-
-    return () => {
-      if (isSinglePost) {
-        dispatch(setPostIndex(prevIndex));
-      }
-    };
-  }, [isSinglePost, data, dispatch, postIndex]);
 
   const post = data && data.data;
   const [isCommentScrolled, setIsCommentScrolled] = useState(null);
@@ -240,11 +225,18 @@ export default function Post({
                   timestamp={post.timestamp}
                   viewCount={post.view_count}
                 />
-                <AudioPlayer
-                  setRunInstructions={setRunInstructions}
-                  postId={postId}
-                  isPaused={isPaused}
-                />
+                {isSinglePost ? (
+                  <StandAloneAudioPlayer
+                    src={data.data.audio_link}
+                    post={data.data}
+                  />
+                ) : (
+                  <AudioPlayer
+                    setRunInstructions={setRunInstructions}
+                    postId={postId}
+                    isPaused={isPaused}
+                  />
+                )}
               </Grid>
             </Grid>
             <Grid

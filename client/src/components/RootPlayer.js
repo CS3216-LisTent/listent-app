@@ -16,14 +16,11 @@ const PAGE_SIZE = 3;
 
 export default function RootPlayer() {
   const dispatch = useDispatch();
-  const { posts, index, swipeRef, src, apiPath } = useSelector(
+  const { posts, index, swipeRef, apiPath } = useSelector(
     (state) => state.audio
   );
 
-  const { data, size, setSize, isEmpty } = useInfinite(
-    !src && apiPath,
-    PAGE_SIZE
-  );
+  const { data, setSize, isEmpty } = useInfinite(apiPath, PAGE_SIZE);
 
   useEffect(() => {
     if (data?.[0]?.length > 0) {
@@ -36,18 +33,13 @@ export default function RootPlayer() {
   }, [isEmpty, dispatch]);
 
   const next = useCallback(() => {
-    if (index + 2 === posts.length) {
-      // Load more if next is last (this is before going to next, but going to go next already, thus index + 2)
-      setSize(size + 1);
-    }
-
     if (swipeRef && swipeRef.current) {
       // Let swipe.js handle next event
       swipeRef.current.next();
     } else {
       dispatch(incPostIndex());
     }
-  }, [index, dispatch, posts.length, setSize, size, swipeRef]);
+  }, [dispatch, swipeRef]);
 
   const prev = useCallback(() => {
     if (swipeRef && swipeRef.current) {
@@ -58,10 +50,16 @@ export default function RootPlayer() {
     }
   }, [dispatch, swipeRef]);
 
+  useEffect(() => {
+    // Load more when index changes
+    if (index + 1 === posts.length) {
+      setSize((size) => size + 1);
+    }
+  }, [index, posts.length, setSize]);
+
   const audioRef = useRef(null);
   const isRender =
-    src ||
-    (posts[index] !== undefined && posts[index].audio_link !== undefined);
+    posts[index] !== undefined && posts[index].audio_link !== undefined;
 
   useEffect(() => {
     dispatch(setAudioRef(audioRef));
@@ -69,15 +67,13 @@ export default function RootPlayer() {
     const audio = audioRef.current;
 
     const increaseViewCount = () => {
-      if (!src) {
-        const postId = posts[index]._id;
-        if (postId) {
-          // Increase view count
-          axios.post(
-            `/api/v1/posts/${postId}/inc-view-count`,
-            JSON.stringify({ number: 1 })
-          );
-        }
+      const postId = posts[index]._id;
+      if (postId) {
+        // Increase view count
+        axios.post(
+          `/api/v1/posts/${postId}/inc-view-count`,
+          JSON.stringify({ number: 1 })
+        );
       }
     };
 
@@ -92,15 +88,10 @@ export default function RootPlayer() {
         audio.removeEventListener("play", increaseViewCount);
       }
     };
-  }, [isRender, dispatch, index, posts, swipeRef, src, next, prev]);
+  }, [isRender, dispatch, index, posts, swipeRef, next, prev]);
 
   useEffect(() => {
-    // Autoplay if is not first song
-    if (index !== 0 && audioRef.current) {
-      audioRef.current.play();
-    }
-
-    if (!src && isRender && "mediaSession" in navigator) {
+    if (isRender && "mediaSession" in navigator) {
       const { title, image_link, username } = posts[index];
       navigator.mediaSession.metadata = new window.MediaMetadata({
         title: title,
@@ -158,7 +149,7 @@ export default function RootPlayer() {
         }
       }
     }
-  }, [index, dispatch, isRender, posts, src, swipeRef, next, prev]);
+  }, [index, dispatch, isRender, posts, swipeRef, next, prev]);
 
   if (!isRender) {
     return null;
@@ -168,8 +159,9 @@ export default function RootPlayer() {
     <audio
       preload="metadata"
       ref={audioRef}
-      src={src || posts[index].audio_link}
+      src={posts[index].audio_link}
       // controls
+      autoPlay
     >
       Your browser does not support the
       <code>audio</code> element.

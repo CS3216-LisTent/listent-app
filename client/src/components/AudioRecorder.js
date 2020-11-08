@@ -17,7 +17,7 @@ import { formatSeconds } from "../utils/general-utils";
 import convertToChipmunk from "../utils/convert-to-chipmunk";
 
 // Custom components
-import AudioPlayer from "../components/AudioPlayer";
+import StandAloneAudioPlayer from "../components/StandAloneAudioPlayer";
 
 // Redux
 import { useDispatch } from "react-redux";
@@ -198,6 +198,7 @@ export default function AudioRecorder({
 
   const startRecording = () => {
     setIsRecordDisabled(true);
+
     if (!microphone) {
       captureMicrophone((mic) => {
         microphone = mic;
@@ -239,7 +240,7 @@ export default function AudioRecorder({
 
   return (
     <div className={clsx(errors && classes.error)}>
-      {audioSrc && <AudioPlayer src={audioSrc} hideNext hidePrevious />}
+      {audioSrc && <StandAloneAudioPlayer src={audioSrc} />}
       <RecordButtons
         isRecording={isRecording}
         startRecord={startRecording}
