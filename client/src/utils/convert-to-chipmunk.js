@@ -2,8 +2,7 @@
 import store from "../store";
 import { openSnackbar } from "../actions/snackbar-actions";
 
-// Placeholder
-let workerPath = `https://archive.org/download/ffmpeg_asm/ffmpeg_asm.js`;
+let workerPath = `https://listent.app/ffmpeg_asm.js`;
 
 function processInWebWorker() {
   let blob = URL.createObjectURL(

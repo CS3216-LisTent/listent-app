@@ -18,3 +18,11 @@ export const SET_SEARCH_TAB = "SET_SEARCH_TAB";
 export const SET_SEED = "SET_SEED";
 
 export const SET_BACK_ACTION = "SET_BACK_ACTION ";
+
+export const SET_POSTS = "SET_POSTS";
+export const SET_POST_INDEX = "SET_POST_INDEX";
+export const SET_AUDIO_REF = "SET_AUDIO_REF";
+export const SET_SWIPE_REF = "SET_SWIPE_REF";
+export const SET_AUDIO_SRC = "SET_AUDIO_SRC";
+export const SET_API_PATH = "SET_API_PATH ";
+export const SET_AUDIO_EMPTY = "SET_AUDIO_EMPTY";

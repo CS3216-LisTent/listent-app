@@ -27,6 +27,15 @@ const initialState = {
   back: () => {
     history.goBack();
   },
+  audio: {
+    posts: [],
+    index: 0,
+    audioRef: undefined,
+    swipeRef: undefined,
+    src: undefined,
+    apiPath: undefined,
+    isEmpty: false,
+  },
 };
 
 const middleware = [thunk];

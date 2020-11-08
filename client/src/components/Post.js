@@ -26,6 +26,7 @@ import ShareIcon from "@material-ui/icons/Share";
 // Custom components
 import AudioDetails from "./AudioDetails";
 import AudioPlayer from "./AudioPlayer";
+import StandAloneAudioPlayer from "./StandAloneAudioPlayer";
 import Can from "./Can";
 import Comments from "./Comments";
 import ShareDrawer from "./ShareDrawer";
@@ -115,18 +116,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Post({
   postId,
-  next,
-  previous,
-  hideNext,
-  hidePrevious,
-  autoplay,
-  autopause,
-  startSlide,
   index,
   setRunInstructions,
+  isSinglePost,
 }) {
-  const isRender =
-    startSlide && index ? Math.abs(startSlide - index) <= 1 : true;
+  const { index: postIndex } = useSelector((state) => state.audio);
+  const isRender = isSinglePost || Math.abs(postIndex - index) <= 1;
 
   const { data, mutate } = useSwr(isRender ? `/api/v1/posts/${postId}` : null);
 
@@ -160,7 +155,7 @@ export default function Post({
 
   return (
     <>
-      {hideNext && (
+      {isSinglePost && (
         <Helmet>
           <title>{post.title}</title>
         </Helmet>
@@ -230,18 +225,18 @@ export default function Post({
                   timestamp={post.timestamp}
                   viewCount={post.view_count}
                 />
-                <AudioPlayer
-                  autoplay={autoplay}
-                  autopause={autopause}
-                  next={next}
-                  previous={previous}
-                  hideNext={hideNext}
-                  hidePrevious={hidePrevious}
-                  src={post.audio_link}
-                  isPaused={isPaused}
-                  setRunInstructions={setRunInstructions}
-                  postId={postId}
-                />
+                {isSinglePost ? (
+                  <StandAloneAudioPlayer
+                    src={data.data.audio_link}
+                    post={data.data}
+                  />
+                ) : (
+                  <AudioPlayer
+                    setRunInstructions={setRunInstructions}
+                    postId={postId}
+                    isPaused={isPaused}
+                  />
+                )}
               </Grid>
             </Grid>
             <Grid

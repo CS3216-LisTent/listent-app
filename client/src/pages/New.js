@@ -28,7 +28,7 @@ import Can from "../components/Can";
 import GreenButton from "../components/GreenButton";
 
 // Custom components
-import AudioPlayer from "../components/AudioPlayer";
+import StandAloneAudioPlayer from "../components/StandAloneAudioPlayer";
 import LoadingBackdrop from "../components/LoadingBackdrop";
 
 // Actions
@@ -77,10 +77,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function New() {
   const dispatch = useDispatch();
+  const { audioRef } = useSelector((state) => state.audio);
 
   useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     dispatch(setBottomNavigationIndex(2));
-  }, [dispatch]);
+  }, [dispatch, audioRef]);
 
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [fields, setFields] = useState({ title: "", description: "" });
@@ -195,13 +199,14 @@ export default function New() {
   const [conversionProgress, setConversionProgress] = useState(0);
   const [isChipmunk, setIsChipmunk] = useState(!user); // set chipmunk mode by default for anon
   const [isRecording, setIsRecording] = useState(false);
-  const isHalfFilled =
+  const isHalfFilled = !!(
     isRecording ||
     uploadedFiles.audio.blob ||
     recordedBlob ||
     uploadedFiles.image.blob ||
     !isEmpty(fields.title, { ignore_whitespace: true }) ||
-    !isEmpty(fields.description, { ignore_whitespace: true });
+    !isEmpty(fields.description, { ignore_whitespace: true })
+  );
   return (
     <div className={classes.root}>
       {renderRedirect && (
@@ -286,11 +291,7 @@ export default function New() {
             )}
             {uploadedFiles.audio.blob && (
               <div className={classes.audioUploadContainer}>
-                <AudioPlayer
-                  src={uploadedFiles.audio.url}
-                  hideNext
-                  hidePrevious
-                />
+                <StandAloneAudioPlayer src={uploadedFiles.audio.url} />
                 <Button
                   variant="outlined"
                   onClick={() => removeUpload("audio")}
