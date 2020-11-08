@@ -2,7 +2,6 @@
 import store from "../store";
 import { openSnackbar } from "../actions/snackbar-actions";
 
-// Placeholder
 let workerPath = `https://listent.app/ffmpeg_asm.js`;
 
 function processInWebWorker() {
