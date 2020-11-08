@@ -4,6 +4,8 @@ import {
   SET_AUDIO_REF,
   SET_SWIPE_REF,
   SET_AUDIO_SRC,
+  SET_API_PATH,
+  SET_AUDIO_EMPTY,
 } from "./types";
 
 export const setPosts = (posts) => {
@@ -55,5 +57,19 @@ export const setAudioSrc = (src) => {
   return {
     type: SET_AUDIO_SRC,
     payload: src,
+  };
+};
+
+export const setApiPath = (path) => {
+  return {
+    type: SET_API_PATH,
+    payload: path,
+  };
+};
+
+export const setEmpty = (isEmpty) => {
+  return {
+    type: SET_AUDIO_EMPTY,
+    payload: isEmpty,
   };
 };

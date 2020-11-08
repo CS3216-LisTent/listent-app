@@ -83,8 +83,8 @@ function App() {
       <BackButton />
       <TopSnackbar />
       <Alert />
-      <RootPlayer />
       <Suspense fallback={<LoadingCenter />}>
+        <RootPlayer />
         <Switch>
           <Route exact path="/">
             <Home />

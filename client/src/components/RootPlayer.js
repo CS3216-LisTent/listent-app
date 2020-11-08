@@ -1,16 +1,63 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
+
+import useInfinite from "../utils/use-infinite";
 
 import {
   setAudioRef,
   incPostIndex,
   decPostIndex,
+  setPosts,
+  setEmpty,
 } from "../actions/audio-actions";
+
+const PAGE_SIZE = 3;
 
 export default function RootPlayer() {
   const dispatch = useDispatch();
-  const { posts, index, swipeRef, src } = useSelector((state) => state.audio);
+  const { posts, index, swipeRef, src, apiPath } = useSelector(
+    (state) => state.audio
+  );
+
+  const { data, size, setSize, isEmpty } = useInfinite(
+    !src && apiPath,
+    PAGE_SIZE
+  );
+
+  useEffect(() => {
+    if (data?.[0]?.length > 0) {
+      dispatch(setPosts(data.flat()));
+    }
+  }, [data, dispatch]);
+
+  useEffect(() => {
+    dispatch(setEmpty(isEmpty));
+  }, [isEmpty, dispatch]);
+
+  const next = useCallback(() => {
+    if (index + 2 === posts.length) {
+      // Load more if next is last (this is before going to next, but going to go next already, thus index + 2)
+      setSize(size + 1);
+    }
+
+    if (swipeRef && swipeRef.current) {
+      // Let swipe.js handle next event
+      swipeRef.current.next();
+    } else {
+      dispatch(incPostIndex());
+    }
+  }, [index, dispatch, posts.length, setSize, size, swipeRef]);
+
+  const prev = useCallback(() => {
+    if (swipeRef && swipeRef.current) {
+      // Let swipe.js handle next event
+      swipeRef.current.prev();
+    } else {
+      dispatch(decPostIndex());
+    }
+  }, [dispatch, swipeRef]);
+
   const audioRef = useRef(null);
   const isRender =
     src ||
@@ -20,15 +67,6 @@ export default function RootPlayer() {
     dispatch(setAudioRef(audioRef));
 
     const audio = audioRef.current;
-
-    const endedEvent = () => {
-      if (swipeRef && swipeRef.current) {
-        // Let swipe.js handle next event
-        swipeRef.current.next();
-      } else {
-        dispatch(incPostIndex());
-      }
-    };
 
     const increaseViewCount = () => {
       if (!src) {
@@ -44,17 +82,17 @@ export default function RootPlayer() {
     };
 
     if (isRender && audio) {
-      audio.addEventListener("ended", endedEvent);
+      audio.addEventListener("ended", next);
       audio.addEventListener("play", increaseViewCount);
     }
 
     return () => {
       if (audio) {
-        audio.removeEventListener("ended", endedEvent);
+        audio.removeEventListener("ended", next);
         audio.removeEventListener("play", increaseViewCount);
       }
     };
-  }, [isRender, dispatch, index, posts, swipeRef, src]);
+  }, [isRender, dispatch, index, posts, swipeRef, src, next, prev]);
 
   useEffect(() => {
     // Autoplay if is not first song
@@ -102,18 +140,8 @@ export default function RootPlayer() {
       });
 
       const actionHandlers = [
-        [
-          "previoustrack",
-          () => {
-            dispatch(decPostIndex());
-          },
-        ],
-        [
-          "nexttrack",
-          () => {
-            dispatch(incPostIndex());
-          },
-        ],
+        ["previoustrack", prev],
+        ["nexttrack", next],
       ];
 
       if (window.navigator.mediaSession?.setPositionState) {
@@ -130,7 +158,7 @@ export default function RootPlayer() {
         }
       }
     }
-  }, [index, dispatch, isRender, posts, src]);
+  }, [index, dispatch, isRender, posts, src, swipeRef, next, prev]);
 
   if (!isRender) {
     return null;

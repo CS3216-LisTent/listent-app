@@ -33,6 +33,8 @@ const initialState = {
     audioRef: undefined,
     swipeRef: undefined,
     src: undefined,
+    apiPath: undefined,
+    isEmpty: false,
   },
 };
 
