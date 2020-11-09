@@ -38,7 +38,7 @@ const initialState = {
   },
   notifications: {
     hasNew: false,
-    notifications: [],
+    notifications: false,
   },
 };
 

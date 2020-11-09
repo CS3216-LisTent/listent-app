@@ -8,7 +8,7 @@ export default function useNotifications() {
 
   // Refresh every 30 seconds
   useSwr("/api/v1/users", {
-    refreshInterval: 30000,
+    refreshInterval: 3000,
     refreshWhenHidden: true,
     suspense: false,
     onSuccess: (data) => {
