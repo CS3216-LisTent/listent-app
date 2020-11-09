@@ -7,6 +7,7 @@ import { useHistory } from "react-router-dom";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 
 // Icons
 import HomeIcon from "@material-ui/icons/Home";
@@ -47,6 +48,9 @@ export default function BottomNavigationBar() {
             history.push("/new");
             break;
           case 3:
+            history.push("/notifications");
+            break;
+          case 4:
             history.push(user ? `/${user.username}` : `/login`);
             break;
           default:
@@ -59,6 +63,12 @@ export default function BottomNavigationBar() {
       <BottomNavigationAction label="Home" icon={<HomeIcon />} />
       <BottomNavigationAction label="Search" icon={<SearchIcon />} />
       <BottomNavigationAction label="Record" icon={<MicIcon />} />
+      {user && (
+        <BottomNavigationAction
+          label="Notifications"
+          icon={<NotificationsIcon />}
+        />
+      )}
       {user ? (
         <BottomNavigationAction label="Profile" icon={<PersonIcon />} />
       ) : (

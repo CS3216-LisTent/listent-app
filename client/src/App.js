@@ -26,6 +26,7 @@ import RootPlayer from "./components/RootPlayer";
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const New = lazy(() => import("./pages/New"));
+const Notifications = lazy(() => import("./pages/Notifications"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Register = lazy(() => import("./pages/Register"));
 const Search = lazy(() => import("./pages/Search"));
@@ -96,6 +97,9 @@ function App() {
           </Route>
           <Route exact path="/new">
             <New />
+          </Route>
+          <Route exact path="/notifications">
+            <Notifications />
           </Route>
           <Route exact path="/login">
             <Login />
