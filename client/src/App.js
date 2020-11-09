@@ -19,8 +19,9 @@ import Alert from "./components/Alert";
 import BackButton from "./components/BackButton";
 import BottomNavigationBar from "./components/BottomNavigationBar";
 import LoadingCenter from "./components/LoadingCenter";
-import TopSnackbar from "./components/TopSnackbar";
+import PrivateRoute from "./components/PrivateRoute";
 import RootPlayer from "./components/RootPlayer";
+import TopSnackbar from "./components/TopSnackbar";
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));
@@ -98,9 +99,9 @@ function App() {
           <Route exact path="/new">
             <New />
           </Route>
-          <Route exact path="/notifications">
+          <PrivateRoute exact path="/notifications">
             <Notifications />
-          </Route>
+          </PrivateRoute>
           <Route exact path="/login">
             <Login />
           </Route>

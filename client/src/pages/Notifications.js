@@ -19,6 +19,25 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 
+// Icons
+import DeleteIcon from "@material-ui/icons/Delete";
+
+// Custom components
+import AudioRecorder from "../components/AudioRecorder";
+import Can from "../components/Can";
+import GreenButton from "../components/GreenButton";
+
+// Custom components
+import StandAloneAudioPlayer from "../components/StandAloneAudioPlayer";
+import LoadingBackdrop from "../components/LoadingBackdrop";
+
+// Actions
+import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
+import { openSnackbar } from "../actions/snackbar-actions";
+import { openAlert } from "../actions/alert-actions";
+
+// Utils
+import { newPostErrors } from "../utils/validators";
 const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: theme.spacing(6),
@@ -27,6 +46,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Notifications() {
   const classes = useStyles();
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(setBottomNavigationIndex(3));
+  }, [dispatch]);
 
   return (
     <Container className={classes.root} maxWidth="sm">
