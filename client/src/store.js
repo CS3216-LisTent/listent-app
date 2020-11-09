@@ -36,6 +36,10 @@ const initialState = {
     apiPath: undefined,
     isEmpty: false,
   },
+  notifications: {
+    hasNew: false,
+    notifications: false,
+  },
 };
 
 const middleware = [thunk];

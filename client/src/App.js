@@ -8,6 +8,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 
 // Utils
 import jwt_decode from "jwt-decode";
+import useNotifications from "./utils/use-notifications";
 
 // Redux
 import store from "./store";
@@ -19,13 +20,15 @@ import Alert from "./components/Alert";
 import BackButton from "./components/BackButton";
 import BottomNavigationBar from "./components/BottomNavigationBar";
 import LoadingCenter from "./components/LoadingCenter";
-import TopSnackbar from "./components/TopSnackbar";
+import PrivateRoute from "./components/PrivateRoute";
 import RootPlayer from "./components/RootPlayer";
+import TopSnackbar from "./components/TopSnackbar";
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const New = lazy(() => import("./pages/New"));
+const Notifications = lazy(() => import("./pages/Notifications"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Register = lazy(() => import("./pages/Register"));
 const Search = lazy(() => import("./pages/Search"));
@@ -51,6 +54,7 @@ const useStyles = makeStyles({
 });
 
 function App() {
+  useNotifications();
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const classes = useStyles(windowHeight);
 
@@ -97,6 +101,9 @@ function App() {
           <Route exact path="/new">
             <New />
           </Route>
+          <PrivateRoute exact path="/notifications">
+            <Notifications />
+          </PrivateRoute>
           <Route exact path="/login">
             <Login />
           </Route>
