@@ -8,6 +8,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 
 // Utils
 import jwt_decode from "jwt-decode";
+import useNotifications from "./utils/use-notifications";
 
 // Redux
 import store from "./store";
@@ -53,6 +54,7 @@ const useStyles = makeStyles({
 });
 
 function App() {
+  useNotifications();
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const classes = useStyles(windowHeight);
 

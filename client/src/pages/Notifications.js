@@ -130,8 +130,8 @@ export default function Notifications() {
             ? `${process.env.PUBLIC_URL}/${username}`
             : `${process.env.PUBLIC_URL}/post/${post_id}`;
           return (
-            <Link to={linkToVisit} className={classes.plainLink}>
-              <ListItem button key={i} alignItems="flex-start">
+            <Link to={linkToVisit} className={classes.plainLink} key={i}>
+              <ListItem button alignItems="flex-start">
                 {/* <ListItemAvatar>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
               </ListItemAvatar> */}
