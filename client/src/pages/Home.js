@@ -13,7 +13,7 @@ import Posts from "../components/Posts";
 // Utils
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
 import { setHomeTabIndex } from "../actions/home-tab-actions";
-import { setPostIndex } from "../actions/audio-actions";
+import { setPostIndex, setPosts } from "../actions/audio-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,6 +66,7 @@ function Home() {
     dispatch(setHomeTabIndex(newValue));
     // Reset position after change section
     dispatch(setPostIndex(0));
+    dispatch(setPosts(false));
   };
 
   return (

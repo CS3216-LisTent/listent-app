@@ -28,7 +28,7 @@ const initialState = {
     history.goBack();
   },
   audio: {
-    posts: [],
+    posts: false,
     index: 0,
     audioRef: undefined,
     swipeRef: undefined,

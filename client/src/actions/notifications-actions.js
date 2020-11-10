@@ -24,10 +24,8 @@ export const updateNotifications = (notifications) => {
     };
   }
 
-  // Placeholder: TDOD: remove get last index
   const isNewestSeen =
-    new Date(lastChecked) >=
-    new Date(notifications[notifications.length - 1].timestamp + "Z");
+    new Date(lastChecked) >= new Date(notifications[0].timestamp + "Z");
 
   if (!isNewestSeen && notifications.length !== 0) {
     return {
