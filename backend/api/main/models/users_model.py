@@ -3,7 +3,6 @@ from datetime import datetime
 from pymongo.errors import WriteError
 from api.main.config import LOGGER
 from api.main.db import DB
-from api.main.models.posts_model import PostModel
 
 
 class UserModel:
@@ -126,6 +125,7 @@ class UserModel:
             notification_payload['user_ref'] = user_ref
             notification_payload['user_pic'] = UserModel.get_picture(user_ref)
         if post_ref:
+            from api.main.models.posts_model import PostModel
             notification_payload['post_ref'] = post_ref
             notification_payload['post_pic'] = PostModel.get_picture(post_ref)
         resp = DB.users.find_one_and_update(
