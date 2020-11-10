@@ -12,8 +12,8 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Typography from "@material-ui/core/Typography";
-// import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-// import Avatar from "@material-ui/core/Avatar";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Avatar from "@material-ui/core/Avatar";
 
 // Actions
 import { setBottomNavigationIndex } from "../actions/bottom-navigation-actions";
@@ -21,6 +21,7 @@ import { updateNotifications } from "../actions/notifications-actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    paddingBottom: theme.spacing(8),
     paddingTop: theme.spacing(6),
   },
   inline: {
@@ -70,25 +71,33 @@ export default function Notifications() {
     );
   }
 
-  // Placeholder: TDOD: remove reverse
-  const reversed = [...notifications].reverse();
-
   return (
     <Container className={classes.root} maxWidth="sm">
       <Typography variant="h5">Notifications</Typography>
-      <List className={classes.root}>
-        {reversed.map((notification, i) => {
-          const { post_id, username } = notification;
+      <List>
+        {notifications.map((notification, i) => {
+          const {
+            post_ref,
+            user_ref,
+            message,
+            post_pic,
+            user_pic,
+          } = notification;
 
-          const linkToVisit = !post_id
-            ? `${process.env.PUBLIC_URL}/${username}`
-            : `${process.env.PUBLIC_URL}/post/${post_id}`;
+          const linkToVisit = !post_ref
+            ? `${process.env.PUBLIC_URL}/${user_ref}`
+            : `${process.env.PUBLIC_URL}/post/${post_ref}`;
           return (
             <Link to={linkToVisit} className={classes.plainLink} key={i}>
-              <ListItem button alignItems="flex-start">
-                {/* <ListItemAvatar>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-              </ListItemAvatar> */}
+              <ListItem button alignItems="center">
+                <Link
+                  className={classes.plainLink}
+                  to={`${process.env.PUBLIC_URL}/${user_ref}`}
+                >
+                  <ListItemAvatar>
+                    <Avatar src={user_pic} />
+                  </ListItemAvatar>
+                </Link>
                 <ListItemText
                   primary={
                     <React.Fragment>
@@ -98,13 +107,24 @@ export default function Notifications() {
                         className={classes.inline}
                         color="textPrimary"
                       >
-                        {notification.message}
+                        <Link
+                          className={classes.plainLink}
+                          to={`${process.env.PUBLIC_URL}/${user_ref}`}
+                        >
+                          <strong>{user_ref}</strong>
+                        </Link>{" "}
+                        {message}
                       </Typography>
                     </React.Fragment>
                   }
                 />
+                {post_pic && (
+                  <ListItemAvatar>
+                    <Avatar variant="square" src={post_pic} />
+                  </ListItemAvatar>
+                )}
               </ListItem>
-              <Divider component="li" />
+              <Divider variant="inset" component="li" />
             </Link>
           );
         })}
