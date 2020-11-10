@@ -197,3 +197,9 @@ class PostModel:
             if resp:
                 return PostModel.get_post(post_id)
         raise WriteError('Error in incrementing the view count. Post may not exist.')
+
+    @staticmethod
+    def get_picture(post_id):
+        resp = DB.posts.find_one({'_id': post_id}, {'image_link': 1})
+        if resp:
+            return resp.get('image_link')
