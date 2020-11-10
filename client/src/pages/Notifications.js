@@ -34,16 +34,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Notifications() {
+export default function Notifications({ update }) {
   const classes = useStyles();
   const dispatch = useDispatch();
 
   useEffect(() => {
+    update();
     dispatch(setBottomNavigationIndex(3));
 
     // Set hasNew to false
     dispatch(updateNotifications(false));
-  }, [dispatch]);
+  }, [dispatch, update]);
 
   const { notifications } = useSelector((state) => state.notifications);
 

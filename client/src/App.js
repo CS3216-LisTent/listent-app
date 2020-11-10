@@ -54,7 +54,7 @@ const useStyles = makeStyles({
 });
 
 function App() {
-  useNotifications();
+  const update = useNotifications();
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const classes = useStyles(windowHeight);
 
@@ -102,7 +102,7 @@ function App() {
             <New />
           </Route>
           <PrivateRoute exact path="/notifications">
-            <Notifications />
+            <Notifications update={update} />
           </PrivateRoute>
           <Route exact path="/login">
             <Login />
