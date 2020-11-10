@@ -28,13 +28,17 @@ const initialState = {
     history.goBack();
   },
   audio: {
-    posts: [],
+    posts: false,
     index: 0,
     audioRef: undefined,
     swipeRef: undefined,
     src: undefined,
     apiPath: undefined,
     isEmpty: false,
+  },
+  notifications: {
+    hasNew: false,
+    notifications: false,
   },
 };
 

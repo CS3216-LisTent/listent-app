@@ -87,6 +87,16 @@ class PostService:
                 description=description,
                 image_link=image_link
             )
+
+            user_data = UserModel.get_user(username)
+            for follower_username in user_data['followers']:
+                UserModel.add_notification_message(
+                    follower_username,
+                    f'made a new post!',
+                    user_ref=username,
+                    post_ref=post_id,
+                )
+
             return make_response(
                 jsonify({
                     'status': 'success',
@@ -322,6 +332,16 @@ class PostService:
                 text=text,
                 timestamp=timestamp
             )
+
+            post_username = post_data['username']
+            post_title = post_data['title']
+            UserModel.add_notification_message(
+                post_username,
+                f'commented on your post {post_title}',
+                user_ref=username,
+                post_ref=post_id
+            )
+
             return make_response(
                 jsonify({
                     'status': 'success',
@@ -351,6 +371,16 @@ class PostService:
                 post_id=post_id,
                 username=username,
             )
+
+            post_username = post_data['username']
+            post_title = post_data['title']
+            UserModel.add_notification_message(
+                post_username,
+                f'liked your post {post_title}',
+                user_ref=username,
+                post_ref=post_id
+            )
+
             return make_response(
                 jsonify({
                     'status': 'success',

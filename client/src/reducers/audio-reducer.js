@@ -9,7 +9,7 @@ import {
 } from "../actions/types";
 
 const initialState = {
-  posts: [],
+  posts: false,
   index: 0,
   audioRef: undefined,
   swipeRef: undefined,

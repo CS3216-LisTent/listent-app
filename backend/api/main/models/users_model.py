@@ -1,5 +1,5 @@
 import re
-
+from datetime import datetime
 from pymongo.errors import WriteError
 from api.main.config import LOGGER
 from api.main.db import DB
@@ -26,6 +26,10 @@ class UserModel:
                     picture = UserModel.get_user(un)['picture']
                     resp['followings'][i] = {'username': un, 'picture': picture}
             LOGGER.info(f'Successfully retrieving user: {resp}')
+
+            if 'notifications' not in resp:
+                resp['notifications'] = []
+
             return resp
 
         raise WriteError(f'Error in querying for {username}. User may not exist.')
@@ -106,3 +110,33 @@ class UserModel:
             username = user['_id']
             rtn.append(UserModel.get_user(username, show_follower_pics=True, show_following_pics=True))
         return rtn
+
+    @staticmethod
+    def get_picture(username):
+        resp = DB.users.find_one({'_id': username}, {'picture': 1})
+        if resp:
+            return resp.get('picture')
+
+    @staticmethod
+    def add_notification_message(username, message, user_ref=None, post_ref=None):
+        timestamp = datetime.utcnow().isoformat()
+        notification_payload = {'timestamp': timestamp, 'message': message}
+        if user_ref:
+            notification_payload['user_ref'] = user_ref
+            notification_payload['user_pic'] = UserModel.get_picture(user_ref)
+        if post_ref:
+            from api.main.models.posts_model import PostModel
+            notification_payload['post_ref'] = post_ref
+            notification_payload['post_pic'] = PostModel.get_picture(post_ref)
+        resp = DB.users.find_one_and_update(
+            {'_id': username},
+            {'$push': {'notifications': {
+                '$each': [notification_payload],
+                '$sort': {'timestamp': -1}
+            }}}
+        )
+        if resp:
+            return UserModel.get_user(username, show_following_pics=True, show_follower_pics=True)
+        raise WriteError(f'Error in updating {username}. User may not exist.')
+
+

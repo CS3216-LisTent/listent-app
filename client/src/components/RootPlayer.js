@@ -161,7 +161,7 @@ export default function RootPlayer() {
       ref={audioRef}
       src={posts[index].audio_link}
       // controls
-      autoPlay
+      autoPlay={index !== 0}
     >
       Your browser does not support the
       <code>audio</code> element.

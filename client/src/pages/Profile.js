@@ -96,7 +96,7 @@ function UserProfile({ username }) {
   const user = useSelector((state) => state.user);
   useEffect(() => {
     if (user && user.username === username) {
-      dispatch(setBottomNavigationIndex(3));
+      dispatch(setBottomNavigationIndex(4));
     }
   }, [dispatch, user, username]);
 

@@ -51,7 +51,7 @@ export default function Register() {
   const user = useSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch(setBottomNavigationIndex(3));
+    dispatch(setBottomNavigationIndex(4));
   }, [dispatch]);
 
   useEffect(() => {

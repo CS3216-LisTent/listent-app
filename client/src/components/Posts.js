@@ -9,8 +9,9 @@ import Typography from "@material-ui/core/Typography";
 
 // Custom components
 import ErrorBoundary from "../components/ErrorBoundary";
-import SuspenseLoading from "../components/SuspenseLoading";
 import Instructions from "../components/Instructions";
+import LoadingCenter from "../components/LoadingCenter";
+import SuspenseLoading from "../components/SuspenseLoading";
 
 // Other components
 import ReactSwipe from "react-swipe";
@@ -77,12 +78,14 @@ function Posts({ apiPath }) {
   return (
     <div className={classes.root}>
       {posts && <Instructions run={runInstructions} />}
-      {isEmpty ? (
+      {isEmpty && posts ? (
         <Container maxWidth="sm" className={classes.emptyContainer}>
           <Typography variant="h5">
             It seems a little lonely here... Start following other accounts now!
           </Typography>
         </Container>
+      ) : !posts ? (
+        <LoadingCenter />
       ) : (
         <ReactSwipe
           swipeOptions={{

@@ -37,11 +37,10 @@ linkify.add("#", {
     return 0;
   },
   normalize: function (match) {
-    match.url = `${
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000"
-        : "https://listent.app"
-    }/search/tags/${match.url.replace(/^#/, "")}`;
+    match.url = `${process.env.PUBLIC_URL}/search/tags/${match.url.replace(
+      /^#/,
+      ""
+    )}`;
   },
 });
 

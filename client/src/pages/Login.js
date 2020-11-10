@@ -55,7 +55,7 @@ export default function Login() {
   const [isShowResend, setIsShowResend] = useState(false);
 
   useEffect(() => {
-    dispatch(setBottomNavigationIndex(3));
+    dispatch(setBottomNavigationIndex(4));
   }, [dispatch]);
 
   useEffect(() => {
