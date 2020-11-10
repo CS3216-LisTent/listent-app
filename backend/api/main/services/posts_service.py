@@ -89,13 +89,12 @@ class PostService:
             )
 
             user_data = UserModel.get_user(username)
-            followers = user_data['followers']
-            for follower_username in followers:
+            for follower_username in user_data['followers']:
                 UserModel.add_notification_message(
                     follower_username,
-                    f'{username} made a new post!',
+                    f'made a new post!',
                     user_ref=username,
-                    post_ref=post_id
+                    post_ref=post_id,
                 )
 
             return make_response(
@@ -338,7 +337,7 @@ class PostService:
             post_title = post_data['title']
             UserModel.add_notification_message(
                 post_username,
-                f'{username} commented on your post {post_title}: "{text}"',
+                f'commented on your post {post_title}',
                 user_ref=username,
                 post_ref=post_id
             )
@@ -377,7 +376,7 @@ class PostService:
             post_title = post_data['title']
             UserModel.add_notification_message(
                 post_username,
-                f'{username} liked your post {post_title}',
+                f'liked your post {post_title}',
                 user_ref=username,
                 post_ref=post_id
             )
