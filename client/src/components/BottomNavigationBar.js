@@ -47,7 +47,10 @@ export default function BottomNavigationBar() {
             history.push("/new");
             break;
           case 3:
-            history.push(user ? `/${user.username}` : `/login`);
+            history.push("/notifications");
+            break;
+          case 4:
+            history.push(user ? `/${user.username}` : `/register`);
             break;
           default:
           // placeholder
@@ -62,7 +65,7 @@ export default function BottomNavigationBar() {
       {user ? (
         <BottomNavigationAction label="Profile" icon={<PersonIcon />} />
       ) : (
-        <BottomNavigationAction label="Login" icon={<ExitToAppIcon />} />
+        <BottomNavigationAction label="Register" icon={<ExitToAppIcon />} />
       )}
     </BottomNavigation>
   );
