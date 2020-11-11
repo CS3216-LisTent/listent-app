@@ -4,9 +4,11 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 // Material UI components
+import Badge from "@material-ui/core/Badge";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 
 // Icons
 import HomeIcon from "@material-ui/icons/Home";
@@ -28,6 +30,7 @@ export default function BottomNavigationBar() {
   const index = useSelector((state) => state.bottomNavigation.index);
   const user = useSelector((state) => state.user);
   const { searchTerm, searchTab } = useSelector((state) => state.search);
+  const { hasNew } = useSelector((state) => state.notifications);
   const history = useHistory();
 
   return (
@@ -62,6 +65,21 @@ export default function BottomNavigationBar() {
       <BottomNavigationAction label="Home" icon={<HomeIcon />} />
       <BottomNavigationAction label="Search" icon={<SearchIcon />} />
       <BottomNavigationAction label="Record" icon={<MicIcon />} />
+      {user && (
+        <BottomNavigationAction
+          label="Notifications"
+          icon={
+            <Badge
+              color="secondary"
+              variant="dot"
+              overlap="circle"
+              invisible={!hasNew}
+            >
+              <NotificationsIcon />
+            </Badge>
+          }
+        />
+      )}
       {user ? (
         <BottomNavigationAction label="Profile" icon={<PersonIcon />} />
       ) : (

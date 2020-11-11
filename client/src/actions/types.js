@@ -26,3 +26,5 @@ export const SET_SWIPE_REF = "SET_SWIPE_REF";
 export const SET_AUDIO_SRC = "SET_AUDIO_SRC";
 export const SET_API_PATH = "SET_API_PATH ";
 export const SET_AUDIO_EMPTY = "SET_AUDIO_EMPTY";
+
+export const UPDATE_NOTIFICATIONS = "UPDATE_NOTIFICATIONS";

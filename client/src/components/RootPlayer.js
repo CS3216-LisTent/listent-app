@@ -23,6 +23,10 @@ export default function RootPlayer() {
   const { data, setSize, isEmpty } = useInfinite(apiPath, PAGE_SIZE);
 
   useEffect(() => {
+    if (data?.[0]?.length === 0) {
+      dispatch(setPosts([]));
+    }
+    
     if (data?.[0]?.length > 0) {
       dispatch(setPosts(data.flat()));
     }
@@ -161,7 +165,7 @@ export default function RootPlayer() {
       ref={audioRef}
       src={posts[index].audio_link}
       // controls
-      autoPlay
+      autoPlay={index !== 0}
     >
       Your browser does not support the
       <code>audio</code> element.

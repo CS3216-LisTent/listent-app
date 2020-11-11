@@ -317,7 +317,13 @@ class UserService:
     def follow(username, other_username):
         try:
             user_app_data = UserModel.follow(username, other_username)[0]
-            UserModel.add_notification_message(other_username, f'{username} followed you!')
+
+            UserModel.add_notification_message(
+                other_username,
+                f'followed you!',
+                user_ref=username
+            )
+
             data = {
                 'username': user_app_data['_id'],
                 'email': user_app_data['email'],

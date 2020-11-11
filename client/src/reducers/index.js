@@ -10,6 +10,7 @@ import searchReducer from "./search-reducer";
 import seedReducer from "./seed-reducer";
 import backReducer from "./back-reducer";
 import audioReducer from "./audio-reducer";
+import notificationsReducer from "./notifications-reducer";
 
 export default combineReducers({
   bottomNavigation: bottomNavigationReducer,
@@ -22,4 +23,5 @@ export default combineReducers({
   seed: seedReducer,
   back: backReducer,
   audio: audioReducer,
+  notifications: notificationsReducer,
 });
