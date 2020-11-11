@@ -23,6 +23,10 @@ export default function RootPlayer() {
   const { data, setSize, isEmpty } = useInfinite(apiPath, PAGE_SIZE);
 
   useEffect(() => {
+    if (data?.[0]?.length === 0) {
+      dispatch(setPosts([]));
+    }
+    
     if (data?.[0]?.length > 0) {
       dispatch(setPosts(data.flat()));
     }

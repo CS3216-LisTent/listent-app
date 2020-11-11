@@ -48,6 +48,11 @@ export default function Notifications({ update }) {
 
   const { notifications } = useSelector((state) => state.notifications);
 
+  useEffect(() => {
+    // Set hasNew to false
+    dispatch(updateNotifications(false));
+  }, [notifications, dispatch]);
+
   if (notifications.length === 0) {
     return (
       <Container className={classes.root} maxWidth="sm">

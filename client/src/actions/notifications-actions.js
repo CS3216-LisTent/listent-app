@@ -25,6 +25,7 @@ export const updateNotifications = (notifications) => {
   }
 
   const isNewestSeen =
+    notifications.length !== 0 &&
     new Date(lastChecked) >= new Date(notifications[0].timestamp + "Z");
 
   if (!isNewestSeen && notifications.length !== 0) {
